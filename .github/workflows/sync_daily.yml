@@ -2,8 +2,11 @@ name: Sync Daily Log from Swiss Server
 
 on:
   schedule:
-    - cron: '45 0 * * *' # S'exécute chaque nuit à 00:45 UTC (15 min après ton compilateur)
-  workflow_dispatch: # Permet de lancer un test manuellement quand tu veux
+    - cron: '45 0 * * *' # S'exécute à 00:45 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write # Autorise l'écriture/push dans le dépôt
 
 jobs:
   sync-log:
@@ -29,7 +32,7 @@ jobs:
 
       - name: SCP Download to Root
         run: |
-          # Récupère la page de la veille depuis le serveur suisse
+          # Télécharge la page de hier depuis le serveur suisse
           scp ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/root/xylem_data/public_html/${{ steps.dates.outputs.file_name }} ./
 
       - name: Commit and Push
@@ -37,6 +40,5 @@ jobs:
           git config --global user.name "Xylem Node Bot"
           git config --global user.email "bot@xylem.local"
           git add ${{ steps.dates.outputs.file_name }}
-          # Ne commit que s'il y a une différence réelle avec le fichier existant
           git diff-index --quiet HEAD || git commit -m "🔒 Dynamic anchor: ${{ steps.dates.outputs.file_name }}"
           git push

@@ -226,7 +226,7 @@ document.addEventListener("DOMContentLoaded", function() {
     
     links.forEach(link => {
         const url = link.getAttribute("href");
-        fetch(url, { method: 'HEAD' })
+        fetch(url)
             .then(response => {
                 if (!response.ok) {
                     link.classList.add("empty");

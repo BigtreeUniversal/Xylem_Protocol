@@ -1,7 +1,6 @@
 const { ethers } = require("ethers");
 
 async function main() {
-  // 1. Récupération et nettoyage de la clé privée
   let privateKey = process.env.OPERATOR_PRIVATE_KEY;
   const rpcUrl = process.env.RPC_URL || "https://mainnet.base.org";
   const contractAddress = process.env.CONTRACT_ADDRESS;
@@ -9,15 +8,23 @@ async function main() {
   if (!privateKey) throw new Error("OPERATOR_PRIVATE_KEY manquante");
   if (!contractAddress) throw new Error("CONTRACT_ADDRESS manquante");
 
-  // Nettoyage : retire espaces, sauts de ligne et guillemets parasites
+  // Nettoyage strict
   privateKey = privateKey.trim().replace(/^["']|["']$/g, '');
 
-  // Ajout automatique du préfixe 0x si absent
+  // LOG DE DÉBOGAGE (masque le milieu pour la sécurité)
+  const cleanLen = privateKey.length;
+  const preview = privateKey.length > 10 
+    ? `${privateKey.slice(0, 6)}...${privateKey.slice(-4)}` 
+    : "TROP COURT";
+  
+  console.log(`🔍 Diagnostic Secret GitHub :`);
+  console.log(`   - Longueur lue : ${cleanLen} caractères`);
+  console.log(`   - Aperçu sécurisé : ${preview}`);
+
   if (!privateKey.startsWith("0x")) {
     privateKey = `0x${privateKey}`;
   }
 
-  // 2. Initialisation Provider & Wallet
   const provider = new ethers.JsonRpcProvider(rpcUrl);
   const wallet = new ethers.Wallet(privateKey, provider);
   console.log(`🤖 Operator Wallet: ${wallet.address}`);

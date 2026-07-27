@@ -1,15 +1,15 @@
-name: Sync Daily Log from Swiss Server
+name: Sync Daily Log and Update Xylem Oracle
 
 on:
   schedule:
-    - cron: '45 0 * * *' # S'exécute à 00:45 UTC
-  workflow_dispatch:
+    - cron: '45 0 * * *' # S'exécute chaque jour à 00:45 UTC
+  workflow_dispatch:     # Permet le déclenchement manuel
 
 permissions:
-  contents: write # Autorise l'écriture/push dans le dépôt
+  contents: write        # Autorise le push dans le dépôt
 
 jobs:
-  sync-log:
+  sync-and-anchor:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -25,17 +25,31 @@ jobs:
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known_hosts: 'placeholder'
+          known_hosts: unneeded
 
       - name: Scan Host Keys
         run: ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
       - name: SCP Download to Root
         run: |
-          # Télécharge la page de hier depuis le serveur suisse
           scp ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/root/xylem_data/public_html/${{ steps.dates.outputs.file_name }} ./
 
-      - name: Commit and Push
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies
+        run: npm install ethers
+
+      - name: Execute Oracle Anchor Script
+        env:
+          OPERATOR_PRIVATE_KEY: ${{ secrets.OPERATOR_PRIVATE_KEY }}
+          CONTRACT_ADDRESS: ${{ secrets.CONTRACT_ADDRESS }}
+          RPC_URL: "https://mainnet.base.org"
+        run: node scripts/updateOracle.js
+
+      - name: Commit and Push HTML Log
         run: |
           git config --global user.name "Xylem Node Bot"
           git config --global user.email "bot@xylem.local"

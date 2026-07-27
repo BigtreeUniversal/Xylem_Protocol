@@ -1,13 +1,21 @@
 const { ethers } = require("ethers");
 
 async function main() {
-  // 1. Récupération des variables d'environnement
-  const privateKey = process.env.OPERATOR_PRIVATE_KEY;
+  // 1. Récupération et nettoyage de la clé privée
+  let privateKey = process.env.OPERATOR_PRIVATE_KEY;
   const rpcUrl = process.env.RPC_URL || "https://mainnet.base.org";
   const contractAddress = process.env.CONTRACT_ADDRESS;
 
   if (!privateKey) throw new Error("OPERATOR_PRIVATE_KEY manquante");
   if (!contractAddress) throw new Error("CONTRACT_ADDRESS manquante");
+
+  // Nettoyage : retire espaces, sauts de ligne et guillemets parasites
+  privateKey = privateKey.trim().replace(/^["']|["']$/g, '');
+
+  // Ajout automatique du préfixe 0x si absent
+  if (!privateKey.startsWith("0x")) {
+    privateKey = `0x${privateKey}`;
+  }
 
   // 2. Initialisation Provider & Wallet
   const provider = new ethers.JsonRpcProvider(rpcUrl);
@@ -27,11 +35,11 @@ async function main() {
   yesterday.setDate(yesterday.getDate() - 1);
   const dayStr = yesterday.toISOString().split('T')[0]; // Format: "YYYY-MM-DD"
 
-  // ⚠️ Remplace ces variables par tes vraies données/calculs issus de ton fichier HTML ou log !
+  // Valeurs par défaut/placeholders pour le test
   const parentHash = process.env.PARENT_HASH || "0x0000000000000000000000000000000000000000000000000000000000000000";
   const currentHash = process.env.CURRENT_HASH || "0x1111111111111111111111111111111111111111111111111111111111111111";
   
-  // Tableau de 1 à 24 CIDs obligatoire selon le contrat (cids.length >= 1 && cids.length <= 24)
+  // Tableau de 1 à 24 CIDs obligatoire selon le contrat
   const cids = [process.env.IPFS_CID || "QmPlaceholderCIDForDailyLog12345678901234567890"];
 
   console.log(`📌 Tentative d'ancrage pour le jour : ${dayStr}`);

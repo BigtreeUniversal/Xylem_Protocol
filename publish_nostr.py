@@ -4,82 +4,71 @@ import glob
 import json
 import base64
 import asyncio
-from nostr_sdk import (
-    Client,
-    Keys,
-    EventBuilder,
-    Tag,
-    Kind
-)
+from nostr_sdk import Client, Keys, EventBuilder, Tag, Kind
 
 async def main():
-    # 1. Dossier des fichiers .ots
     ots_dir = "./ots_downloaded"
     ots_files = glob.glob(os.path.join(ots_dir, "*.ots"))
 
     if not ots_files:
-        print("❌ ERREUR : Aucun fichier .ots trouvé dans la plage requise.")
+        print("❌ ERREUR : Aucun fichier .ots trouvé.")
         sys.exit(1)
 
-    # 2. Encodage Base64 / JSON
+    # 1. Charger la carte des CIDs depuis l'index extrait du log_cron.txt
+    cid_map = {}
+    if os.path.exists("ipfs_index.jsonl"):
+        with open("ipfs_index.jsonl", "r") as f:
+            for line in f:
+                if line.strip():
+                    data = json.loads(line.strip())
+                    cid_map[data["Name"]] = data["Hash"]
+
+    # 2. Construction du bundle enrichi
     bundle_data = {}
     for filepath in ots_files:
         filename = os.path.basename(filepath)
+        img_name = filename.replace(".ots", "")
+        
         with open(filepath, "rb") as f:
-            encoded_content = base64.b64encode(f.read()).decode('utf-8')
-            bundle_data[filename] = encoded_content
+            encoded_ots = base64.b64encode(f.read()).decode('utf-8')
+            
+        bundle_data[img_name] = {
+            "ots": encoded_ots,
+            "cid": cid_map.get(img_name, None)
+        }
 
-    print(f"✅ Packagé {len(bundle_data)} fichiers .ots dans le bundle.")
+    print(f"✅ Packagé {len(bundle_data)} Trônes avec leurs CIDs IPFS et OTS.")
 
-    # 3. Chargement sécurisé de la clé privée (nsec ou Hex)
+    # 3. Configuration Nostr
     raw_key = os.environ.get("NOSTR_PRIVATE_KEY", "").strip()
     if not raw_key:
-        print("❌ ERREUR : Secret NOSTR_PRIVATE_KEY introuvable.")
+        print("❌ Secret NOSTR_PRIVATE_KEY manquant.")
         sys.exit(1)
 
-    try:
-        if raw_key.startswith("nsec"):
-            keys = Keys.parse(raw_key)
-        else:
-            keys = Keys.parse(raw_key) # Keys.parse de nostr-sdk gère intelligemment Hex et Bech32
-    except Exception as e:
-        print(f"❌ ERREUR : Format de clé Nostr invalide ({e})")
-        sys.exit(1)
-
-    # 4. Initialisation du client et ajout des relais
+    keys = Keys.parse(raw_key)
     client = Client(keys)
     
-    relays = [
-        "wss://relay.damus.io",
-        "wss://nos.lol",
-        "wss://relay.nostr.band"
-    ]
-    for r in relays:
+    for r in ["wss://relay.damus.io", "wss://nos.lol", "wss://relay.nostr.band"]:
         await client.add_relay(r)
 
-    # Connexion aux relais
     await client.connect()
-    print("📡 Connecté aux relais Nostr.")
 
-    # 5. Construction de l'événement avec les tags
+    # 4. Envoi de l'événement avec les tags d'indexation
     content_json = json.dumps(bundle_data)
-    
-    # Création des tags "t" (hashtags)
-    tag_opentimestamps = Tag.parse(["t", "opentimestamps"])
-    tag_xylem = Tag.parse(["t", "xylem"])
+    tags = [
+        Tag.parse(["t", "opentimestamps"]),
+        Tag.parse(["t", "xylem"]),
+        Tag.parse(["t", "buhs_oracle"])
+    ]
 
-    # Kind 1 = Text Note
-    builder = EventBuilder(Kind(1), content_json).tags([tag_opentimestamps, tag_xylem])
+    builder = EventBuilder(Kind(1), content_json).tags(tags)
 
-    # 6. Envoi garanti avec confirmation des relais
     try:
-        # send_event envoie et ATTEND la confirmation des relais
         output = await client.send_event_builder(builder)
-        print(f"✅ Événement envoyé avec succès ! Event ID: {output.id.to_hex()}")
+        print(f"✅ 24 Trônes Binah publiés sur Nostr ! Event ID: {output.id.to_hex()}")
     except Exception as e:
-        print(f"❌ ERREUR lors de l'envoi sur Nostr : {e}")
+        print(f"❌ ERREUR d'envoi Nostr : {e}")
         sys.exit(1)
 
 if __name__ == "__main__":
     asyncio.run(main())
-    

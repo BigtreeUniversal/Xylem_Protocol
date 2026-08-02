@@ -1,22 +1,27 @@
 import os
+import sys
 import glob
 import json
 import base64
-import time
-from nostr.key import PrivateKey
-from nostr.event import Event
-from nostr.relay_manager import RelayManager
+import asyncio
+from nostr_sdk import (
+    Client,
+    Keys,
+    EventBuilder,
+    Tag,
+    Kind
+)
 
-def main():
-    # 1. Dossier où sont stockés les .ots téléchargés
+async def main():
+    # 1. Dossier des fichiers .ots
     ots_dir = "./ots_downloaded"
     ots_files = glob.glob(os.path.join(ots_dir, "*.ots"))
 
     if not ots_files:
-        print("❌ Aucun fichier .ots trouvé.")
-        return
+        print("❌ ERREUR : Aucun fichier .ots trouvé dans la plage requise.")
+        sys.exit(1)
 
-    # 2. Emballage des fichiers .ots en JSON / Base64
+    # 2. Encodage Base64 / JSON
     bundle_data = {}
     for filepath in ots_files:
         filename = os.path.basename(filepath)
@@ -24,49 +29,57 @@ def main():
             encoded_content = base64.b64encode(f.read()).decode('utf-8')
             bundle_data[filename] = encoded_content
 
-    print(f"Packagé {len(bundle_data)} fichiers .ots dans le bundle.")
+    print(f"✅ Packagé {len(bundle_data)} fichiers .ots dans le bundle.")
 
-    # 3. Préparation de la clé et du message Nostr
-    nsec_hex = os.environ.get("NOSTR_PRIVATE_KEY")
-    if not nsec_hex:
-        print("❌ Clé privée Nostr manquante (NOSTR_PRIVATE_KEY).")
-        return
+    # 3. Chargement sécurisé de la clé privée (nsec ou Hex)
+    raw_key = os.environ.get("NOSTR_PRIVATE_KEY", "").strip()
+    if not raw_key:
+        print("❌ ERREUR : Secret NOSTR_PRIVATE_KEY introuvable.")
+        sys.exit(1)
 
-    # Chargement direct depuis le format hexadécimal brut
-    private_key = PrivateKey(bytes.fromhex(nsec_hex))
-    content_json = json.dumps(bundle_data)
+    try:
+        if raw_key.startswith("nsec"):
+            keys = Keys.parse(raw_key)
+        else:
+            keys = Keys.parse(raw_key) # Keys.parse de nostr-sdk gère intelligemment Hex et Bech32
+    except Exception as e:
+        print(f"❌ ERREUR : Format de clé Nostr invalide ({e})")
+        sys.exit(1)
 
-    event = Event(
-        content=content_json,
-        public_key=private_key.public_key.hex(),
-        kind=1,
-        tags=[["t", "opentimestamps"], ["t", "xylem"]]
-    )
-    private_key.sign_event(event)
-
-    # 4. Connexion aux relais Nostr
-    relay_manager = RelayManager()
+    # 4. Initialisation du client et ajout des relais
+    client = Client(keys)
+    
     relays = [
         "wss://relay.damus.io",
         "wss://nos.lol",
         "wss://relay.nostr.band"
     ]
     for r in relays:
-        relay_manager.add_relay(r)
+        await client.add_relay(r)
 
-    # Pause de 4 secondes pour stabiliser la connexion réseau
-    time.sleep(4.0)
+    # Connexion aux relais
+    await client.connect()
+    print("📡 Connecté aux relais Nostr.")
 
-    # 5. Envoi
+    # 5. Construction de l'événement avec les tags
+    content_json = json.dumps(bundle_data)
+    
+    # Création des tags "t" (hashtags)
+    tag_opentimestamps = Tag.parse(["t", "opentimestamps"])
+    tag_xylem = Tag.parse(["t", "xylem"])
+
+    # Kind 1 = Text Note
+    builder = EventBuilder(Kind(1), content_json).tags([tag_opentimestamps, tag_xylem])
+
+    # 6. Envoi garanti avec confirmation des relais
     try:
-        relay_manager.publish_event(event)
-        time.sleep(2.0)
+        # send_event envoie et ATTEND la confirmation des relais
+        output = await client.send_event_builder(builder)
+        print(f"✅ Événement envoyé avec succès ! Event ID: {output.id.to_hex()}")
     except Exception as e:
-        print(f"Note lors de l'envoi : {e}")
-    finally:
-        relay_manager.close_connections()
-
-    print("✅ Publication du bundle OTS terminée avec succès sur Nostr !")
+        print(f"❌ ERREUR lors de l'envoi sur Nostr : {e}")
+        sys.exit(1)
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
+    

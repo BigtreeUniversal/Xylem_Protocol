@@ -61,4 +61,4 @@ jobs:
       - name: Execute Nostr Publish Script
         env:
           NOSTR_PRIVATE_KEY: ${{ secrets.NOSTR_PRIVATE_KEY }}
-        run: python publish_nostr.py ./ots_downloaded
+        run: python publish_nostr.py

@@ -4,7 +4,7 @@ import glob
 import json
 import base64
 import asyncio
-from nostr_sdk import Client, Keys, EventBuilder, Tag, Kind, NostrSigner
+from nostr_sdk import Client, Keys, EventBuilder, Tag, Kind, NostrSigner, RelayUrl
 
 async def main():
     ots_dir = "./ots_downloaded"
@@ -53,8 +53,10 @@ async def main():
         print(f"❌ ERREUR d'initialisation des clés Nostr : {e}")
         sys.exit(1)
     
-    for r in ["wss://relay.damus.io", "wss://nos.lol", "wss://relay.nostr.band"]:
-        await client.add_relay(r)
+    # Correction du typage strict avec RelayUrl.parse()
+    relays = ["wss://relay.damus.io", "wss://nos.lol", "wss://relay.nostr.band"]
+    for r in relays:
+        await client.add_relay(RelayUrl.parse(r))
 
     await client.connect()
 
@@ -77,4 +79,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-    

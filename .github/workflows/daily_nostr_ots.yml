@@ -2,7 +2,7 @@ name: Routine 2 - Export OTS vers Nostr (Midi)
 
 on:
   schedule:
-    # S'exécute chaque jour à 12:15 UTC (aucun chevauchement avec 00:45 UTC)
+    # S'exécute chaque jour à 12:15 UTC
     - cron: '15 12 * * *'
   workflow_dispatch:     # Permet le déclenchement manuel
 
@@ -19,9 +19,8 @@ jobs:
           python-version: '3.11'
 
       - name: Install Nostr Dependency
-        run: pip install nostr
+        run: pip install nostr-sdk
 
-      # Utilisation du même mécanisme SSH que votre premier workflow
       - name: Setup SSH Key
         uses: shimataro/ssh-key-action@v2
         with:
@@ -29,35 +28,38 @@ jobs:
           known_hosts: unneeded
 
       - name: Scan Host Keys
-        run: ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+        run: ssh-keyscan -p ${{ secrets.SSH_PORT || 22 }} -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
-      - name: SSH & SCP Download Precise OTS Window (Unix Timestamp)
+      - name: SSH & SCP Download Precise OTS Window
         run: |
           mkdir -p ./ots_downloaded
           
-          # 1. Calcul des bornes Unix en millisecondes (13 chiffres) pour 23h30 J-2 et 23h30 J-1
-          TS_START=$(($(date -d "2 days ago 23:30" +%s) * 1000))
-          TS_END=$(($(date -d "1 day ago 23:30" +%s) * 1000))
+          # Bornes calculées strictement en UTC (millisecondes)
+          TS_START=$(($(date -u -d "2 days ago 23:30" +%s) * 1000))
+          TS_END=$(($(date -u -d "1 day ago 23:30" +%s) * 1000))
           
-          echo "Recherche des timestamps entre $TS_START et $TS_END"
+          echo "Plage UTC ciblée : $TS_START à $TS_END"
 
-          # 2. Filtrage distant : extrait le timestamp 13 chiffres de xylem_xxxx.jpg.ots
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
-            "ls /root/xylem_data/archives/*.ots | awk -v min=\"$TS_START\" -v max=\"$TS_END\" '{
-              match(\$0, /[0-9]{13}/);
-              ts = substr(\$0, RSTART, RLENGTH);
-              if (ts >= min && ts < max) print \$0;
-            }'" > ots_list.txt
+          # 1. Extrait la liste des fichiers distants
+          ssh -p ${{ secrets.SSH_PORT || 22 }} -o BatchMode=yes ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
+            "ls /root/xylem_data/archives/*.ots" | awk -v min="$TS_START" -v max="$TS_END" '{
+              match($0, /[0-9]{13}/);
+              ts = substr($0, RSTART, RLENGTH);
+              if (ts >= min && ts < max) print $0;
+            }' > ots_list.txt
 
-          # 3. Téléchargement ciblé des fichiers .ots
-          cat ots_list.txt | while read file; do
-            [ -n "$file" ] && scp -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:"$file" ./ots_downloaded/
-          done
+          # 2. Téléchargement sécurisé via rsync
+          if [ -s ots_list.txt ]; then
+            rsync -avz -e "ssh -p ${{ secrets.SSH_PORT || 22 }} -o BatchMode=yes" \
+              --files-from=ots_list.txt \
+              ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/ ./ots_downloaded/
+          else
+            echo "⚠️ Aucun fichier trouvé dans la plage horaire."
+          fi
 
-          # 4. Contrôle dans les logs GitHub
-          echo "Fichiers OTS récupérés :"
+          echo "Fichiers récupérés :"
           ls -1 ./ots_downloaded
-          
+
       - name: Execute Nostr Publish Script
         env:
           NOSTR_PRIVATE_KEY: ${{ secrets.NOSTR_PRIVATE_KEY }}

@@ -54,21 +54,21 @@ jobs:
               }
             ' /root/xylem_node/log_cron.txt" > ipfs_index.jsonl
 
-          # Affichage de contrôle dans les logs GitHub
+          # Affichage de contrôle
           echo "--- Index JSONL extrait ---"
           cat ipfs_index.jsonl
           echo "---------------------------"
 
-          # 2. Vérification si des fichiers ont été trouvés
+          # 2. Vérification et téléchargement
           if [ -s ipfs_index.jsonl ]; then
-            # Génère les chemins relatifs depuis /root/xylem_data/archives/
-            jq -r '.Name' ipfs_index.jsonl | sed 's/$/ .ots/' > ots_list.txt
+            # Génère les noms relatifs (EXACTEMENT sans espace !)
+            jq -r '.Name' ipfs_index.jsonl | sed 's/$/.ots/' > ots_list.txt
             
-            echo "--- Liste des .ots à télécharger ---"
+            echo "--- Liste exacte des fichiers .ots ---"
             cat ots_list.txt
-            echo "------------------------------------"
+            echo "--------------------------------------"
 
-            # 3. Téléchargement scp/rsync ciblé depuis le dossier archives
+            # 3. Téléchargement depuis le dossier archives
             rsync -avz \
               --files-from=ots_list.txt \
               ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/root/xylem_data/archives/ \

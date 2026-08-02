@@ -1,0 +1,43 @@
+name: Routine 2 - Export OTS vers Nostr (Midi)
+
+on:
+  schedule:
+    # S'exécute chaque jour à 12:15 UTC (aucun chevauchement avec 00:45 UTC)
+    - cron: '15 12 * * *'
+  workflow_dispatch:     # Permet le déclenchement manuel
+
+jobs:
+  export-nostr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Nostr Dependency
+        run: pip install nostr
+
+      # Utilisation du même mécanisme SSH que votre premier workflow
+      - name: Setup SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: unneeded
+
+      - name: Scan Host Keys
+        run: ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+
+      - name: SCP Download OTS Files
+        run: |
+          mkdir -p ./ots_downloaded
+          # Récupération des fichiers .ots vers le dossier temporaire
+          scp ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/root/xylem_data/archives/*.ots ./ots_downloaded/
+
+      - name: Execute Nostr Publish Script
+        env:
+          NOSTR_PRIVATE_KEY: ${{ secrets.NOSTR_PRIVATE_KEY }}
+        run: python publish_nostr.py ./ots_downloaded

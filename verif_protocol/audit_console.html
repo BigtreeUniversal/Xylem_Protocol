@@ -287,6 +287,43 @@
             border-top: 1px solid var(--panel-border);
             padding-top: 20px;
         }
+
+
+        /* --- Gestion Responsive & Verticale des Images --- */
+     .img-container {
+    margin: 15px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.terminal-img {
+    width: 100%;              /* S'adapte à la largeur du conteneur */
+    max-width: 500px;         /* Limite la largeur sur grand écran pour éviter l'effet géant */
+    height: auto;             /* Conserve le ratio d'aspect (pas de déformation) */
+    object-fit: contain;      /* Empêche le rognage ou la distorsion */
+    border: 1px solid var(--panel-border);
+    border-radius: 4px;
+    background-color: #090d12;
+}
+
+.img-caption {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    text-align: center;
+}
+
+/* Optimisation spécifique pour Mobile / Smartphone */
+@media (max-width: 768px) {
+    .terminal-img {
+        max-width: 100%;       /* Prend toute la largeur disponible */
+        max-height: 450px;     /* Limite la hauteur sur smartphone pour les images très verticales */
+    }
+}
+
+        
     </style>
 </head>
 <body>

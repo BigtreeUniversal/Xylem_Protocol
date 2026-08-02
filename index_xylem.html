@@ -109,9 +109,9 @@
             <span class="text-green-600 self-center mr-2">MONTH:</span>
             
             <button id="btn-juin2026" onclick="switchEpoch('juin2026')" class="epoch-btn border border-green-700 px-2 py-1 text-green-400">06_JUIN</button>
-            <button id="btn-juillet2026" onclick="switchEpoch('juillet2026')" class="epoch-btn border border-green-400 px-2 py-1 bg-green-500 text-black font-bold">07_JUILLET</button>
+            <button id="btn-juillet2026" onclick="switchEpoch('juillet2026')" class="epoch-btn border border-green-700 px-2 py-1 text-green-400">07_JUILLET</button>
+            <button id="btn-aout2026" onclick="switchEpoch('aout2026')" class="epoch-btn border border-green-400 px-2 py-1 bg-green-500 text-black font-bold">08_AOUT</button>
             
-            <button class="text-green-900 border border-dashed border-green-950 px-2 py-1 cursor-not-allowed" disabled>08_AOUT</button>
             <button class="text-green-900 border border-dashed border-green-950 px-2 py-1 cursor-not-allowed" disabled>09_SEPT</button>
         </div>
     </div>
@@ -139,7 +139,7 @@
     </div>
 
     <!-- JUILLET 2026 -->
-    <div id="juillet2026" class="epoch-calendar box">
+    <div id="juillet2026" class="epoch-calendar box hidden">
         <h2 class="text-md mb-4 text-green-400">> EPOCH_LOG : JUILLET_2026</h2>
         <div class="grid grid-cols-7 gap-1 sm:gap-2 text-xs">
             <div class="text-center font-bold text-green-700 pb-2">LUN</div>
@@ -153,7 +153,6 @@
             <div class="day-node empty"></div>
             <div class="day-node empty"></div>
 
-            <!-- Génération des liens redirigeant vers mirror.html?log=page-2026-07-XX.html -->
             <a href="mirror.html?log=page-2026-07-01.html" class="day-node">01</a>
             <a href="mirror.html?log=page-2026-07-02.html" class="day-node">02</a>
             <a href="mirror.html?log=page-2026-07-03.html" class="day-node">03</a>
@@ -188,6 +187,60 @@
         </div>
     </div>
 
+    <!-- AOÛT 2026 -->
+    <div id="aout2026" class="epoch-calendar box">
+        <h2 class="text-md mb-4 text-green-400">> EPOCH_LOG : AOUT_2026</h2>
+        <div class="grid grid-cols-7 gap-1 sm:gap-2 text-xs">
+            <div class="text-center font-bold text-green-700 pb-2">LUN</div>
+            <div class="text-center font-bold text-green-700 pb-2">MAR</div>
+            <div class="text-center font-bold text-green-700 pb-2">MER</div>
+            <div class="text-center font-bold text-green-700 pb-2">JEU</div>
+            <div class="text-center font-bold text-green-700 pb-2">VEN</div>
+            <div class="text-center font-bold text-green-700 pb-2">SAM</div>
+            <div class="text-center font-bold text-green-700 pb-2">DIM</div>
+
+            <!-- Le 1er août 2026 tombe un Samedi (5 cases vides avant) -->
+            <div class="day-node empty"></div>
+            <div class="day-node empty"></div>
+            <div class="day-node empty"></div>
+            <div class="day-node empty"></div>
+            <div class="day-node empty"></div>
+
+            <!-- Jours du mois d'Août -->
+            <a href="mirror.html?log=page-2026-08-01.html" class="day-node">01</a>
+            <a href="mirror.html?log=page-2026-08-02.html" class="day-node">02</a>
+            <a href="mirror.html?log=page-2026-08-03.html" class="day-node">03</a>
+            <a href="mirror.html?log=page-2026-08-04.html" class="day-node">04</a>
+            <a href="mirror.html?log=page-2026-08-05.html" class="day-node">05</a>
+            <a href="mirror.html?log=page-2026-08-06.html" class="day-node">06</a>
+            <a href="mirror.html?log=page-2026-08-07.html" class="day-node">07</a>
+            <a href="mirror.html?log=page-2026-08-08.html" class="day-node">08</a>
+            <a href="mirror.html?log=page-2026-08-09.html" class="day-node">09</a>
+            <a href="mirror.html?log=page-2026-08-10.html" class="day-node">10</a>
+            <a href="mirror.html?log=page-2026-08-11.html" class="day-node">11</a>
+            <a href="mirror.html?log=page-2026-08-12.html" class="day-node">12</a>
+            <a href="mirror.html?log=page-2026-08-13.html" class="day-node">13</a>
+            <a href="mirror.html?log=page-2026-08-14.html" class="day-node">14</a>
+            <a href="mirror.html?log=page-2026-08-15.html" class="day-node">15</a>
+            <a href="mirror.html?log=page-2026-08-16.html" class="day-node">16</a>
+            <a href="mirror.html?log=page-2026-08-17.html" class="day-node">17</a>
+            <a href="mirror.html?log=page-2026-08-18.html" class="day-node">18</a>
+            <a href="mirror.html?log=page-2026-08-19.html" class="day-node">19</a>
+            <a href="mirror.html?log=page-2026-08-20.html" class="day-node">20</a>
+            <a href="mirror.html?log=page-2026-08-21.html" class="day-node">21</a>
+            <a href="mirror.html?log=page-2026-08-22.html" class="day-node">22</a>
+            <a href="mirror.html?log=page-2026-08-23.html" class="day-node">23</a>
+            <a href="mirror.html?log=page-2026-08-24.html" class="day-node">24</a>
+            <a href="mirror.html?log=page-2026-08-25.html" class="day-node">25</a>
+            <a href="mirror.html?log=page-2026-08-26.html" class="day-node">26</a>
+            <a href="mirror.html?log=page-2026-08-27.html" class="day-node">27</a>
+            <a href="mirror.html?log=page-2026-08-28.html" class="day-node">28</a>
+            <a href="mirror.html?log=page-2026-08-29.html" class="day-node">29</a>
+            <a href="mirror.html?log=page-2026-08-30.html" class="day-node">30</a>
+            <a href="mirror.html?log=page-2026-08-31.html" class="day-node">31</a>
+        </div>
+    </div>
+
 </div>
 
 <script>
@@ -207,12 +260,11 @@ function switchEpoch(epochId) {
     }
 }
 
-// Vérification HEAD légère (Ne télécharge pas l'image, vérifie juste si le fichier existe)
+// Vérification HEAD légère
 document.addEventListener("DOMContentLoaded", function() {
     const links = document.querySelectorAll(".day-node[href]");
     
     links.forEach(link => {
-        // Extrait le nom du fichier cible depuis le paramètre "?log="
         const targetLog = link.getAttribute("href").split('?log=')[1];
         
         fetch(targetLog, { method: 'HEAD' })

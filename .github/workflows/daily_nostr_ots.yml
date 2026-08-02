@@ -30,34 +30,42 @@ jobs:
       - name: Scan Host Keys
         run: ssh-keyscan -p ${{ secrets.SSH_PORT || 22 }} -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
-      - name: SSH & SCP Download Precise OTS Window
+      - name: SSH, Parse Logs & Download 24 OTS Files
         run: |
           mkdir -p ./ots_downloaded
           
-          # Bornes calculées strictement en UTC (millisecondes)
+          # Bornes calculées en UTC (millisecondes)
           TS_START=$(($(date -u -d "2 days ago 23:30" +%s) * 1000))
           TS_END=$(($(date -u -d "1 day ago 23:30" +%s) * 1000))
           
           echo "Plage UTC ciblée : $TS_START à $TS_END"
 
-          # 1. Extrait la liste des fichiers distants
-          ssh -p ${{ secrets.SSH_PORT || 22 }} -o BatchMode=yes ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
-            "ls /root/xylem_data/archives/*.ots" | awk -v min="$TS_START" -v max="$TS_END" '{
-              match($0, /[0-9]{13}/);
-              ts = substr($0, RSTART, RLENGTH);
-              if (ts >= min && ts < max) print $0;
-            }' > ots_list.txt
+          # 1. SSH : Extraire la section du log_cron.txt dans la fenêtre temporelle
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
+            "awk -v min=\"$TS_START\" -v max=\"$TS_END\" '
+              /SCAN XYLEM \(Unix: [0-9]+\)/ {
+                match(\$0, /[0-9]{13}/);
+                ts = substr(\$0, RSTART, RLENGTH);
+                in_range = (ts >= min && ts < max);
+              }
+              in_range && /IPFS CID LOCAL/ {
+                match(\$0, /\{.*\}/);
+                print substr(\$0, RSTART, RLENGTH);
+              }
+            ' /root/xylem_node/log_cron.txt" > ipfs_index.jsonl
 
-          # 2. Téléchargement sécurisé via rsync
+          # 2. Reconstruire les chemins complets vers /root/xylem_data/archives/
+          jq -r '.Name' ipfs_index.jsonl | sed 's/$/ .ots/' > ots_list.txt
+          sed -i 's|^|/root/xylem_data/archives/|' ots_list.txt
+
+          # 3. Télécharger les 24 fichiers .ots ciblés via rsync
           if [ -s ots_list.txt ]; then
-            rsync -avz -e "ssh -p ${{ secrets.SSH_PORT || 22 }} -o BatchMode=yes" \
-              --files-from=ots_list.txt \
-              ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/ ./ots_downloaded/
+            rsync -avz --files-from=ots_list.txt ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/ ./ots_downloaded/
           else
-            echo "⚠️ Aucun fichier trouvé dans la plage horaire."
+            echo "⚠️ Aucun log trouvé dans la plage horaire."
           fi
 
-          echo "Fichiers récupérés :"
+          echo "24 Fichiers OTS récupérés :"
           ls -1 ./ots_downloaded
 
       - name: Execute Nostr Publish Script

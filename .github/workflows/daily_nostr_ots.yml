@@ -31,28 +31,32 @@ jobs:
       - name: Scan Host Keys
         run: ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
-      - name: SSH & SCP Download Precise OTS Window
+      - name: SSH & SCP Download Precise OTS Window (Unix Timestamp)
         run: |
           mkdir -p ./ots_downloaded
           
-          # 1. Calcul des bornes temporelles exactes (23h30 J-2 et 23h30 J-1)
-          START_TIME=$(date -d "2 days ago 23:30" '+%Y-%m-%d %H:%M:%S')
-          END_TIME=$(date -d "1 day ago 23:30" '+%Y-%m-%d %H:%M:%S')
+          # 1. Calcul des bornes Unix en millisecondes (13 chiffres) pour 23h30 J-2 et 23h30 J-1
+          TS_START=$(($(date -d "2 days ago 23:30" +%s) * 1000))
+          TS_END=$(($(date -d "1 day ago 23:30" +%s) * 1000))
           
-          echo "Fenêtre de recherche : de [$START_TIME] à [$END_TIME]"
+          echo "Recherche des timestamps entre $TS_START et $TS_END"
 
-          # 2. Recherche distante des fichiers .ots créés entre ces deux dates
+          # 2. Filtrage distant : extrait le timestamp 13 chiffres de xylem_xxxx.jpg.ots
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
-            "find /root/xylem_data/archives -maxdepth 1 -name '*.ots' -newermt '$START_TIME' ! -newermt '$END_TIME'" > ots_list.txt
+            "ls /root/xylem_data/archives/*.ots | awk -v min=\"$TS_START\" -v max=\"$TS_END\" '{
+              match(\$0, /[0-9]{13}/);
+              ts = substr(\$0, RSTART, RLENGTH);
+              if (ts >= min && ts < max) print \$0;
+            }'" > ots_list.txt
 
-          # 3. Téléchargement exclusif du lot
+          # 3. Téléchargement ciblé des fichiers .ots
           cat ots_list.txt | while read file; do
             [ -n "$file" ] && scp -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:"$file" ./ots_downloaded/
           done
 
-          # 4. Vérification dans les logs
-          echo "Nombre de fichiers OTS récupérés :"
-          ls -1 ./ots_downloaded | wc -l
+          # 4. Contrôle dans les logs GitHub
+          echo "Fichiers OTS récupérés :"
+          ls -1 ./ots_downloaded
           
       - name: Execute Nostr Publish Script
         env:

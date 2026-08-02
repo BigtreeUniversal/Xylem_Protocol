@@ -4,7 +4,7 @@ import glob
 import json
 import base64
 import asyncio
-from nostr_sdk import Client, Keys, EventBuilder, Tag, Kind
+from nostr_sdk import Client, Keys, EventBuilder, Tag, Kind, NostrSigner
 
 async def main():
     ots_dir = "./ots_downloaded"
@@ -39,14 +39,19 @@ async def main():
 
     print(f"✅ Packagé {len(bundle_data)} Trônes avec leurs CIDs IPFS et OTS.")
 
-    # 3. Configuration Nostr
+    # 3. Configuration Nostr (Signer & Keys)
     raw_key = os.environ.get("NOSTR_PRIVATE_KEY", "").strip()
     if not raw_key:
         print("❌ Secret NOSTR_PRIVATE_KEY manquant.")
         sys.exit(1)
 
-    keys = Keys.parse(raw_key)
-    client = Client(keys)
+    try:
+        keys = Keys.parse(raw_key)
+        signer = NostrSigner.keys(keys)
+        client = Client(signer)
+    except Exception as e:
+        print(f"❌ ERREUR d'initialisation des clés Nostr : {e}")
+        sys.exit(1)
     
     for r in ["wss://relay.damus.io", "wss://nos.lol", "wss://relay.nostr.band"]:
         await client.add_relay(r)
@@ -72,3 +77,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+    

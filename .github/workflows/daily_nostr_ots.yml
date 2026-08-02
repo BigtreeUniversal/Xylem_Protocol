@@ -31,12 +31,29 @@ jobs:
       - name: Scan Host Keys
         run: ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
-      - name: SCP Download OTS Files
+      - - name: SSH & SCP Download Precise OTS Window
         run: |
           mkdir -p ./ots_downloaded
-          # Récupération des fichiers .ots vers le dossier temporaire
-          scp ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/root/xylem_data/archives/*.ots ./ots_downloaded/
+          
+          # 1. Calcul des bornes temporelles exactes (23h30 J-2 et 23h30 J-1)
+          START_TIME=$(date -d "2 days ago 23:30" '+%Y-%m-%d %H:%M:%S')
+          END_TIME=$(date -d "1 day ago 23:30" '+%Y-%m-%d %H:%M:%S')
+          
+          echo "Fenêtre de recherche : de [$START_TIME] à [$END_TIME]"
 
+          # 2. Recherche distante des fichiers .ots créés entre ces deux dates
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
+            "find /root/xylem_data/archives -maxdepth 1 -name '*.ots' -newermt '$START_TIME' ! -newermt '$END_TIME'" > ots_list.txt
+
+          # 3. Téléchargement exclusif du lot
+          cat ots_list.txt | while read file; do
+            [ -n "$file" ] && scp -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:"$file" ./ots_downloaded/
+          done
+
+          # 4. Vérification dans les logs
+          echo "Nombre de fichiers OTS récupérés :"
+          ls -1 ./ots_downloaded | wc -l
+          
       - name: Execute Nostr Publish Script
         env:
           NOSTR_PRIVATE_KEY: ${{ secrets.NOSTR_PRIVATE_KEY }}

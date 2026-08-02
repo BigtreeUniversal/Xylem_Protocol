@@ -26,13 +26,14 @@ def main():
 
     print(f"Packagé {len(bundle_data)} fichiers .ots dans le bundle.")
 
-    # 3. Préparation du message Nostr
-    nsec = os.environ.get("NOSTR_PRIVATE_KEY")
-    if not nsec:
+    # 3. Préparation de la clé et du message Nostr
+    nsec_hex = os.environ.get("NOSTR_PRIVATE_KEY")
+    if not nsec_hex:
         print("❌ Clé privée Nostr manquante (NOSTR_PRIVATE_KEY).")
         return
 
-    private_key = PrivateKey.from_hex(nsec)
+    # Chargement direct depuis le format hexadécimal brut
+    private_key = PrivateKey(bytes.fromhex(nsec_hex))
     content_json = json.dumps(bundle_data)
 
     event = Event(
@@ -69,4 +70,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    

@@ -40,7 +40,7 @@ jobs:
           
           echo "Plage UTC ciblée : $TS_START à $TS_END"
 
-          # 1. SSH : Extraire la section du log_cron.txt dans la fenêtre temporelle
+          # 1. SSH : Extrait les CIDs et Noms depuis /root/xylem_node/log_cron.txt
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
             "awk -v min=\"$TS_START\" -v max=\"$TS_END\" '
               /SCAN XYLEM \(Unix: [0-9]+\)/ {
@@ -54,18 +54,30 @@ jobs:
               }
             ' /root/xylem_node/log_cron.txt" > ipfs_index.jsonl
 
-          # 2. Reconstruire les chemins complets vers /root/xylem_data/archives/
-          jq -r '.Name' ipfs_index.jsonl | sed 's/$/ .ots/' > ots_list.txt
-          sed -i 's|^|/root/xylem_data/archives/|' ots_list.txt
+          # Affichage de contrôle dans les logs GitHub
+          echo "--- Index JSONL extrait ---"
+          cat ipfs_index.jsonl
+          echo "---------------------------"
 
-          # 3. Télécharger les 24 fichiers .ots ciblés via rsync
-          if [ -s ots_list.txt ]; then
-            rsync -avz --files-from=ots_list.txt ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/ ./ots_downloaded/
+          # 2. Vérification si des fichiers ont été trouvés
+          if [ -s ipfs_index.jsonl ]; then
+            # Génère les chemins relatifs depuis /root/xylem_data/archives/
+            jq -r '.Name' ipfs_index.jsonl | sed 's/$/ .ots/' > ots_list.txt
+            
+            echo "--- Liste des .ots à télécharger ---"
+            cat ots_list.txt
+            echo "------------------------------------"
+
+            # 3. Téléchargement scp/rsync ciblé depuis le dossier archives
+            rsync -avz \
+              --files-from=ots_list.txt \
+              ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/root/xylem_data/archives/ \
+              ./ots_downloaded/
           else
-            echo "⚠️ Aucun log trouvé dans la plage horaire."
+            echo "⚠️ Aucun log trouvé dans la plage horaire $TS_START - $TS_END."
           fi
 
-          echo "24 Fichiers OTS récupérés :"
+          echo "Fichiers récupérés dans ./ots_downloaded :"
           ls -1 ./ots_downloaded
 
       - name: Execute Nostr Publish Script

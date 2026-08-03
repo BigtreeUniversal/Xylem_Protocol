@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xylem Oracle - Console d'Audit Centralisée</title>
-    <!-- Librairie OpenTimestamps officielle pour vérification in-browser -->
-    <script src="https://unpkg.com/javascript-opentimestamps/dist/opentimestamps.min.js"></script>
+    <title>24 ELDERS - Console d'Audit de l'Oracle</title>
     <style>
         :root {
             --bg-color: #0b0f14;
@@ -111,16 +109,29 @@
 <body>
 
     <div class="header">
-        <div class="title">&gt; ELDERS_LOG // ORACLE_AUDIT_CONSOLE</div>
+        <div class="title">&gt; 24_ELDERS_LOG // ORACLE_AUDIT_CONSOLE</div>
         <span style="color:var(--accent-blue); font-size:11px;">[ CLIENT-SIDE 100% ]</span>
     </div>
 
-    <!-- ÉTAPE 1 : EXTRACTION DE L'EVENT ID -->
+    <!-- ÉTAPE 1 : RECHERCHE DE L'EVENT ID -->
+    <div class="card" style="border-color: var(--accent-green);">
+        <div class="card-title" style="color: var(--accent-green);">
+            [ ÉTAPE 1 ] CHERCHER l'Event ID Nostr
+        </div>
+        <p style="margin-bottom:12px;">
+            Accédez au journal et copiez l'Event ID Nostr du jour recherché (dans le log J+1 de GitHub "Execute Nostr Publish Script") :
+        </p>
+        <a href="https://github.com/BigtreeUniversal/Xylem_Protocol/actions/workflows/daily_nostr_ots.yml" target="_blank" class="btn" style="background: var(--accent-green); color: #000;">
+            📂 Parcourir le journal &gt;&gt;
+        </a>
+    </div>
+
+    <!-- ÉTAPE 2 : EXTRACTION DE L'EVENT ID -->
     <div class="card" style="border-color: var(--accent-purple);">
         <div class="card-title" style="color: var(--accent-purple);">
-            [ ÉTAPE 1 ] Saisie de l'Event ID Nostr
+            [ ÉTAPE 2 ] Saisie de l'Event ID Nostr
         </div>
-        <p style="margin-bottom:10px;">Entrez l'Event ID (ou naviguez sur le registre pour récupérer l'ID du jour) :</p>
+        <p style="margin-bottom:10px;">Entrez l'Event ID récupéré du journal :</p>
         
         <div style="display: flex; gap: 10px;">
             <input type="text" id="nostrEventId" placeholder="Ex: 22ca793886c668e4214606414f291f1eea186fd16d36a95afd7a39aea6df029d">
@@ -130,57 +141,34 @@
         <div id="fetchStatus" class="status-box"></div>
     </div>
 
-    <!-- ÉTAPE 2 : DECODEUR TERMINAL & GENERATEUR DE PREUVES -->
+    <!-- ÉTAPE 3 : DECODEUR TERMINAL & GENERATEUR DE PREUVES -->
     <div class="card" style="border-color: var(--accent-blue);">
         <div class="card-title" style="color: var(--accent-blue);">
-            [ ÉTAPE 2 ] Décodeur Terminal &amp; Extraction des Preuves OTS
+            [ ÉTAPE 3 ] Décodeur Terminal &amp; Extraction des Preuves OTS
         </div>
-        <p style="margin-bottom:8px;">Payload de la note Nostr reçue (copier/coller manuel possible si besoin) :</p>
+        <p style="margin-bottom:8px;">Payload de la note Nostr reçue (Bouton "décoder" pour copier/coller manuel) :</p>
         <textarea id="nostrPayload" rows="4" placeholder='{"xylem_1785596401827.jpg": {"ots": "...", "cid": "..."}}'></textarea>
         
-        <button onclick="parsePayload()" class="btn btn-green" style="margin-top:10px;">🔍 Décoder &amp; Extraire les 24 Oracles</button>
+        <button onclick="parsePayload()" class="btn btn-green" style="margin-top:10px;">🔍 Décoder &amp; Extraire les Oracles</button>
 
         <div id="oraclesContainer"></div>
     </div>
 
-    <!-- ÉTAPE 3 : VERIFICATEUR OTS INTEGRATED -->
+    <!-- ÉTAPE 4 : VERIFICATION ANCRAGE TEMPOREL OFFICIEL -->
     <div class="card" style="border-color: var(--accent-amber);">
         <div class="card-title" style="color: var(--accent-amber);">
-            [ ÉTAPE 3 ] Vérification Instantanée Bitcoin OpenTimestamps
+            [ ÉTAPE 4 ] Vérifier l'ancrage temporel sur OpenTimestamps
         </div>
-        <p>Sélectionnez les deux fichiers correspondants pour exécuter la vérification cryptographique :</p>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
-            <!-- Champ 1 : L'Image JPG -->
-            <div style="background: #090d12; border: 1px dashed var(--panel-border); padding: 15px; border-radius: 4px; text-align: center;">
-                <label style="color: var(--accent-blue); font-weight: bold; display: block; margin-bottom: 8px;">
-                    1. Fichier Image (.jpg)
-                </label>
-                <input type="file" id="fileJpg" accept=".jpg,.jpeg,.png" onchange="checkAndVerify()" style="width: 100%; font-size: 11px;">
-                <div id="jpgName" style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Aucun fichier chargé</div>
-            </div>
-
-            <!-- Champ 2 : La Preuve OTS -->
-            <div style="background: #090d12; border: 1px dashed var(--panel-border); padding: 15px; border-radius: 4px; text-align: center;">
-                <label style="color: var(--accent-purple); font-weight: bold; display: block; margin-bottom: 8px;">
-                    2. Preuve Horodatée (.ots)
-                </label>
-                <input type="file" id="fileOts" accept=".ots" onchange="checkAndVerify()" style="width: 100%; font-size: 11px;">
-                <div id="otsName" style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Aucun fichier chargé</div>
-            </div>
-        </div>
-
-        <!-- Bouton de secours si l'utilisateur veut lancer manuellement -->
-        <button onclick="runOtsVerification()" class="btn" style="background: var(--accent-amber); color: #000; width: 100%; justify-content: center;">
-            ⚡ Lancer la vérification de l'ancrage Bitcoin
-        </button>
-
-        <!-- Zone de Résultat terminal -->
-        <div id="otsResult" class="status-box" style="margin-top: 15px; padding: 10px; border-radius: 4px; background: #090d12;"></div>
+        <p style="margin-bottom:12px;">
+            Glissez-déposez le fichier image original et son fichier de preuve (.ots) téléchargé à l'étape précédente sur la plateforme officielle OpenTimestamps pour valider l'ancrage Bitcoin :
+        </p>
+        <a href="https://opentimestamps.org/" target="_blank" class="btn" style="background: var(--accent-amber); color: #000;">
+            🛡️ Accéder à OpenTimestamps.org &gt;&gt;
+        </a>
     </div>
 
     <script>
-        // --- LOGIQUE ÉTAPE 1 : FETCH RELAIS NOSTR ---
+        // --- LOGIQUE ÉTAPE 2 : FETCH RELAIS NOSTR ---
         async function fetchEvent() {
             const eventId = document.getElementById('nostrEventId').value.trim();
             const statusDiv = document.getElementById('fetchStatus');
@@ -225,7 +213,7 @@
             }
         }
 
-        // --- LOGIQUE ÉTAPE 2 : PARSER MULTI-FORMAT & DECODEUR OTS ---
+        // --- LOGIQUE ÉTAPE 3 : PARSER MULTI-FORMAT & DECODEUR OTS ---
         function parsePayload() {
             let rawText = document.getElementById('nostrPayload').value.trim();
             const container = document.getElementById('oraclesContainer');
@@ -279,93 +267,6 @@
 
             } catch (e) {
                 alert("Erreur de format JSON : " + e.message);
-            }
-        }
-
-        // --- LOGIQUE ÉTAPE 3 : VERIFICATION OTS CLIENT-SIDE ---
-        function checkAndVerify() {
-            const jpgInput = document.getElementById('fileJpg');
-            const otsInput = document.getElementById('fileOts');
-
-            if (jpgInput.files[0]) document.getElementById('jpgName').innerText = "✔ " + jpgInput.files[0].name;
-            if (otsInput.files[0]) document.getElementById('otsName').innerText = "✔ " + otsInput.files[0].name;
-
-            if (jpgInput.files[0] && otsInput.files[0]) {
-                runOtsVerification();
-            }
-        }
-
-        async function runOtsVerification() {
-            const jpgFile = document.getElementById('fileJpg').files[0];
-            const otsFile = document.getElementById('fileOts').files[0];
-            const resultDiv = document.getElementById('otsResult');
-
-            if (!jpgFile || !otsFile) {
-                resultDiv.innerHTML = '<span style="color:#f85149;">&gt; Erreur : Sélectionnez une image ET un fichier .ots.</span>';
-                return;
-            }
-
-            resultDiv.innerHTML = '<span style="color:var(--accent-amber);">&gt; Calcul du Hash SHA-256 du fichier...</span>';
-
-            try {
-                // 1. Calcul de l'empreinte SHA-256 du fichier image via WebCrypto API
-                const jpgBuffer = await jpgFile.arrayBuffer();
-                const hashBuffer = await crypto.subtle.digest('SHA-256', jpgBuffer);
-                const hashArray = new Uint8Array(hashBuffer);
-
-                // 2. Préparation du detached timestamp depuis le Hash
-                const detached = OpenTimestamps.DetachedTimestampFile.fromHash(
-                    new OpenTimestamps.Ops.OpSHA256(), 
-                    hashArray
-                );
-
-                // 3. Désérialisation du fichier .ots
-                const otsBuffer = new Uint8Array(await otsFile.arrayBuffer());
-                const timestamp = OpenTimestamps.DetachedTimestampFile.deserialize(otsBuffer);
-
-                resultDiv.innerHTML = '<span style="color:var(--accent-amber);">&gt; Interrogation des serveurs de calendrier &amp; vérification Bitcoin...</span>';
-
-                // 4. Exécution de la vérification OpenTimestamps
-                const options = { ignorePending: false };
-                const verifyResult = await OpenTimestamps.verify(timestamp, detached, options);
-
-                if (verifyResult && Object.keys(verifyResult).length > 0) {
-                    let details = '';
-                    for (const [key, value] of Object.entries(verifyResult)) {
-                        if (value && value.timestamp) {
-                            const date = new Date(value.timestamp * 1000).toLocaleString('fr-FR');
-                            details += `<br>• Attestation <b>${key}</b> : confirmée le <b>${date}</b>`;
-                        }
-                    }
-
-                    resultDiv.innerHTML = `
-                        <div style="color:var(--accent-green); font-weight:bold; font-size:13px;">
-                            ✔ PREUVE VALIDE ! L'ancrage Bitcoin est confirmé.
-                        </div>
-                        <div style="font-size:11px; color:var(--text-color); margin-top:4px;">
-                            L'empreinte du fichier <code>${jpgFile.name}</code> correspond exactement à la preuve <code>${otsFile.name}</code>.
-                            ${details}
-                        </div>
-                    `;
-                } else {
-                    resultDiv.innerHTML = `
-                        <div style="color:var(--accent-amber); font-weight:bold;">
-                            ⏳ ATTESTATION EN COURS (PENDING)
-                        </div>
-                        <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">
-                            La preuve est valide mais l'ancrage définitif sur le bloc Bitcoin est encore en cours de confirmation ou d'upgrade par le calendrier OTS.
-                        </div>
-                    `;
-                }
-
-            } catch (err) {
-                resultDiv.innerHTML = `
-                    <div style="color:#f85149; font-weight:bold;">❌ ÉCHEC DE LA VÉRIFICATION</div>
-                    <div style="font-size:11px; margin-top:4px;">
-                        L'empreinte du fichier image ne correspond pas à la preuve .ots fournie ou le fichier est corrompu.<br>
-                        <span style="color:var(--text-muted);">Détail : ${err.message || err}</span>
-                    </div>
-                `;
             }
         }
     </script>

@@ -359,16 +359,26 @@
             </a>
 
             <!-- Bouton 2 : Ancre locale vers la procédure complète -->
-            <a href="#audit-procedure" class="nav-btn">
-                <span class="btn-num">[ ACTION 02 ]</span>
-                <span class="btn-text">&gt; Auditer l'ancrage OTS (24 CID) &amp; Smart Contract Quotidien</span>
-            </a>
+
             
            <!-- Bouton 3 : check le code compilateur -->
             <a href="https://github.com/BigtreeUniversal/Xylem_Protocol/blob/main/verif_protocol/merkle_builder.py" class="nav-btn">
-                <span class="btn-num">[ ACTION 03 ]</span>
-                <span class="btn-text">&gt; Analyser le script python automatisé merkle_builder.py</span>
+                <span class="btn-num">[ ACTION 02 ]</span>
+                <span class="btn-text">&gt; Analyser le Compilateur (script python automatisé merkle_builder.py)</span>
             </a>
+
+
+            <a href="https://xylem.bigtreeconnection.com/verif_protocol/oracle_console.html" class="nav-btn">
+                <span class="btn-num">[ ACTION 03 ]</span>
+                <span class="btn-text">&gt; Analyser l'oracle avec la console NOSTR</span>
+            </a>
+
+
+            <a href="#audit-procedure" class="nav-btn">
+                <span class="btn-num">[ ACTION 04 ]</span>
+                <span class="btn-text">&gt; Auditer l'ancrage OTS (24 CID) &amp; Smart Contract Quotidien - Analyse complete</span>
+            </a>
+
             
         </div>
     </div>
@@ -383,14 +393,14 @@
 
         <!-- Étape 1 -->
         <div class="step-block active">
-            <div class="step-header">[ ÉTAPE 1 ] Accès au Journal Xylem Log &amp; Récupération du nom de fichier et CID</div>
+            <div class="step-header">[ ÉTAPE 1 ] Accès au Journal Nostr &amp; Récupération des meta-données</div>
             <div class="step-content">
                 <p>1. Rendez-vous sur la page du jour que vous souhaitez auditer sur le journal <strong>Xylem Log</strong> :</p>
-                <a href="https://xylem.bigtreeconnection.com/index.html" target="_blank" class="link-btn">&gt; Chercher la page sur Xylem Log</a>
+                <a href="https://github.com/BigtreeUniversal/Xylem_Protocol/actions/workflows/daily_nostr_ots.yml" target="_blank" class="link-btn">&gt; Chercher la page sur Github</a>
 
                 <div class="img-container">
-    <img src="xylem_log.png" alt="Vue de la page du journal Xylem Log avec la liste des images horaires" class="terminal-img">
-    <span class="img-caption">&gt; CAPTURE 01:journal Xylem Log avec la liste des images horaires</span>
+    <img src="xylem_log.png" alt="Vue de la page " class="terminal-img">
+    <span class="img-caption">&gt; CAPTURE 01:journal OTS vers Nostr </span>
 </div>
 
                 <p>2. Ouvrez le lien de l'image correspondante à l'heure désirée sur le réseau <strong>IPFS</strong> (accessible directement depuis le lien "open" de la page HTML).</p>
@@ -409,16 +419,197 @@
         <div class="step-block active">
             <div class="step-header">[ ÉTAPE 2 ] Téléchargement des Preuves Horodatées (.ots)</div>
             <div class="step-content">
-                <p>Allez dans le dépôt de stockage et téléchargez le ou les fichiers de preuve correspondant (extension <code>.ots</code>) :</p>
-                <a href="https://github.com/BigtreeUniversal/Xylem_Protocol" target="_blank" class="link-btn">&gt; Accéder au dépôt miroir (.ots)</a>
+                <p>Allez sur la page github Action et recuperez le numero de parution Nostr "Event ID" contenant les 24 fichiers OTS cryptés:</p>
+                <a href="https://github.com/BigtreeUniversal/Xylem_Protocol/actions/workflows/daily_nostr_ots.yml" target="_blank" class="link-btn">&gt; CHERCHER JOUR</a>
 
                 <div class="img-container">
-    <img src="archives.png" alt="Vue de la page du journal Xylem Log avec la liste des images horaires" class="terminal-img">
+    <img src="nostr.png" alt="Vue de la page du journal Xylem Log " class="terminal-img">
     <span class="img-caption"
-    >&gt; CAPTURE 02: Vue de la page du depot miroir du dossier source du serveur Heartbeat</span>
+    >&gt; CAPTURE 02: Routine Github Action "Execute Nostr Publish Script" Event ID</span>
          </div>
 
+<!-- SEARCH ENGINE : NOSTR EVENT VIEWER -->
+<div class="card" style="border-color: var(--accent-purple);">
+    <div class="card-title" style="color: var(--accent-purple);">
+        <span class="prompt-symbol">$</span> NOSTR_EVENT_SEARCH_ENGINE // DIRECT RELAY QUERY
+    </div>
+    <p>Saisissez ou collez l'Event ID Nostr (hex 64 caractères) pour récupérer directement l'événement et son JSON :</p>
+
+    <div style="display: flex; gap: 10px; margin: 12px 0;">
+        <input type="text" id="nostrEventId" placeholder="Ex: 22ca793886c668e4214606414f291f1eea186fd16d36a95afd7a39aea6df029d"
+               style="flex: 1; background: #090d12; color: var(--accent-bright); border: 1px solid var(--panel-border); padding: 10px; border-radius: 4px; font-family: var(--font-mono); font-size: 12px;">
+        <button onclick="searchNostrEvent()" class="link-btn" style="background: var(--accent-purple); color: #000; font-weight: bold; cursor: pointer; margin:0;">
+            &gt; Rechercher
+        </button>
+    </div>
+
+    <!-- Zone de statut / chargement -->
+    <div id="searchStatus" style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;"></div>
+
+    <!-- Zone d'affichage du résultat -->
+    <div id="eventDisplay" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="color: var(--accent-green); font-size: 11px;">[ ÉVÉNEMENT TROUVÉ ]</span>
+            <button onclick="autoFillPayload()" class="link-btn" style="font-size: 11px; padding: 2px 8px;">
+                &gt; Charger dans le décodeur OTS
+            </button>
         </div>
+        <pre id="rawContent" style="background: #090d12; color: var(--accent-green); padding: 12px; border-radius: 4px; border: 1px solid var(--panel-border); overflow-x: auto; font-size: 11px; max-height: 250px;"></pre>
+    </div>
+</div>
+
+<script>
+async function searchNostrEvent() {
+    const eventId = document.getElementById('nostrEventId').value.trim();
+    const statusDiv = document.getElementById('searchStatus');
+    const displayDiv = document.getElementById('eventDisplay');
+    const contentPre = document.getElementById('rawContent');
+
+    if (!eventId || eventId.length !== 64) {
+        statusDiv.innerHTML = '<span style="color:#f85149;">&gt; Erreur : L\'Event ID doit contenir exactement 64 caractères hexadécimaux.</span>';
+        displayDiv.style.display = 'none';
+        return;
+    }
+
+    // Relais Nostr publics par défaut pour l'interrogation
+    const relays = [
+        "wss://relay.damus.io",
+        "wss://nos.lol",
+        "wss://relay.nostr.band",
+        "wss://purplepag.es"
+    ];
+
+    statusDiv.innerHTML = '<span style="color:var(--accent-amber);">&gt; Connexion aux relais Nostr en cours...</span>';
+    displayDiv.style.display = 'none';
+
+    let foundEvent = null;
+
+    // Requête via WebSocket natif
+    const fetchFromRelay = (relayUrl) => {
+        return new Promise((resolve) => {
+            try {
+                const ws = new WebSocket(relayUrl);
+                const subId = "sub_" + Math.random().toString(36).substring(2, 8);
+
+                ws.onopen = () => {
+                    // Envoie du filtre de recherche REQ par ID d'événement (NIP-01)
+                    ws.send(JSON.stringify(["REQ", subId, { "ids": [eventId] }]));
+                };
+
+                ws.onmessage = (msg) => {
+                    const data = JSON.parse(msg.data);
+                    if (data[0] === "EVENT" && data[2]?.id === eventId) {
+                        foundEvent = data[2];
+                        ws.close();
+                        resolve(foundEvent);
+                    } else if (data[0] === "EOSE") {
+                        ws.close();
+                        resolve(null);
+                    }
+                };
+
+                ws.onerror = () => resolve(null);
+                setTimeout(() => { ws.close(); resolve(null); }, 3000); // Timeout 3s
+            } catch(e) {
+                resolve(null);
+            }
+        });
+    };
+
+    // Recherche en parallèle sur l'ensemble des relais
+    const results = await Promise.all(relays.map(r => fetchFromRelay(r)));
+    const event = results.find(e => e !== null);
+
+    if (event) {
+        statusDiv.innerHTML = `<span style="color:var(--accent-green);">&gt; Événement trouvé sur le réseau Nostr !</span>`;
+        contentPre.innerText = JSON.stringify(event, null, 2);
+        displayDiv.style.display = 'block';
+    } else {
+        statusDiv.innerHTML = `<span style="color:#f85149;">&gt; Aucun événement trouvé pour cet ID sur les relais interrogés.</span>`;
+    }
+}
+
+// Fonction pour envoyer automatiquement le contenu dans le décodeur OTS si présent
+function autoFillPayload() {
+    const rawContent = document.getElementById('rawContent').innerText;
+    try {
+        const eventObj = JSON.parse(rawContent);
+        const nostrInput = document.getElementById('nostrPayload');
+        if (nostrInput) {
+            nostrInput.value = eventObj.content;
+            nostrInput.scrollIntoView({ behavior: 'smooth' });
+        }
+    } catch(e) {
+        alert("Impossible d'extraire le payload de cet événement.");
+    }
+}
+</script>
+
+        <!-- NOUVEAU MODULE : DECODEUR NOSTR INSTANTANE -->
+<div class="card">
+    <div class="card-title">
+        <span class="prompt-symbol">$</span> DECODEUR_NOSTR_OTS // CONVERTISSEUR INSTANTANE
+    </div>
+    <p>Collez ici le texte brut de la publication Nostr pour extraire directement la preuve <code>.ots</code> binaire :</p>
+
+    <textarea id="nostrPayload" style="width:100%; height:80px; background:#090d12; color:var(--accent-green); border:1px solid var(--panel-border); border-radius:4px; padding:10px; margin:10px 0; font-family:var(--font-mono); font-size:12px;" placeholder='Exemple: {"xylem_1785196801399.jpg": {"ots": "AE9wZW5UaW1lc3RhbXBz...", "cid": "..."}}'></textarea>
+
+    <button onclick="extractOTS()" class="link-btn" style="cursor:pointer; background:var(--accent-green); color:#000;">
+        &gt; Extraire &amp; Télécharger le fichier .ots
+    </button>
+
+    <div id="extractionResult" style="margin-top:15px;"></div>
+</div>
+
+<script>
+function extractOTS() {
+    const rawInput = document.getElementById('nostrPayload').value.trim();
+    const resultDiv = document.getElementById('extractionResult');
+    resultDiv.innerHTML = '';
+
+    try {
+        const data = JSON.parse(rawInput);
+        let count = 0;
+
+        for (const [filename, content] of Object.entries(data)) {
+            if (content.ots) {
+                count++;
+                const otsFilename = filename.endsWith('.jpg') ? filename.replace('.jpg', '.ots') : filename + '.ots';
+
+                // Conversion Base64 vers Binaire Blob
+                const byteCharacters = atob(content.ots);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                const blob = new Blob([byteArray], {type: "application/octet-stream"});
+                const otsUrl = URL.createObjectURL(blob);
+
+                // Affichage d'un bouton de téléchargement direct
+                const item = document.createElement('div');
+                item.style.cssText = "background:#18202a; padding:8px 12px; margin-bottom:6px; border-radius:4px; border:1px solid var(--panel-border); display:flex; justify-content:space-between; align-items:center;";
+                item.innerHTML = `
+                    <span>📄 <strong>${otsFilename}</strong></span>
+                    <a href="${otsUrl}" download="${otsFilename}" class="link-btn">&gt; Télécharger .ots</a>
+                `;
+                resultDiv.appendChild(item);
+            }
+        }
+
+        if(count === 0) {
+            resultDiv.innerHTML = '<span style="color:var(--accent-amber);">&gt; Aucun payload OTS valide trouvé dans ce JSON.</span>';
+        }
+    } catch (e) {
+        resultDiv.innerHTML = '<span style="color:#f85149;">&gt; Erreur : Le texte collé n\'est pas un JSON Nostr valide.</span>';
+    }
+}
+</script>
+
+<p>Consulter directement l'événement source sur un explorateur de relais Nostr (https://nostr.at/+Event_ID):</p>
+<a href="https://nostr.at/22ca793886c668e4214606414f291f1eea186fd16d36a95afd7a39aea6df029d" target="_blank" class="link-btn">
+    &gt; Inspecter la note Nostr (Nostr.band)
+</a>
 
         <!-- Étape 3 -->
         <div class="step-block active">

@@ -2,11 +2,11 @@ name: Sync Daily Log and Update Xylem Oracle
 
 on:
   schedule:
-    - cron: '45 0 * * *' # S'exécute chaque jour à 00:45 UTC
-  workflow_dispatch:     # Permet le déclenchement manuel
+    - cron: '45 0 * * *' # Exécution quotidienne à 00:45 UTC
+  workflow_dispatch:     # Déclenchement manuel sécurisé
 
 permissions:
-  contents: write        # Autorise le push dans le dépôt
+  contents: write
 
 jobs:
   sync-and-anchor:
@@ -15,10 +15,11 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
-      - name: Calculate Yesterday's Date
+      - name: Calculate Yesterday Date (Strict UTC)
         id: dates
         run: |
-          YESTERDAY=$(date -d "yesterday" '+%Y-%m-%d')
+          YESTERDAY=$(date -u -d "yesterday" '+%Y-%m-%d')
+          echo "yesterday_date=${YESTERDAY}" >> $GITHUB_OUTPUT
           echo "file_name=page-${YESTERDAY}.html" >> $GITHUB_OUTPUT
 
       - name: Setup SSH Key
@@ -30,7 +31,7 @@ jobs:
       - name: Scan Host Keys
         run: ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
-      - name: SCP Download to Root
+      - name: SCP Download Log HTML
         run: |
           scp ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/root/xylem_data/public_html/${{ steps.dates.outputs.file_name }} ./
 
@@ -47,9 +48,11 @@ jobs:
           OPERATOR_PRIVATE_KEY: ${{ secrets.OPERATOR_PRIVATE_KEY }}
           CONTRACT_ADDRESS: ${{ secrets.CONTRACT_ADDRESS }}
           RPC_URL: "https://mainnet.base.org"
+          TARGET_DAY: ${{ steps.dates.outputs.yesterday_date }}
+          TARGET_FILE: ${{ steps.dates.outputs.file_name }}
         run: node scripts/updateOracle.js
 
-      - name: Commit and Push HTML Log
+      - name: Commit and Push HTML Log (Uniquement si ancrage réussi)
         run: |
           git config --global user.name "Xylem Node Bot"
           git config --global user.email "bot@xylem.local"

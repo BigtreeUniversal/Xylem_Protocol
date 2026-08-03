@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xylem Oracle - Console d'Audit Centralisée</title>
+    <!-- Librairie OpenTimestamps officielle pour vérification in-browser -->
+    <script src="https://unpkg.com/javascript-opentimestamps/dist/opentimestamps.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #0b0f14;
+            --panel-bg: #131920;
+            --panel-border: #212936;
+            --text-color: #c5d1de;
+            --text-bright: #f0f6fc;
+            --text-muted: #6e7d8e;
+            --accent-green: #3fb950;
+            --accent-blue: #58a6ff;
+            --accent-amber: #d29922;
+            --accent-purple: #bc8cff;
+            --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-mono);
+            font-size: 13.5px;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 6px;
+            padding: 16px 20px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .title { color: var(--accent-green); font-weight: bold; font-size: 15px; }
+
+        .card {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: bold;
+            border-bottom: 1px solid var(--panel-border);
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #1c2533;
+            color: var(--accent-blue);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            padding: 8px 14px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn:hover { background: var(--accent-blue); color: #0d1117; }
+        .btn-green { background: var(--accent-green); color: #000; border: none; }
+        .btn-green:hover { background: #2ea043; color: #fff; }
+
+        input[type="text"], textarea {
+            width: 100%;
+            background: #090d12;
+            color: var(--text-bright);
+            border: 1px solid var(--panel-border);
+            border-radius: 4px;
+            padding: 10px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+        }
+
+        .item-card {
+            background: #18202a;
+            border: 1px solid var(--panel-border);
+            border-radius: 4px;
+            padding: 12px;
+            margin-top: 12px;
+        }
+
+        .status-box { font-size: 12px; margin-top: 10px; word-break: break-word; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="title">&gt; ELDERS_LOG // ORACLE_AUDIT_CONSOLE</div>
+        <span style="color:var(--accent-blue); font-size:11px;">[ CLIENT-SIDE 100% ]</span>
+    </div>
+
+    <!-- ÉTAPE 1 : EXTRACTION DE L'EVENT ID -->
+    <div class="card" style="border-color: var(--accent-purple);">
+        <div class="card-title" style="color: var(--accent-purple);">
+            [ ÉTAPE 1 ] Saisie de l'Event ID Nostr
+        </div>
+        <p style="margin-bottom:10px;">Entrez l'Event ID (ou naviguez sur le registre pour récupérer l'ID du jour) :</p>
+        
+        <div style="display: flex; gap: 10px;">
+            <input type="text" id="nostrEventId" placeholder="Ex: 22ca793886c668e4214606414f291f1eea186fd16d36a95afd7a39aea6df029d">
+            <button onclick="fetchEvent()" class="btn" style="background:var(--accent-purple); color:#000;">&gt;&nbsp;Interroger</button>
+        </div>
+
+        <div id="fetchStatus" class="status-box"></div>
+    </div>
+
+    <!-- ÉTAPE 2 : DECODEUR TERMINAL & GENERATEUR DE PREUVES -->
+    <div class="card" style="border-color: var(--accent-blue);">
+        <div class="card-title" style="color: var(--accent-blue);">
+            [ ÉTAPE 2 ] Décodeur Terminal &amp; Extraction des Preuves OTS
+        </div>
+        <p style="margin-bottom:8px;">Payload de la note Nostr reçue (copier/coller manuel possible si besoin) :</p>
+        <textarea id="nostrPayload" rows="4" placeholder='{"xylem_1785596401827.jpg": {"ots": "...", "cid": "..."}}'></textarea>
+        
+        <button onclick="parsePayload()" class="btn btn-green" style="margin-top:10px;">🔍 Décoder &amp; Extraire les 24 Oracles</button>
+
+        <div id="oraclesContainer"></div>
+    </div>
+
+    <!-- ÉTAPE 3 : VERIFICATEUR OTS INTEGRATED -->
+    <div class="card" style="border-color: var(--accent-amber);">
+        <div class="card-title" style="color: var(--accent-amber);">
+            [ ÉTAPE 3 ] Vérification Instantanée Bitcoin OpenTimestamps
+        </div>
+        <p>Sélectionnez les deux fichiers correspondants pour exécuter la vérification cryptographique :</p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+            <!-- Champ 1 : L'Image JPG -->
+            <div style="background: #090d12; border: 1px dashed var(--panel-border); padding: 15px; border-radius: 4px; text-align: center;">
+                <label style="color: var(--accent-blue); font-weight: bold; display: block; margin-bottom: 8px;">
+                    1. Fichier Image (.jpg)
+                </label>
+                <input type="file" id="fileJpg" accept=".jpg,.jpeg,.png" onchange="checkAndVerify()" style="width: 100%; font-size: 11px;">
+                <div id="jpgName" style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Aucun fichier chargé</div>
+            </div>
+
+            <!-- Champ 2 : La Preuve OTS -->
+            <div style="background: #090d12; border: 1px dashed var(--panel-border); padding: 15px; border-radius: 4px; text-align: center;">
+                <label style="color: var(--accent-purple); font-weight: bold; display: block; margin-bottom: 8px;">
+                    2. Preuve Horodatée (.ots)
+                </label>
+                <input type="file" id="fileOts" accept=".ots" onchange="checkAndVerify()" style="width: 100%; font-size: 11px;">
+                <div id="otsName" style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Aucun fichier chargé</div>
+            </div>
+        </div>
+
+        <!-- Bouton de secours si l'utilisateur veut lancer manuellement -->
+        <button onclick="runOtsVerification()" class="btn" style="background: var(--accent-amber); color: #000; width: 100%; justify-content: center;">
+            ⚡ Lancer la vérification de l'ancrage Bitcoin
+        </button>
+
+        <!-- Zone de Résultat terminal -->
+        <div id="otsResult" class="status-box" style="margin-top: 15px; padding: 10px; border-radius: 4px; background: #090d12;"></div>
+    </div>
+
+    <script>
+        // --- LOGIQUE ÉTAPE 1 : FETCH RELAIS NOSTR ---
+        async function fetchEvent() {
+            const eventId = document.getElementById('nostrEventId').value.trim();
+            const statusDiv = document.getElementById('fetchStatus');
+
+            if (eventId.length !== 64) {
+                statusDiv.innerHTML = '<span style="color:#f85149;">&gt; Erreur : L\'Event ID doit faire exactement 64 caractères hexadécimaux.</span>';
+                return;
+            }
+
+            statusDiv.innerHTML = '<span style="color:var(--accent-amber);">&gt; Connexion aux relais Nostr en cours...</span>';
+            const relays = ["wss://relay.damus.io", "wss://nos.lol", "wss://relay.nostr.band", "wss://purplepag.es"];
+
+            const fetchFromRelay = (url) => {
+                return new Promise((resolve) => {
+                    try {
+                        const ws = new WebSocket(url);
+                        const timer = setTimeout(() => { ws.close(); resolve(null); }, 3000);
+
+                        ws.onopen = () => ws.send(JSON.stringify(["REQ", "sub_audit", { "ids": [eventId] }]));
+                        ws.onmessage = (msg) => {
+                            const res = JSON.parse(msg.data);
+                            if (res[0] === "EVENT" && res[2]?.id === eventId) {
+                                clearTimeout(timer);
+                                ws.close();
+                                resolve(res[2]);
+                            }
+                        };
+                        ws.onerror = () => { clearTimeout(timer); resolve(null); };
+                    } catch(e) { resolve(null); }
+                });
+            };
+
+            const results = await Promise.all(relays.map(r => fetchFromRelay(r)));
+            const foundEvent = results.find(e => e !== null);
+
+            if (foundEvent) {
+                document.getElementById('nostrPayload').value = foundEvent.content;
+                statusDiv.innerHTML = '<span style="color:var(--accent-green);">&gt; Événement trouvé et chargé avec succès !</span>';
+                parsePayload();
+            } else {
+                statusDiv.innerHTML = '<span style="color:#f85149;">&gt; Événement non trouvé sur les relais interrogés.</span>';
+            }
+        }
+
+        // --- LOGIQUE ÉTAPE 2 : PARSER MULTI-FORMAT & DECODEUR OTS ---
+        function parsePayload() {
+            let rawText = document.getElementById('nostrPayload').value.trim();
+            const container = document.getElementById('oraclesContainer');
+            container.innerHTML = '';
+
+            if(!rawText) {
+                alert("Veuillez d'abord fournir un payload ou un Event ID.");
+                return;
+            }
+
+            try {
+                let data = JSON.parse(rawText);
+
+                if (data.content && typeof data.content === 'string') {
+                    data = JSON.parse(data.content);
+                }
+
+                let count = 0;
+                for (const [filename, content] of Object.entries(data)) {
+                    if (!content || !content.ots) continue;
+                    count++;
+
+                    const otsFilename = filename.endsWith('.jpg') ? filename.replace('.jpg', '.ots') : filename + '.ots';
+
+                    const cleanBase64 = content.ots.replace(/\s/g, '');
+                    const byteChars = atob(cleanBase64);
+                    const byteNums = new Array(byteChars.length);
+                    for (let i = 0; i < byteChars.length; i++) byteNums[i] = byteChars.charCodeAt(i);
+                    const byteArray = new Uint8Array(byteNums);
+                    const blob = new Blob([byteArray], {type: "application/octet-stream"});
+                    const otsUrl = URL.createObjectURL(blob);
+
+                    const card = document.createElement('div');
+                    card.className = 'item-card';
+                    card.innerHTML = `
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                            <strong>📄 ${filename}</strong>
+                            <div>
+                                <a href="${otsUrl}" download="${otsFilename}" class="btn">&gt; Télécharger ${otsFilename}</a>
+                                <a href="https://ipfs.io/ipfs/${content.cid}" target="_blank" class="btn" style="color:var(--accent-amber);">&gt; Voir IPFS</a>
+                            </div>
+                        </div>
+                        <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">CID IPFS: <code>${content.cid}</code></div>
+                    `;
+                    container.appendChild(card);
+                }
+
+                if (count === 0) {
+                    alert("Aucune donnée d'Oracle valide (.ots / cid) n'a été trouvée dans le JSON.");
+                }
+
+            } catch (e) {
+                alert("Erreur de format JSON : " + e.message);
+            }
+        }
+
+        // --- LOGIQUE ÉTAPE 3 : VERIFICATION OTS CLIENT-SIDE ---
+        function checkAndVerify() {
+            const jpgInput = document.getElementById('fileJpg');
+            const otsInput = document.getElementById('fileOts');
+
+            if (jpgInput.files[0]) document.getElementById('jpgName').innerText = "✔ " + jpgInput.files[0].name;
+            if (otsInput.files[0]) document.getElementById('otsName').innerText = "✔ " + otsInput.files[0].name;
+
+            if (jpgInput.files[0] && otsInput.files[0]) {
+                runOtsVerification();
+            }
+        }
+
+        async function runOtsVerification() {
+            const jpgFile = document.getElementById('fileJpg').files[0];
+            const otsFile = document.getElementById('fileOts').files[0];
+            const resultDiv = document.getElementById('otsResult');
+
+            if (!jpgFile || !otsFile) {
+                resultDiv.innerHTML = '<span style="color:#f85149;">&gt; Erreur : Sélectionnez une image ET un fichier .ots.</span>';
+                return;
+            }
+
+            resultDiv.innerHTML = '<span style="color:var(--accent-amber);">&gt; Calcul du Hash SHA-256 du fichier...</span>';
+
+            try {
+                // 1. Calcul de l'empreinte SHA-256 du fichier image via WebCrypto API
+                const jpgBuffer = await jpgFile.arrayBuffer();
+                const hashBuffer = await crypto.subtle.digest('SHA-256', jpgBuffer);
+                const hashArray = new Uint8Array(hashBuffer);
+
+                // 2. Préparation du detached timestamp depuis le Hash
+                const detached = OpenTimestamps.DetachedTimestampFile.fromHash(
+                    new OpenTimestamps.Ops.OpSHA256(), 
+                    hashArray
+                );
+
+                // 3. Désérialisation du fichier .ots
+                const otsBuffer = new Uint8Array(await otsFile.arrayBuffer());
+                const timestamp = OpenTimestamps.DetachedTimestampFile.deserialize(otsBuffer);
+
+                resultDiv.innerHTML = '<span style="color:var(--accent-amber);">&gt; Interrogation des serveurs de calendrier &amp; vérification Bitcoin...</span>';
+
+                // 4. Exécution de la vérification OpenTimestamps
+                const options = { ignorePending: false };
+                const verifyResult = await OpenTimestamps.verify(timestamp, detached, options);
+
+                if (verifyResult && Object.keys(verifyResult).length > 0) {
+                    let details = '';
+                    for (const [key, value] of Object.entries(verifyResult)) {
+                        if (value && value.timestamp) {
+                            const date = new Date(value.timestamp * 1000).toLocaleString('fr-FR');
+                            details += `<br>• Attestation <b>${key}</b> : confirmée le <b>${date}</b>`;
+                        }
+                    }
+
+                    resultDiv.innerHTML = `
+                        <div style="color:var(--accent-green); font-weight:bold; font-size:13px;">
+                            ✔ PREUVE VALIDE ! L'ancrage Bitcoin est confirmé.
+                        </div>
+                        <div style="font-size:11px; color:var(--text-color); margin-top:4px;">
+                            L'empreinte du fichier <code>${jpgFile.name}</code> correspond exactement à la preuve <code>${otsFile.name}</code>.
+                            ${details}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div style="color:var(--accent-amber); font-weight:bold;">
+                            ⏳ ATTESTATION EN COURS (PENDING)
+                        </div>
+                        <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">
+                            La preuve est valide mais l'ancrage définitif sur le bloc Bitcoin est encore en cours de confirmation ou d'upgrade par le calendrier OTS.
+                        </div>
+                    `;
+                }
+
+            } catch (err) {
+                resultDiv.innerHTML = `
+                    <div style="color:#f85149; font-weight:bold;">❌ ÉCHEC DE LA VÉRIFICATION</div>
+                    <div style="font-size:11px; margin-top:4px;">
+                        L'empreinte du fichier image ne correspond pas à la preuve .ots fournie ou le fichier est corrompu.<br>
+                        <span style="color:var(--text-muted);">Détail : ${err.message || err}</span>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

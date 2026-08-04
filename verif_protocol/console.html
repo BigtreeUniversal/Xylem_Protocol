@@ -201,35 +201,53 @@
             "wss://purplepag.es"
         ];
 
-        // Lancement du watcher multi-relais
-        function startMultiRelayWatcher() {
-            RELAYS.forEach(relayUrl => {
-                try {
-                    const ws = new WebSocket(relayUrl);
-                    ws.onopen = () => {
-                        ws.send(JSON.stringify([
-                            "REQ", 
-                            "watcher_sub", 
-                            { authors: [TARGET_HEX], kinds: [1], limit: 1 }
-                        ]));
-                    };
+        // Lancement du watcher multi-relais aligné sur ton Python
+function startMultiRelayWatcher() {
+    // Exactement les 3 relais de ton script Python + purplepag.es
+    const RELAYS = [
+        "wss://relay.damus.io", 
+        "wss://nos.lol", 
+        "wss://relay.nostr.band",
+        "wss://purplepag.es"
+    ];
 
-                    ws.onmessage = (msg) => {
-                        const data = JSON.parse(msg.data);
-                        if (data[0] === "EVENT" && data[2]) {
-                            const event = data[2];
-                            
-                            document.getElementById('detectedEventId').textContent = event.id;
-                            document.getElementById('nostrEventId').value = event.id;
-                            document.getElementById('nostrPayload').value = event.content;
-                            document.getElementById('fetchStatus').innerHTML = '<span style="color:var(--accent-green);">&gt; Événement capturé automatiquement !</span>';
-                            
-                            parsePayload();
-                        }
-                    };
-                } catch(e) { console.error("Erreur relai:", relayUrl); }
-            });
+    RELAYS.forEach(relayUrl => {
+        try {
+            const ws = new WebSocket(relayUrl);
+
+            ws.onopen = () => {
+                // Souscription sur ta clé HEX exacte décodée depuis ton npub
+                ws.send(JSON.stringify([
+                    "REQ", 
+                    "watcher_sub", 
+                    { authors: [TARGET_HEX], kinds: [1], limit: 1 }
+                ]));
+            };
+
+            ws.onmessage = (msg) => {
+                const data = JSON.parse(msg.data);
+                
+                // Si le relai envoie un événement
+                if (data[0] === "EVENT" && data[2]) {
+                    const event = data[2];
+                    
+                    // 1. Inscription IMMÉDIATE de l'Event ID dans l'interface (plus de condition sur le texte)
+                    document.getElementById('detectedEventId').textContent = event.id;
+                    document.getElementById('nostrEventId').value = event.id;
+                    document.getElementById('nostrPayload').value = event.content;
+                    
+                    document.getElementById('fetchStatus').innerHTML = 
+                        '<span style="color:var(--accent-green);">&gt; Événement capturé avec succès !</span>';
+                    
+                    // 2. Extrait automatique des fichiers OTS et CIDs IPFS
+                    parsePayload();
+                }
+            };
+        } catch(e) { 
+            console.error("Erreur de connexion au relai :", relayUrl); 
         }
+    });
+}
 
         // Interrogation manuelle si besoin
         async function fetchEvent() {

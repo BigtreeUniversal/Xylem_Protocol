@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BUHS — Deep Tech Feed</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Chargement de la version bundle stable de nostr-tools -->
+  <script src="https://unpkg.com/nostr-tools@1.17.0/lib/nostr.bundle.js"></script>
+</head>
+<body class="bg-[#07080C] text-slate-200 font-sans antialiased min-h-screen">
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // TON NPUB DIRECTEMENT
+    const MY_NPUB = "npub1apk7pxgm929h0mj59hecvyfkl46m3zvwttgfufa45e2lec3evlmqs85zmx";
+
+    // RELAIS NOSTR POPULAIRES ET RAPIDES
+    const RELAYS = [
+      "wss://relay.damus.io",
+      "wss://relay.primal.net",
+      "wss://nos.lol",
+      "wss://nostr.land"
+    ];
+
+    function DeepTechProfile() {
+      const [profile, setProfile] = useState(null);
+      const [todayPost, setTodayPost] = useState(null);
+      const [feed, setFeed] = useState([]);
+      const [loading, setLoading] = useState(true);
+      const [error, setError] = useState(null);
+
+      useEffect(() => {
+        let hexPubKey = "";
+        try {
+          // Décodage automatique npub -> hex
+          const decoded = window.NostrTools.nip19.decode(MY_NPUB);
+          hexPubKey = decoded.data;
+        } catch (e) {
+          setError("Clé npub invalide.");
+          setLoading(false);
+          return;
+        }
+
+        const pool = new window.NostrTools.SimplePool();
+
+        async function loadData() {
+          try {
+            // 1. Récupérer le Profil (Kind 0)
+            const profEvent = await pool.get(RELAYS, { kinds: [0], authors: [hexPubKey] });
+            if (profEvent) {
+              setProfile(JSON.parse(profEvent.content));
+            }
+
+            // 2. Récupérer les Publications (Kind 1)
+            const events = await pool.list(RELAYS, [{ kinds: [1], authors: [hexPubKey], limit: 20 }]);
+            
+            if (events && events.length > 0) {
+              events.sort((a, b) => b.created_at - a.created_at);
+              setTodayPost(events[0]);
+              setFeed(events.slice(1));
+            }
+          } catch (err) {
+            console.error("Erreur d'acquisition Nostr:", err);
+            setError("Impossible de contacter les relais Nostr.");
+          } finally {
+            setLoading(false);
+          }
+        }
+
+        loadData();
+      }, []);
+
+      return (
+        <div className="relative">
+          <div className="fixed inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(14,165,233,0.15),rgba(255,255,255,0))] pointer-events-none"></div>
+
+          <main className="max-w-2xl mx-auto px-4 py-8 relative z-10 space-y-6">
+
+            {/* ERROR DISPLAY */}
+            {error && (
+              <div className="p-4 bg-red-900/30 border border-red-500/50 rounded-xl text-red-300 text-xs font-mono">
+                ⚠ {error}
+              </div>
+            )}
+
+            {/* 1. PARUTION DU JOUR */}
+            <section className="border border-cyan-500/30 bg-[#0D111A]/80 backdrop-blur-md rounded-2xl p-6 shadow-[0_0_30px_rgba(6,182,212,0.1)] relative overflow-hidden">
+              <div className="absolute top-0 right-0 bg-cyan-500/10 border-b border-l border-cyan-500/30 text-cyan-400 text-[10px] px-3 py-1 font-mono uppercase tracking-widest rounded-bl-xl">
+                Émission Live
+              </div>
+
+              <h2 className="text-xs font-mono uppercase text-cyan-400 tracking-wider mb-3">Focus du Jour</h2>
+
+              {loading ? (
+                <div className="animate-pulse space-y-3">
+                  <div className="h-4 bg-slate-800 rounded w-3/4"></div>
+                  <div className="h-4 bg-slate-800 rounded w-1/2"></div>
+                </div>
+              ) : todayPost ? (
+                <div className="space-y-4">
+                  <p className="text-base text-slate-100 whitespace-pre-line leading-relaxed break-words">
+                    {todayPost.content}
+                  </p>
+                  
+                  <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-800/80 items-center">
+                    {todayPost.content.includes("ots") && (
+                      <span className="text-[10px] font-mono bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded">
+                        ✓ OTS Sealed
+                      </span>
+                    )}
+                    <span className="text-[10px] font-mono text-slate-500 ml-auto">
+                      {new Date(todayPost.created_at * 1000).toLocaleDateString("fr-FR")}
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-slate-500 font-mono">Aucune parution récente trouvée sur les relais interrogés.</p>
+              )}
+            </section>
+
+            {/* 2. BLOC PROFIL */}
+            <section className="border border-slate-800 bg-[#0B0E14] rounded-2xl p-6 shadow-xl flex flex-col md:flex-row items-center gap-6">
+              <div className="relative group">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full blur opacity-50"></div>
+                <img 
+                  src={profile?.picture || "https://bigtreeconnection.com/favicon.ico"} 
+                  alt="Avatar" 
+                  className="relative w-20 h-20 rounded-full object-cover border-2 border-[#0B0E14]"
+                />
+              </div>
+
+              <div className="flex-1 text-center md:text-left space-y-2">
+                <h1 className="text-xl font-bold text-white tracking-wide">
+                  {profile?.name || "Oliver Bigtree"}
+                </h1>
+                <p className="text-xs text-cyan-400 font-mono">
+                  Architect of B.U.H.S. | Universal Harmonic
+                </p>
+                <p className="text-xs text-slate-400 leading-relaxed max-w-md">
+                  {profile?.about || "Merging the science of the Tetragrammaton with deep-tech architecture."}
+                </p>
+                
+                <div className="pt-2 flex flex-wrap justify-center md:justify-start gap-3 text-[11px] font-mono text-slate-500">
+                  <a href="https://bigtreeconnection.com/" target="_blank" className="text-cyan-400 hover:underline">
+                    🌐 bigtreeconnection.com
+                  </a>
+                  <span>• BASE L2</span>
+                  <span>• Bitcoin OTS</span>
+                </div>
+              </div>
+            </section>
+
+            {/* 3. FIL DES PARUTIONS PASSÉES */}
+            <section className="space-y-4 pt-4">
+              <h3 className="text-xs font-mono uppercase text-slate-500 tracking-wider px-2">
+                Archives du Réseau
+              </h3>
+
+              <div className="space-y-3">
+                {feed.map((post) => (
+                  <article 
+                    key={post.id} 
+                    className="border border-slate-800/60 bg-[#090C12] hover:border-slate-700 transition duration-200 rounded-xl p-5 space-y-3"
+                  >
+                    <div className="text-sm text-slate-300 font-mono whitespace-pre-wrap break-words leading-relaxed">
+                      {post.content}
+                    </div>
+
+                    <div className="flex justify-between items-center text-[10px] font-mono text-slate-600 pt-2 border-t border-slate-800/40">
+                      <span>ID: {post.id.substring(0, 8)}...</span>
+                      <span>{new Date(post.created_at * 1000).toLocaleDateString("fr-FR")}</span>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
+
+          </main>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<DeepTechProfile />);
+  </script>
+</body>
+</html>

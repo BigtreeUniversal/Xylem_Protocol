@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>24 ELDERS - Console d'Audit & Watcher Direct</title>
+    <style>
+        :root {
+            --bg-color: #0b0f14;
+            --panel-bg: #131920;
+            --panel-border: #212936;
+            --text-color: #c5d1de;
+            --text-bright: #f0f6fc;
+            --text-muted: #6e7d8e;
+            --accent-green: #3fb950;
+            --accent-blue: #58a6ff;
+            --accent-amber: #d29922;
+            --accent-purple: #bc8cff;
+            --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-mono);
+            font-size: 13.5px;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 6px;
+            padding: 16px 20px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .title { color: var(--accent-green); font-weight: bold; font-size: 15px; }
+
+        .card {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: bold;
+            border-bottom: 1px solid var(--panel-border);
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .status-live { background: rgba(63, 185, 80, 0.2); color: var(--accent-green); border: 1px solid var(--accent-green); }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #1c2533;
+            color: var(--accent-blue);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            padding: 8px 14px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn:hover { background: var(--accent-blue); color: #0d1117; }
+        .btn-green { background: var(--accent-green); color: #000; border: none; }
+        .btn-green:hover { background: #2ea043; color: #fff; }
+
+        input[type="text"], textarea {
+            width: 100%;
+            background: #090d12;
+            color: var(--text-bright);
+            border: 1px solid var(--panel-border);
+            border-radius: 4px;
+            padding: 10px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+        }
+
+        .item-card {
+            background: #18202a;
+            border: 1px solid var(--panel-border);
+            border-radius: 4px;
+            padding: 12px;
+            margin-top: 12px;
+        }
+
+        .status-box { font-size: 12px; margin-top: 10px; word-break: break-word; }
+        .pubkey-tag { color: var(--accent-purple); font-size: 11px; word-break: break-all; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="title">&gt; 24_ELDERS_LOG // ORACLE_AUDIT_CONSOLE</div>
+        <span style="color:var(--accent-blue); font-size:11px;">[ CLIENT-SIDE AUTO-WATCHER ]</span>
+    </div>
+
+    <!-- ÉTAPE 1 : NOSTR WATCHER DIRECT -->
+    <div class="card" style="border-color: var(--accent-green);">
+        <div class="card-title" style="color: var(--accent-green);">
+            <span>[ ÉTAPE 1 ] Watcher Actif (Oliver Bigtree)</span>
+            <span id="watcherStatus" class="status-badge status-live">MULTI-RELAIS CONNECTÉS</span>
+        </div>
+        <p style="margin-bottom:8px;">
+            Profil : <span class="pubkey-tag">npub1apk7pxgm929h0mj59hecvyfkl46m3zvwttgfufa45e2lec3evlmqs85zmx</span>
+        </p>
+        <div style="font-size:12px; color:var(--text-bright); background: #090d12; padding: 10px; border-radius: 4px; border: 1px solid var(--panel-border);">
+            Dernier Event ID détecté : <strong id="detectedEventId" style="color:var(--accent-blue);">Recherche en cours...</strong>
+        </div>
+    </div>
+
+    <!-- ÉTAPE 2 : EVENT ID ACTIVE -->
+    <div class="card" style="border-color: var(--accent-purple);">
+        <div class="card-title" style="color: var(--accent-purple);">
+            [ ÉTAPE 2 ] Saisie / Auto-capture de l'Event ID
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <input type="text" id="nostrEventId" placeholder="Event ID capturé automatiquement...">
+            <button onclick="fetchEvent()" class="btn" style="background:var(--accent-purple); color:#000;">&gt;&nbsp;Interroger</button>
+        </div>
+        <div id="fetchStatus" class="status-box"></div>
+    </div>
+
+    <!-- ÉTAPE 3 : DECODEUR TERMINAL -->
+    <div class="card" style="border-color: var(--accent-blue);">
+        <div class="card-title" style="color: var(--accent-blue);">
+            [ ÉTAPE 3 ] Décodeur Terminal &amp; Extraction des Preuves
+        </div>
+        <textarea id="nostrPayload" rows="5" placeholder='Le contenu de la note chargée apparaîtra ici...'></textarea>
+        <button onclick="parsePayload()" class="btn btn-green" style="margin-top:10px;">🔍 Décoder &amp; Extraire les Oracles</button>
+        <div id="oraclesContainer"></div>
+    </div>
+
+    <!-- ÉTAPE 4 : OPENTIMESTAMPS -->
+    <div class="card" style="border-color: var(--accent-amber);">
+        <div class="card-title" style="color: var(--accent-amber);">
+            [ ÉTAPE 4 ] Ancrage Temporel Officiel
+        </div>
+        <a href="https://opentimestamps.org/" target="_blank" class="btn" style="background: var(--accent-amber); color: #000;">
+            🛡️ Ouvrir OpenTimestamps.org &gt;&gt;
+        </a>
+    </div>
+
+    <script>
+        // Convertisseur npub1 vers hex brut
+        function npubToHex(npub) {
+            if (!npub.startsWith('npub1')) return npub;
+            const charset = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
+            const data = [];
+            for (let i = 5; i < npub.length; i++) {
+                const p = charset.indexOf(npub[i]);
+                if (p !== -1) data.push(p);
+            }
+            let acc = 0, bits = 0, hex = '';
+            for (let value of data.slice(0, -6)) {
+                acc = (acc << 5) | value;
+                bits += 5;
+                while (bits >= 8) {
+                    bits -= 8;
+                    hex += ((acc >> bits) & 0xff).toString(16).padStart(2, '0');
+                }
+            }
+            return hex;
+        }
+
+        const TARGET_NPUB = "npub1apk7pxgm929h0mj59hecvyfkl46m3zvwttgfufa45e2lec3evlmqs85zmx";
+        const TARGET_HEX = npubToHex(TARGET_NPUB);
+
+        const RELAYS = [
+            "wss://relay.damus.io", 
+            "wss://nos.lol", 
+            "wss://relay.nostr.band",
+            "wss://purplepag.es"
+        ];
+
+        // Lancement du watcher multi-relais
+        function startMultiRelayWatcher() {
+            RELAYS.forEach(relayUrl => {
+                try {
+                    const ws = new WebSocket(relayUrl);
+                    ws.onopen = () => {
+                        ws.send(JSON.stringify([
+                            "REQ", 
+                            "watcher_sub", 
+                            { authors: [TARGET_HEX], kinds: [1], limit: 1 }
+                        ]));
+                    };
+
+                    ws.onmessage = (msg) => {
+                        const data = JSON.parse(msg.data);
+                        if (data[0] === "EVENT" && data[2]) {
+                            const event = data[2];
+                            
+                            document.getElementById('detectedEventId').textContent = event.id;
+                            document.getElementById('nostrEventId').value = event.id;
+                            document.getElementById('nostrPayload').value = event.content;
+                            document.getElementById('fetchStatus').innerHTML = '<span style="color:var(--accent-green);">&gt; Événement capturé automatiquement !</span>';
+                            
+                            parsePayload();
+                        }
+                    };
+                } catch(e) { console.error("Erreur relai:", relayUrl); }
+            });
+        }
+
+        // Interrogation manuelle si besoin
+        async function fetchEvent() {
+            const eventId = document.getElementById('nostrEventId').value.trim();
+            if (eventId.length !== 64) return;
+
+            document.getElementById('fetchStatus').innerHTML = '<span style="color:var(--accent-amber);">&gt; Interrogation des relais...</span>';
+
+            const fetchFromRelay = (url) => {
+                return new Promise((resolve) => {
+                    try {
+                        const ws = new WebSocket(url);
+                        const timer = setTimeout(() => { ws.close(); resolve(null); }, 3000);
+
+                        ws.onopen = () => ws.send(JSON.stringify(["REQ", "sub_manual", { "ids": [eventId] }]));
+                        ws.onmessage = (msg) => {
+                            const res = JSON.parse(msg.data);
+                            if (res[0] === "EVENT" && res[2]?.id === eventId) {
+                                clearTimeout(timer);
+                                ws.close();
+                                resolve(res[2]);
+                            }
+                        };
+                        ws.onerror = () => { clearTimeout(timer); resolve(null); };
+                    } catch(e) { resolve(null); }
+                });
+            };
+
+            const results = await Promise.all(RELAYS.map(r => fetchFromRelay(r)));
+            const foundEvent = results.find(e => e !== null);
+
+            if (foundEvent) {
+                document.getElementById('nostrPayload').value = foundEvent.content;
+                document.getElementById('fetchStatus').innerHTML = '<span style="color:var(--accent-green);">&gt; Événement chargé !</span>';
+                parsePayload();
+            } else {
+                document.getElementById('fetchStatus').innerHTML = '<span style="color:#f85149;">&gt; Non trouvé.</span>';
+            }
+        }
+
+        // Décodeur de preuves OTS
+        function parsePayload() {
+            let rawText = document.getElementById('nostrPayload').value.trim();
+            const container = document.getElementById('oraclesContainer');
+            container.innerHTML = '';
+
+            if(!rawText) return;
+
+            try {
+                let data = JSON.parse(rawText);
+                if (data.content && typeof data.content === 'string') {
+                    data = JSON.parse(data.content);
+                }
+
+                for (const [filename, content] of Object.entries(data)) {
+                    if (!content || !content.ots) continue;
+
+                    const otsFilename = filename.endsWith('.jpg') ? filename.replace('.jpg', '.ots') : filename + '.ots';
+                    const cleanBase64 = content.ots.replace(/\s/g, '');
+                    const byteChars = atob(cleanBase64);
+                    const byteNums = new Array(byteChars.length);
+                    for (let i = 0; i < byteChars.length; i++) byteNums[i] = byteChars.charCodeAt(i);
+                    const blob = new Blob([new Uint8Array(byteNums)], {type: "application/octet-stream"});
+                    const otsUrl = URL.createObjectURL(blob);
+
+                    const card = document.createElement('div');
+                    card.className = 'item-card';
+                    card.innerHTML = `
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                            <strong>📄 ${filename}</strong>
+                            <div>
+                                <a href="${otsUrl}" download="${otsFilename}" class="btn">&gt; Télécharger ${otsFilename}</a>
+                                <a href="https://ipfs.io/ipfs/${content.cid}" target="_blank" class="btn" style="color:var(--accent-amber);">&gt; Voir IPFS</a>
+                            </div>
+                        </div>
+                        <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">CID IPFS: <code>${content.cid}</code></div>
+                    `;
+                    container.appendChild(card);
+                }
+            } catch (e) {}
+        }
+
+        window.addEventListener("DOMContentLoaded", startMultiRelayWatcher);
+    </script>
+</body>
+</html>

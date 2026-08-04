@@ -4,185 +4,192 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BUHS — Deep Tech Feed</title>
-  <script>
-  // Clef exacte 64 chars HEX publique correspondant à npub1apk7...
-  const HEX_PUBKEY = "40ad3a9e144ea1d06ff352fa1029baecfcbb9233857e4e08285ce70733d7d70c";
 
-  // Pool de relais pour éviter qu'un relai down ne bloque tout
-  const RELAYS = [
-    "wss://nos.lol",
-    "wss://relay.damus.io",
-    "wss://relay.nostr.band"
-  ];
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Chargement de la version bundle stable de nostr-tools -->
+  <script src="https://unpkg.com/nostr-tools@1.17.0/lib/nostr.bundle.js"></script>
+</head>
+<body class="bg-[#07080C] text-slate-200 font-sans antialiased min-h-screen">
 
-  function connectNostr() {
-    let connected = false;
+  <div id="root"></div>
 
-    RELAYS.forEach((relayUrl) => {
-      if (connected) return;
+  <script type="text/babel">
+    const { useState, useEffect } = React;
 
-      const ws = new WebSocket(relayUrl);
-      const timeout = setTimeout(() => { ws.close(); }, 4000); // 4s max par relai
+    // TON NPUB DIRECTEMENT
+    const MY_NPUB = "npub1apk7pxgm929h0mj59hecvyfkl46m3zvwttgfufa45e2lec3evlmqs85zmx";
 
-      ws.onopen = () => {
-        clearTimeout(timeout);
-        connected = true;
+    // RELAIS NOSTR POPULAIRES ET RAPIDES
+    const RELAYS = [
+      "wss://relay.damus.io",
+      "wss://relay.primal.net",
+      "wss://nos.lol",
+      "wss://nostr.land"
+    ];
 
-        // Une seule requête globale pour Profil (kind 0) ET Dernier Post (kind 1)
-        const req = JSON.stringify([
-          "REQ",
-          "buhs_feed",
-          { kinds: [0, 1], authors: [HEX_PUBKEY], limit: 2 }
-        ]);
+    function DeepTechProfile() {
+      const [profile, setProfile] = useState(null);
+      const [todayPost, setTodayPost] = useState(null);
+      const [feed, setFeed] = useState([]);
+      const [loading, setLoading] = useState(true);
+      const [error, setError] = useState(null);
 
-        ws.send(req);
-      };
-
-      ws.onmessage = (event) => {
+      useEffect(() => {
+        let hexPubKey = "";
         try {
-          const data = JSON.parse(event.data);
+          // Décodage automatique npub -> hex
+          const decoded = window.NostrTools.nip19.decode(MY_NPUB);
+          hexPubKey = decoded.data;
+        } catch (e) {
+          setError("Clé npub invalide.");
+          setLoading(false);
+          return;
+        }
 
-          if (data[0] === "EVENT" && data[2]) {
-            const nostrEvent = data[2];
+        const pool = new window.NostrTools.SimplePool();
 
-            // Profil (kind 0)
-            if (nostrEvent.kind === 0) {
-              const meta = JSON.parse(nostrEvent.content);
-              if (meta.name) document.getElementById("profile-name").textContent = meta.name;
-              if (meta.picture) document.getElementById("profile-picture").src = meta.picture;
-              if (meta.about) document.getElementById("profile-about").textContent = meta.about;
-              if (meta.website) {
-                const webEl = document.getElementById("profile-website");
-                webEl.href = meta.website;
-                webEl.textContent = "🌐 " + meta.website;
-              }
+        async function loadData() {
+          try {
+            // 1. Récupérer le Profil (Kind 0)
+            const profEvent = await pool.get(RELAYS, { kinds: [0], authors: [hexPubKey] });
+            if (profEvent) {
+              setProfile(JSON.parse(profEvent.content));
             }
 
-            // Dernier Post (kind 1)
-            if (nostrEvent.kind === 1) {
-              const container = document.getElementById("today-post-container");
-              const dateStr = new Date(nostrEvent.created_at * 1000).toLocaleDateString("fr-FR");
-
-              let contentDisplay = nostrEvent.content;
-              if (contentDisplay.length > 300) {
-                contentDisplay = contentDisplay.substring(0, 300) + "... (Voir console/explorateur pour le JSON complet)";
-              }
-
-              container.innerHTML = `
-                <p class="text-sm text-slate-100 whitespace-pre-line leading-relaxed font-mono">
-                  ${contentDisplay}
-                </p>
-                <div class="flex justify-between items-center pt-2 border-t border-slate-800 text-[10px] font-mono text-slate-500">
-                  <span>Event ID: ${nostrEvent.id.substring(0, 12)}...</span>
-                  <a href="https://njump.me/${nostrEvent.id}" target="_blank" class="text-cyan-400 hover:underline">${dateStr} ↗</a>
-                </div>
-              `;
+            // 2. Récupérer les Publications (Kind 1)
+            const events = await pool.list(RELAYS, [{ kinds: [1], authors: [hexPubKey], limit: 20 }]);
+            
+            if (events && events.length > 0) {
+              events.sort((a, b) => b.created_at - a.created_at);
+              setTodayPost(events[0]);
+              setFeed(events.slice(1));
             }
+          } catch (err) {
+            console.error("Erreur d'acquisition Nostr:", err);
+            setError("Impossible de contacter les relais Nostr.");
+          } finally {
+            setLoading(false);
           }
-        } catch(e) {
-          console.error("Erreur de parsing:", e);
         }
-      };
 
-      ws.onerror = () => {
-        if (!connected) {
-          document.getElementById("today-post-container").innerHTML = `<p class="text-xs text-rose-400 font-mono">Tentative sur relai suivant...</p>`;
-        }
-      };
-    });
-  }
+        loadData();
+      }, []);
 
-  window.addEventListener("DOMContentLoaded", connectNostr);
-</script>
-  // Clef exacte 64 chars HEX d'Oliver Bigtree
-  const HEX_PUBKEY = "e86de0991b2a8b77ee542df3861136fd75b8898e5ad09e27b5a655fce23967f6";
+      return (
+        <div className="relative">
+          <div className="fixed inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(14,165,233,0.15),rgba(255,255,255,0))] pointer-events-none"></div>
 
-  // Pool de relais pour éviter qu'un relai down ne bloque tout
-  const RELAYS = [
-    "wss://nos.lol",
-    "wss://relay.damus.io",
-    "wss://relay.nostr.band"
-  ];
+          <main className="max-w-2xl mx-auto px-4 py-8 relative z-10 space-y-6">
 
-  function connectNostr() {
-    let connected = false;
+            {/* ERROR DISPLAY */}
+            {error && (
+              <div className="p-4 bg-red-900/30 border border-red-500/50 rounded-xl text-red-300 text-xs font-mono">
+                ⚠ {error}
+              </div>
+            )}
 
-    RELAYS.forEach((relayUrl) => {
-      if (connected) return;
+            {/* 1. PARUTION DU JOUR */}
+            <section className="border border-cyan-500/30 bg-[#0D111A]/80 backdrop-blur-md rounded-2xl p-6 shadow-[0_0_30px_rgba(6,182,212,0.1)] relative overflow-hidden">
+              <div className="absolute top-0 right-0 bg-cyan-500/10 border-b border-l border-cyan-500/30 text-cyan-400 text-[10px] px-3 py-1 font-mono uppercase tracking-widest rounded-bl-xl">
+                Émission Live
+              </div>
 
-      const ws = new WebSocket(relayUrl);
-      const timeout = setTimeout(() => { ws.close(); }, 4000); // 4s max par relai
+              <h2 className="text-xs font-mono uppercase text-cyan-400 tracking-wider mb-3">Focus du Jour</h2>
 
-      ws.onopen = () => {
-        clearTimeout(timeout);
-        connected = true;
-
-        // Une seule requête globale pour Profil (kind 0) ET Dernier Post (kind 1)
-        const req = JSON.stringify([
-          "REQ",
-          "buhs_feed",
-          { kinds: [0, 1], authors: [HEX_PUBKEY], limit: 2 }
-        ]);
-
-        ws.send(req);
-      };
-
-      ws.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-
-          if (data[0] === "EVENT" && data[2]) {
-            const nostrEvent = data[2];
-
-            // Profil (kind 0)
-            if (nostrEvent.kind === 0) {
-              const meta = JSON.parse(nostrEvent.content);
-              if (meta.name) document.getElementById("profile-name").textContent = meta.name;
-              if (meta.picture) document.getElementById("profile-picture").src = meta.picture;
-              if (meta.about) document.getElementById("profile-about").textContent = meta.about;
-              if (meta.website) {
-                const webEl = document.getElementById("profile-website");
-                webEl.href = meta.website;
-                webEl.textContent = "🌐 " + meta.website;
-              }
-            }
-
-            // Dernier Post (kind 1)
-            if (nostrEvent.kind === 1) {
-              const container = document.getElementById("today-post-container");
-              const dateStr = new Date(nostrEvent.created_at * 1000).toLocaleDateString("fr-FR");
-
-              // Raccourcissement intelligent du texte JSON s'il s'agit d'un bundle de CIDs
-              let contentDisplay = nostrEvent.content;
-              if (contentDisplay.length > 300) {
-                contentDisplay = contentDisplay.substring(0, 300) + "... (Voir console/explorateur pour le JSON complet)";
-              }
-
-              container.innerHTML = `
-                <p class="text-sm text-slate-100 whitespace-pre-line leading-relaxed font-mono">
-                  ${contentDisplay}
-                </p>
-                <div class="flex justify-between items-center pt-2 border-t border-slate-800 text-[10px] font-mono text-slate-500">
-                  <span>Event ID: ${nostrEvent.id.substring(0, 12)}...</span>
-                  <a href="https://njump.me/${nostrEvent.id}" target="_blank" class="text-cyan-400 hover:underline">${dateStr} ↗</a>
+              {loading ? (
+                <div className="animate-pulse space-y-3">
+                  <div className="h-4 bg-slate-800 rounded w-3/4"></div>
+                  <div className="h-4 bg-slate-800 rounded w-1/2"></div>
                 </div>
-              `;
-            }
-          }
-        } catch(e) {
-          console.error("Erreur de parsing:", e);
-        }
-      };
+              ) : todayPost ? (
+                <div className="space-y-4">
+                  <p className="text-base text-slate-100 whitespace-pre-line leading-relaxed break-words">
+                    {todayPost.content}
+                  </p>
+                  
+                  <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-800/80 items-center">
+                    {todayPost.content.includes("ots") && (
+                      <span className="text-[10px] font-mono bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded">
+                        ✓ OTS Sealed
+                      </span>
+                    )}
+                    <span className="text-[10px] font-mono text-slate-500 ml-auto">
+                      {new Date(todayPost.created_at * 1000).toLocaleDateString("fr-FR")}
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-slate-500 font-mono">Aucune parution récente trouvée sur les relais interrogés.</p>
+              )}
+            </section>
 
-      ws.onerror = () => {
-        if (!connected) {
-          document.getElementById("today-post-container").innerHTML = `<p class="text-xs text-rose-400 font-mono">Tentative sur relai suivant...</p>`;
-        }
-      };
-    });
-  }
+            {/* 2. BLOC PROFIL */}
+            <section className="border border-slate-800 bg-[#0B0E14] rounded-2xl p-6 shadow-xl flex flex-col md:flex-row items-center gap-6">
+              <div className="relative group">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full blur opacity-50"></div>
+                <img 
+                  src={profile?.picture || "https://bigtreeconnection.com/favicon.ico"} 
+                  alt="Avatar" 
+                  className="relative w-20 h-20 rounded-full object-cover border-2 border-[#0B0E14]"
+                />
+              </div>
 
-  window.addEventListener("DOMContentLoaded", connectNostr);
-</script>
+              <div className="flex-1 text-center md:text-left space-y-2">
+                <h1 className="text-xl font-bold text-white tracking-wide">
+                  {profile?.name || "Oliver Bigtree"}
+                </h1>
+                <p className="text-xs text-cyan-400 font-mono">
+                  Architect of B.U.H.S. | Universal Harmonic
+                </p>
+                <p className="text-xs text-slate-400 leading-relaxed max-w-md">
+                  {profile?.about || "Merging the science of the Tetragrammaton with deep-tech architecture."}
+                </p>
+                
+                <div className="pt-2 flex flex-wrap justify-center md:justify-start gap-3 text-[11px] font-mono text-slate-500">
+                  <a href="https://bigtreeconnection.com/" target="_blank" className="text-cyan-400 hover:underline">
+                    🌐 bigtreeconnection.com
+                  </a>
+                  <span>• BASE L2</span>
+                  <span>• Bitcoin OTS</span>
+                </div>
+              </div>
+            </section>
+
+            {/* 3. FIL DES PARUTIONS PASSÉES */}
+            <section className="space-y-4 pt-4">
+              <h3 className="text-xs font-mono uppercase text-slate-500 tracking-wider px-2">
+                Archives du Réseau
+              </h3>
+
+              <div className="space-y-3">
+                {feed.map((post) => (
+                  <article 
+                    key={post.id} 
+                    className="border border-slate-800/60 bg-[#090C12] hover:border-slate-700 transition duration-200 rounded-xl p-5 space-y-3"
+                  >
+                    <div className="text-sm text-slate-300 font-mono whitespace-pre-wrap break-words leading-relaxed">
+                      {post.content}
+                    </div>
+
+                    <div className="flex justify-between items-center text-[10px] font-mono text-slate-600 pt-2 border-t border-slate-800/40">
+                      <span>ID: {post.id.substring(0, 8)}...</span>
+                      <span>{new Date(post.created_at * 1000).toLocaleDateString("fr-FR")}</span>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
+
+          </main>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<DeepTechProfile />);
+  </script>
 </body>
 </html>

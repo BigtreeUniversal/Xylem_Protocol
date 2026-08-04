@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BUHS — Deep Tech Feed</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body { background-color: #07080C; }
+  </style>
+</head>
+<body class="text-slate-200 font-sans antialiased min-h-screen">
+
+  <div class="fixed inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(14,165,233,0.15),rgba(255,255,255,0))] pointer-events-none"></div>
+
+  <main class="max-w-2xl mx-auto px-4 py-8 relative z-10 space-y-6">
+
+    <!-- 1. FOCUS DU JOUR -->
+    <section class="border border-cyan-500/30 bg-[#0D111A]/80 backdrop-blur-md rounded-2xl p-6 shadow-[0_0_30px_rgba(6,182,212,0.1)] relative overflow-hidden">
+      <div class="absolute top-0 right-0 bg-cyan-500/10 border-b border-l border-cyan-500/30 text-cyan-400 text-[10px] px-3 py-1 font-mono uppercase tracking-widest rounded-bl-xl">
+        Émission Live
+      </div>
+
+      <h2 class="text-xs font-mono uppercase text-cyan-400 tracking-wider mb-3">Focus du Jour</h2>
+
+      <div id="today-post-container" class="space-y-3">
+        <p class="text-sm text-slate-500 font-mono animate-pulse">&gt; Connexion au relai Nostr en cours...</p>
+      </div>
+    </section>
+
+    <!-- 2. BLOC PROFIL -->
+    <section class="border border-slate-800 bg-[#0B0E14] rounded-2xl p-6 shadow-xl flex flex-col md:flex-row items-center gap-6">
+      <div class="relative group">
+        <div class="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full blur opacity-50"></div>
+        <img 
+          id="profile-picture"
+          src="https://bigtreeconnection.com/favicon.ico" 
+          alt="Avatar" 
+          class="relative w-20 h-20 rounded-full object-cover border-2 border-[#0B0E14]"
+        />
+      </div>
+
+      <div class="flex-1 text-center md:text-left space-y-2">
+        <h1 id="profile-name" class="text-xl font-bold text-white tracking-wide">
+          Oliver Bigtree
+        </h1>
+        <p id="profile-about" class="text-xs text-slate-400 leading-relaxed max-w-md">
+          Merging the science of the Tetragrammaton with deep-tech architecture.
+        </p>
+        
+        <div class="pt-2 flex flex-wrap justify-center md:justify-start gap-3 text-[11px] font-mono text-slate-500">
+          <a id="profile-website" href="https://bigtreeconnection.com/" target="_blank" class="text-cyan-400 hover:underline">🌐 bigtreeconnection.com</a>
+          <span>• BASE L2 ETHEREUM</span>
+          <span>• BITCOIN</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+  // Clef exacte 64 chars HEX d'Oliver Bigtree
+  const HEX_PUBKEY = "148f3224b4556488331cf11786cc1c9b6852bb0a047d9eaef72aef43e11409f4";
+
+  // Pool de relais pour éviter qu'un relai down ne bloque tout
+  const RELAYS = [
+    "wss://nos.lol",
+    "wss://relay.damus.io",
+    "wss://relay.nostr.band"
+  ];
+
+  function connectNostr() {
+    let connected = false;
+
+    RELAYS.forEach((relayUrl) => {
+      if (connected) return;
+
+      const ws = new WebSocket(relayUrl);
+      const timeout = setTimeout(() => { ws.close(); }, 4000); // 4s max par relai
+
+      ws.onopen = () => {
+        clearTimeout(timeout);
+        connected = true;
+
+        // Une seule requête globale pour Profil (kind 0) ET Dernier Post (kind 1)
+        const req = JSON.stringify([
+          "REQ",
+          "buhs_feed",
+          { kinds: [0, 1], authors: [HEX_PUBKEY], limit: 2 }
+        ]);
+
+        ws.send(req);
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+
+          if (data[0] === "EVENT" && data[2]) {
+            const nostrEvent = data[2];
+
+            // Profil (kind 0)
+            if (nostrEvent.kind === 0) {
+              const meta = JSON.parse(nostrEvent.content);
+              if (meta.name) document.getElementById("profile-name").textContent = meta.name;
+              if (meta.picture) document.getElementById("profile-picture").src = meta.picture;
+              if (meta.about) document.getElementById("profile-about").textContent = meta.about;
+              if (meta.website) {
+                const webEl = document.getElementById("profile-website");
+                webEl.href = meta.website;
+                webEl.textContent = "🌐 " + meta.website;
+              }
+            }
+
+            // Dernier Post (kind 1)
+            if (nostrEvent.kind === 1) {
+              const container = document.getElementById("today-post-container");
+              const dateStr = new Date(nostrEvent.created_at * 1000).toLocaleDateString("fr-FR");
+
+              // Raccourcissement intelligent du texte JSON s'il s'agit d'un bundle de CIDs
+              let contentDisplay = nostrEvent.content;
+              if (contentDisplay.length > 300) {
+                contentDisplay = contentDisplay.substring(0, 300) + "... (Voir console/explorateur pour le JSON complet)";
+              }
+
+              container.innerHTML = `
+                <p class="text-sm text-slate-100 whitespace-pre-line leading-relaxed font-mono">
+                  ${contentDisplay}
+                </p>
+                <div class="flex justify-between items-center pt-2 border-t border-slate-800 text-[10px] font-mono text-slate-500">
+                  <span>Event ID: ${nostrEvent.id.substring(0, 12)}...</span>
+                  <a href="https://njump.me/${nostrEvent.id}" target="_blank" class="text-cyan-400 hover:underline">${dateStr} ↗</a>
+                </div>
+              `;
+            }
+          }
+        } catch(e) {
+          console.error("Erreur de parsing:", e);
+        }
+      };
+
+      ws.onerror = () => {
+        if (!connected) {
+          document.getElementById("today-post-container").innerHTML = `<p class="text-xs text-rose-400 font-mono">Tentative sur relai suivant...</p>`;
+        }
+      };
+    });
+  }
+
+  window.addEventListener("DOMContentLoaded", connectNostr);
+</script>
+</body>
+</html>

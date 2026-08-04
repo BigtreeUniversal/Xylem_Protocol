@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BUHS — Deep Tech Feed</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body { background-color: #07080C; }
+  </style>
+</head>
+<body class="text-slate-200 font-sans antialiased min-h-screen">
+
+  <div class="fixed inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(14,165,233,0.15),rgba(255,255,255,0))] pointer-events-none"></div>
+
+  <main class="max-w-2xl mx-auto px-4 py-8 relative z-10 space-y-6">
+
+    <!-- 1. FOCUS DU JOUR -->
+    <section class="border border-cyan-500/30 bg-[#0D111A]/80 backdrop-blur-md rounded-2xl p-6 shadow-[0_0_30px_rgba(6,182,212,0.1)] relative overflow-hidden">
+      <div class="absolute top-0 right-0 bg-cyan-500/10 border-b border-l border-cyan-500/30 text-cyan-400 text-[10px] px-3 py-1 font-mono uppercase tracking-widest rounded-bl-xl">
+        Émission Live
+      </div>
+
+      <h2 class="text-xs font-mono uppercase text-cyan-400 tracking-wider mb-3">Focus du Jour</h2>
+
+      <div id="today-post-container" class="space-y-3">
+        <p class="text-sm text-slate-500 font-mono animate-pulse">&gt; Connexion au relai Nostr en cours...</p>
+      </div>
+    </section>
+
+    <!-- 2. BLOC PROFIL -->
+    <section class="border border-slate-800 bg-[#0B0E14] rounded-2xl p-6 shadow-xl flex flex-col md:flex-row items-center gap-6">
+      <div class="relative group">
+        <div class="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full blur opacity-50"></div>
+        <img 
+          id="profile-picture"
+          src="https://bigtreeconnection.com/favicon.ico" 
+          alt="Avatar" 
+          class="relative w-20 h-20 rounded-full object-cover border-2 border-[#0B0E14]"
+        />
+      </div>
+
+      <div class="flex-1 text-center md:text-left space-y-2">
+        <h1 id="profile-name" class="text-xl font-bold text-white tracking-wide">
+          Oliver Bigtree
+        </h1>
+        <p id="profile-about" class="text-xs text-slate-400 leading-relaxed max-w-md">
+          Merging the science of the Tetragrammaton with deep-tech architecture.
+        </p>
+        
+        <div class="pt-2 flex flex-wrap justify-center md:justify-start gap-3 text-[11px] font-mono text-slate-500">
+          <a id="profile-website" href="https://bigtreeconnection.com/" target="_blank" class="text-cyan-400 hover:underline">🌐 bigtreeconnection.com</a>
+          <span>• BASE L2 ETHEREUM</span>
+          <span>• BITCOIN</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+  const HEX_PUBKEY = "40ad3a9e144ea1d06ff352fa1029baecfcbb9233857e4e08285ce70733d7d70c";
+
+  async function loadFeedDirect() {
+    const container = document.getElementById("today-post-container");
+
+    try {
+      // Interrogation via API REST (pas de WebSocket, pas de freeze)
+      const res = await fetch(`https://api.nostr.band/v1/profile/${HEX_PUBKEY}`);
+      if (!res.ok) throw new Error("API Indisponible");
+
+      const data = await res.json();
+
+      // 1. Mise à jour du profil si disponible
+      if (data.stats && data.profile) {
+        const meta = JSON.parse(data.profile.content);
+        if (meta.picture) document.getElementById("profile-picture").src = meta.picture;
+        if (meta.name) document.getElementById("profile-name").textContent = meta.name;
+      }
+
+      // 2. Récupération des derniers posts
+      const postsRes = await fetch(`https://api.nostr.band/v1/author/${HEX_PUBKEY}?kind=1&limit=1`);
+      const postsData = await postsRes.json();
+
+      if (postsData.events && postsData.events.length > 0) {
+        const latestEvent = postsData.events[0];
+        const dateStr = new Date(latestEvent.created_at * 1000).toLocaleDateString("fr-FR");
+
+        container.innerHTML = `
+          <div class="text-xs text-cyan-400 font-mono mb-2">[EVENT DETECTED: ${latestEvent.id.substring(0, 16)}...]</div>
+          <p class="text-sm text-slate-100 whitespace-pre-line leading-relaxed font-mono">
+            ${latestEvent.content.substring(0, 250)}...
+          </p>
+          <div class="flex justify-between items-center pt-3 mt-2 border-t border-slate-800 text-[10px] font-mono text-slate-500">
+            <a href="https://njump.me/${latestEvent.id}" target="_blank" class="text-cyan-400 hover:underline">VOIR SUR NJUMP ↗</a>
+            <span>${dateStr}</span>
+          </div>
+        `;
+      } else {
+        container.innerHTML = `<p class="text-xs text-amber-400 font-mono">&gt; Aucun event kind 1 trouvé sur l'indexeur.</p>`;
+      }
+
+    } catch (err) {
+      console.error(err);
+      container.innerHTML = `
+        <p class="text-xs text-slate-400 font-mono mb-2">&gt; Relais WebSocket indisponibles.</p>
+        <a href="https://njump.me/npub1apk7pxgm929h0mj59hecvyfkl46m3zvwttgfufa45e2lec3evlmqs85zmx" target="_blank" class="text-xs text-cyan-400 hover:underline font-mono">&gt; Consulter le profil directement sur njump.me ↗</a>
+      `;
+    }
+  }
+
+  window.addEventListener("DOMContentLoaded", loadFeedDirect);
+</script>
+</body>
+</html>

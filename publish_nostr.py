@@ -39,36 +39,28 @@ async def main():
 
     print(f"✅ Packagé {len(bundle_data)} Trônes avec leurs CIDs IPFS et OTS.")
 
-    # 3. Configuration Nostr (Signer & Keys) pour v0.34.0
+    # 3. Configuration Nostr (Signer & Keys)
     raw_key = os.environ.get("NOSTR_PRIVATE_KEY", "").strip()
     if not raw_key:
         print("❌ Secret NOSTR_PRIVATE_KEY manquant.")
         sys.exit(1)
 
     try:
-        from nostr_sdk import NostrSigner
-        
-        # 1. Conversion de la clé (nsec1... ou hex)
         keys = Keys.parse(raw_key)
-
-        # 2. Création du NostrSigner à partir des clés
         signer = NostrSigner.keys(keys)
-
-        # 3. Initialisation du Client avec le signer
         client = Client(signer)
-
     except Exception as e:
         print(f"❌ ERREUR d'initialisation des clés Nostr : {e}")
         sys.exit(1)
     
-    # 4. Ajout des relais (simples chaînes de caractères en v0.34.0)
+    # 4. Ajout des relais
     relays = ["wss://relay.damus.io", "wss://nos.lol", "wss://relay.nostr.band"]
     for r in relays:
         await client.add_relay(r)
 
     await client.connect()
 
-    # 5. Envoi de l'événement
+    # 5. Envoi de l'événement (tags directement dans EventBuilder)
     content_json = json.dumps(bundle_data)
     tags = [
         Tag.parse(["t", "opentimestamps"]),
@@ -76,7 +68,7 @@ async def main():
         Tag.parse(["t", "buhs_oracle"])
     ]
 
-    builder = EventBuilder(Kind(1), content_json).tags(tags)
+    builder = EventBuilder(Kind(1), content_json, tags)
 
     try:
         output = await client.send_event_builder(builder)
@@ -87,4 +79,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-    

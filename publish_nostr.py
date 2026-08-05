@@ -47,7 +47,6 @@ async def main():
 
     try:
         keys = Keys.parse(raw_key)
-        signer = NostrSigner.keys(keys)
         client = Client(signer)
     except Exception as e:
         print(f"❌ ERREUR d'initialisation des clés Nostr : {e}")

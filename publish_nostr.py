@@ -72,7 +72,8 @@ async def main():
 
     try:
         output = await client.send_event_builder(builder)
-        print(f"✅ 24 Trônes Binah publiés sur Nostr ! Event ID: {output.id().to_hex()}")
+        # Supprimé les () après output.id
+        print(f"✅ 24 Trônes Binah publiés sur Nostr ! Event ID: {output.id.to_hex()}")
     except Exception as e:
         print(f"❌ ERREUR d'envoi Nostr : {e}")
         sys.exit(1)

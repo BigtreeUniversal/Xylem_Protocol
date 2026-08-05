@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Big Tree Universal Harmonic System — Daily Oracle Manual</title>
+    <style>
+        /* --- CSS VARIABLES & THEMES --- */
+        :root {
+            /* Dark Mode (Default) */
+            --bg-color: #0d0f12;
+            --paper-bg: #161920;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent-color: #38bdf8;
+            --border-color: #262c36;
+            --code-bg: #090a0f;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-mono: "Fira Code", Monaco, Consolas, monospace;
+        }
+
+        [data-theme="pdf"] {
+            /* Light / PDF Mode */
+            --bg-color: #e2e8f0;
+            --paper-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --accent-color: #0284c7;
+            --border-color: #cbd5e1;
+            --code-bg: #f8fafc;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        /* --- BASE STYLES --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-family);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            padding: 2rem 1rem;
+        }
+
+        /* --- CONTAINER --- */
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: var(--paper-bg);
+            padding: 3rem 4rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        /* --- CONTROLS / TOOLBAR --- */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .theme-toggle-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .theme-toggle-btn:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        /* --- TYPOGRAPHY --- */
+        h1 { font-size: 2.2rem; margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+        h2 { font-size: 1.4rem; margin-top: 2.5rem; margin-bottom: 1rem; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.3rem; }
+        p { margin-bottom: 1.2rem; color: var(--text-main); }
+        ul { margin-left: 1.5rem; margin-bottom: 1.5rem; }
+        li { margin-bottom: 0.5rem; }
+        .meta { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 2rem; }
+        
+        /* --- DYNAMIC LINKS --- */
+        a.dynamic-link {
+            color: var(--accent-color);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--accent-color);
+            transition: border-bottom 0.2s;
+        }
+        a.dynamic-link:hover {
+            border-bottom: 1px solid var(--accent-color);
+        }
+
+        /* --- DATA BOX / CODE --- */
+        .data-box {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+
+        .img-placeholder {
+            text-align: center;
+            margin: 2rem 0;
+            padding: 2rem;
+            border: 1px dashed var(--border-color);
+            border-radius: 6px;
+            background-color: var(--code-bg);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* --- PRINT STYLES FOR PDF --- */
+        @media print {
+            body { background: white; color: black; padding: 0; }
+            .container { box-shadow: none; border: none; padding: 0; max-width: 100%; }
+            .toolbar { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- TOP TOOLBAR -->
+        <div class="toolbar">
+            <span class="meta" style="margin:0;">Status: <strong style="color: #22c55e;">Live (Day +1)</strong></span>
+            <button class="theme-toggle-btn" id="themeBtn" onclick="toggleTheme()">Switch to PDF Mode</button>
+        </div>
+
+        <!-- HEADER SECTION -->
+        <header>
+            <h1>Big Tree Universal Harmonic System</h1>
+            <div class="meta">
+                Architect: <strong>Oliver Big Tree</strong> (Artist & Engineer) &nbsp;|&nbsp; 
+                Protocol Version: <strong>1.0.4</strong>
+            </div>
+        </header>
+
+        <!-- SECTION 1: TODAY STATE GATEWAY -->
+        <section id="gateway">
+            <h2>Current Day State (T+1 Gateway)</h2>
+            <div class="data-box">
+                <div><strong>Daily Hash (official):</strong> <a href="#" id="link-day-hash" class="dynamic-link" target="_blank"> 80290...4a895</a></div>
+                <div><strong>Daily Hash (mirror):</strong> <a href="#" id="link-parent-hash" class="dynamic-link" target="_blank">80290...4a895</a></div>
+                <div><strong>Ethereum L2 Contract:</strong> <a href="#" id="link-l2-contract" class="dynamic-link" target="_blank">View on L2 Explorer &rarr;</a></div>
+                <div><strong>Nostr Event ID (J-1):</strong> <a href="#" id="link-nostr-event" class="dynamic-link" target="_blank">Celebrate 24 Elders</a></div>
+                
+                <!-- BALISES HTML AJOUTÉES POUR LES 3 DERNIERS LIENS -->
+                <div style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed var(--border-color);"></div>
+                <div><strong>Official Web Site:</strong> <a href="#" id="link-main-website" class="dynamic-link" target="_blank">Visit Web3 Portal &rarr;</a></div>
+                <div><strong>Nostr Relays:</strong> <a href="#" id="link-nostr-relays-list" class="dynamic-link" target="_blank">View Active Relays &rarr;</a></div>
+                <div><strong>Nano Stamper:</strong> <a href="#" id="link-nano-stamper" class="dynamic-link" target="_blank">Access Nano Stamper Console &rarr;</a></div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: INTRODUCTION & CONTEXT -->
+        <section id="introduction">
+            <h2>Welcome to the 24 Elders Oracle Manual</h2>
+            <p>
+                <strong>Context:</strong> The 24 Elders Oracle operates as an active component within a broader, living network organism known as the 
+                <a href="#" id="link-doc-general" class="dynamic-link" target="_blank">Big Tree Universal Harmonic System</a>. 
+                Positioned at the upper sphere of the Tree of Life, the Oracle is driven by <strong>Module 3</strong>.
+            </p>
+
+            <!-- DIAGRAM / IMAGE PLACEHOLDER -->
+            <div style="text-align: center; margin: 2rem 0; padding: 1rem; border: 1px dashed var(--border-color); border-radius: 6px; background-color: var(--code-bg);">
+                <img src="tree_raw.png" alt="Tree of Life - Module 3 Placement" style="max-width: 100%; height: auto; border-radius: 4px;" />
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">Figure 1: Architectural placement of Module 3 within the Tree of Life.</div>
+            </div>
+
+            <p>The underlying ecosystem relies on three core modules:</p>
+            <ul>
+                <li>
+                    <strong>Module 1 — The Control Tower:</strong> Serves as the all-seeing eye of the architecture (the <em>Eye of Metatron</em>), continuously monitoring continuous feeds.
+                </li>
+                <li>
+                    <strong>Module 2 — The Smart Clock:</strong> Real-time positioning engine calculating astronomical light sources and celestial luminaries.
+                </li>
+                <li>
+                    <strong>Module 3 — The Third Sephirot:</strong> Extracts one image frame per hour and structures the Oracle payload for blockchain notarization.
+                </li>
+            </ul>
+
+            <p>
+                Together, this pipeline powers the <strong>Xylem Protocol</strong> and the daily <strong>24-Hour Oracle</strong>.
+            </p>
+        </section>
+
+        <!-- SECTION 3: SERVER ARCHITECTURE & WORKFLOW -->
+        <section id="server-and-workflow">
+            <h2>Server Infrastructure & Hourly Cryptographic Execution</h2>
+            <p>
+                <strong>High-Precision Time Synchronization:</strong> The system's central server is hosted in Zurich, Switzerland. It is directly synchronized via physical cabling to a Stratum-1 time server, which anchors directly to a Stratum-0 atomic clock (see the <a href="#" id="link-heartbeat" class="dynamic-link" target="_blank">Heartbeat Server Status</a>).
+            </p>
+            <p>
+                <strong>Hourly Watchdog Routine:</strong> Triggered precisely on the hour by the server's synchronized clock, a cron-based Watchdog process queries the latest frame output from Module 2, the <a href="#" id="link-smartclock" class="dynamic-link" target="_blank">Smart Clock Engine</a>.
+            </p>
+
+            <ul>
+                <li>
+                    <strong>IPFS Ingestion:</strong> The extracted image is pinned directly to the local IPFS node (monitor via <a href="#" id="link-ipfs-console" class="dynamic-link" target="_blank">Local IPFS Console</a>).
+                </li>
+                <li>
+                    <strong>Bitcoin OpenTimestamps (OTS):</strong> The image CID is immediately submitted to the Bitcoin network via OpenTimestamps, saving both the image and its cryptographic OTS proof into the server's daily storage directory.
+                </li>
+            </ul>
+
+            <h2>Daily Aggregation & Nostr Network Publication</h2>
+            <p>
+                Throughout the 24-hour cycle, all blockchain transaction logs are concatenated alongside the 24 hourly CIDs. At midnight (00:00 UTC), as the daily ledger seals, a custom compiler parses the daily state into a unified log file (inspected via <a href="#" id="link-xylem-log" class="dynamic-link" target="_blank">Xylem Daily Logs</a>).
+            </p>
+            <p>
+                Immediately following log compilation, an automated <a href="#" id="link-github-workflow" class="dynamic-link" target="_blank">GitHub Action Routine</a> securely connects to the Zurich server to extract the Oracle journal and execute a single, consolidated publication to the Nostr network.
+            </p>
+
+            <ul>
+                <li>
+                    <strong>On-the-Fly Payload Encryption:</strong> The routine parses the cron log, collects all 24 IPFS CIDs, and encrypts the associated OTS proof data into a unified payload stream.
+                </li>
+                <li>
+                    <strong>Verification & Retrieval:</strong> Anyone can track publications via the <a href="#" id="link-nostr-watcher" class="dynamic-link" target="_blank">Automated Nostr Live Watcher</a>, perform a <a href="#" id="link-nostr-search" class="dynamic-link" target="_blank">Historical Event ID Query</a>, or rebuild and download the raw OTS proofs using our <a href="#" id="link-nostr-console" class="dynamic-link" target="_blank">Official Nostr Verification Console</a>.
+                </li>
+            </ul>
+        </section>
+
+    </div>
+
+    <!-- JAVASCRIPT: THEME MANAGEMENT & CENTRALIZED LINKS CONFIGURATION -->
+    <script>
+        // =================================================================
+        // CONFIGURATION CENTRALISÉE DE VOS LIENS
+        // =================================================================
+        const config = {
+            dayHashUrl: "https://xylem.bigtreeconnection.com/index.html",
+            parentHashUrl: "https://xylem.bigtreeconnection.com/index_xylem.html",
+            l2ContractUrl: "https://basescan.org/address/0xc88160cc2f3f8171c7782d220bc92ba8f6e426a3",
+            nostrEventUrl: "https://xylem.bigtreeconnection.com/verif_protocol/console.html",
+            
+            docGeneralUrl: "https://xylem.bigtreeconnection.com/verif_protocol/The%20Big%20Tree%20Universal%20Harmonic%20System.pdf",
+            heartbeatUrl: "https://bigtreeconnection.com/buhs/Heartbeat/index.html",
+            smartClockUrl: "https://bigtreeconnection.com/buhs/smartclock/SMARTCLOCK_index.html",
+            ipfsConsoleUrl: "https://bigtreeconnection.com/web3/daily_log.html",
+            xylemLogUrl: "https://xylem.bigtreeconnection.com/index_xylem.html",
+            githubWorkflowUrl: "https://github.com/BigtreeUniversal/Xylem_Protocol/actions/workflows/daily_nostr_ots.yml",
+            nostrWatcherUrl: "https://xylem.bigtreeconnection.com/watcher.html",
+            nostrSearchUrl: "https://github.com/BigtreeUniversal/Xylem_Protocol/actions/workflows/daily_nostr_ots.yml",
+            nostrConsoleUrl: "https://xylem.bigtreeconnection.com/verif_protocol/console_nostr.html",
+
+            // Nouveaux liens configurés :
+            mainWebsiteUrl: "https://bigtreeconnection.com/home/Web3_Protocols.html",
+            nostrRelaysListUrl: "https://njump.me/npub1apk7pxgm929h0mj59hecvyfkl46m3zvwttgfufa45e2lec3evlmqs85zmx",
+            nanoStamperUrl: "https://bigtreeconnection.com/buhs/Time-Stamper/index.html"
+        };
+
+        // INJECTION AUTOMATIQUE DES LIENS DANS LE CODE HTML
+        document.getElementById("link-day-hash").href = config.dayHashUrl;
+        document.getElementById("link-parent-hash").href = config.parentHashUrl;
+        document.getElementById("link-l2-contract").href = config.l2ContractUrl;
+        document.getElementById("link-nostr-event").href = config.nostrEventUrl;
+        
+        document.getElementById("link-doc-general").href = config.docGeneralUrl;
+        document.getElementById("link-heartbeat").href = config.heartbeatUrl;
+        document.getElementById("link-smartclock").href = config.smartClockUrl;
+        document.getElementById("link-ipfs-console").href = config.ipfsConsoleUrl;
+        document.getElementById("link-xylem-log").href = config.xylemLogUrl;
+        document.getElementById("link-github-workflow").href = config.githubWorkflowUrl;
+        document.getElementById("link-nostr-watcher").href = config.nostrWatcherUrl;
+        document.getElementById("link-nostr-search").href = config.nostrSearchUrl;
+        document.getElementById("link-nostr-console").href = config.nostrConsoleUrl;
+
+        // Injections des 3 nouveaux liens
+        document.getElementById("link-main-website").href = config.mainWebsiteUrl;
+        document.getElementById("link-nostr-relays-list").href = config.nostrRelaysListUrl;
+        document.getElementById("link-nano-stamper").href = config.nanoStamperUrl;
+
+        // BASCULE DE THÈME (Mode Sombre <-> Mode Blanc/PDF)
+        function toggleTheme() {
+            const html = document.documentElement;
+            const btn = document.getElementById("themeBtn");
+            
+            if (html.getAttribute("data-theme") === "dark") {
+                html.setAttribute("data-theme", "pdf");
+                btn.textContent = "Switch to Dark Mode";
+            } else {
+                html.setAttribute("data-theme", "dark");
+                btn.textContent = "Switch to PDF Mode";
+            }
+        }
+    </script>
+</body>
+</html>

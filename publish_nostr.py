@@ -46,15 +46,11 @@ async def main():
         sys.exit(1)
 
     try:
-        # 1. Verification et chargement de la clé
+        # Parsing universel de la clé (nsec... ou hex)
         keys = Keys.parse(raw_key)
-        
-        # 2. Support de la nouvelle syntaxe nostr-sdk
-        signer = NostrSigner.keys(keys)
-        client = Client()
-        
-        # On attache le signer de manière sécurisée
-        asyncio.run(client.set_signer(signer)) if asyncio.iscoroutinefunction(client.set_signer) else client.set_signer(signer)
+
+        # On passe directement la clé au Client
+        client = Client(keys)
 
     except Exception as e:
         print(f"❌ ERREUR d'initialisation des clés Nostr : {e}")

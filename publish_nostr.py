@@ -46,9 +46,16 @@ async def main():
         sys.exit(1)
 
     try:
-        keys = Keys.parse(raw_key)
-        signer = NostrSigner.keys(keys)
-        client = Client(signer)
+        # 1. Parsing de la clé (gère nsec1... ET le format hex 64 caractères)
+        if raw_key.startswith("nsec"):
+            keys = Keys.parse(raw_key)
+        else:
+            keys = Keys.from_hex(raw_key)
+
+        # 2. Initialisation directe du Client avec les clés
+        # (Dans nostr-sdk, passer 'keys' directement à Client créera le signer automatiquement)
+        client = Client(keys)
+
     except Exception as e:
         print(f"❌ ERREUR d'initialisation des clés Nostr : {e}")
         sys.exit(1)

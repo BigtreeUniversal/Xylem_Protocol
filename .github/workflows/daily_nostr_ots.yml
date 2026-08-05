@@ -19,7 +19,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install Nostr Dependency
-        run: pip install nostr-sdk
+        run: pip install nostr-sdk==0.34.0
 
       - name: Setup SSH Key
         uses: shimataro/ssh-key-action@v2

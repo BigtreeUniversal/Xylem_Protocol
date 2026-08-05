@@ -46,12 +46,9 @@ async def main():
         sys.exit(1)
 
     try:
-        # Parsing universel de la clé (nsec... ou hex)
         keys = Keys.parse(raw_key)
-
-        # On passe directement la clé au Client
-        client = Client(keys)
-
+        signer = NostrSigner.keys(keys)
+        client = Client(signer)
     except Exception as e:
         print(f"❌ ERREUR d'initialisation des clés Nostr : {e}")
         sys.exit(1)

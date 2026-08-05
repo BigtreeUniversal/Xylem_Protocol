@@ -4,7 +4,7 @@ import glob
 import json
 import base64
 import asyncio
-from nostr_sdk import Client, Keys, EventBuilder, Tag, Kind
+from nostr_sdk import Client, Keys, EventBuilder, Tag, Kind, NostrSigner
 
 async def main():
     ots_dir = "./ots_downloaded"
@@ -46,8 +46,17 @@ async def main():
         sys.exit(1)
 
     try:
+        from nostr_sdk import NostrSigner
+        
+        # 1. Conversion de la clé (nsec1... ou hex)
         keys = Keys.parse(raw_key)
-        client = Client(keys)
+
+        # 2. Création du NostrSigner à partir des clés
+        signer = NostrSigner.keys(keys)
+
+        # 3. Initialisation du Client avec le signer
+        client = Client(signer)
+
     except Exception as e:
         print(f"❌ ERREUR d'initialisation des clés Nostr : {e}")
         sys.exit(1)

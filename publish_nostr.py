@@ -4,7 +4,7 @@ import glob
 import json
 import base64
 import asyncio
-from nostr_sdk import Client, Keys, EventBuilder, Tag, Kind, NostrSigner, RelayUrl
+from nostr_sdk import Client, Keys, EventBuilder, Tag, Kind
 
 async def main():
     ots_dir = "./ots_downloaded"
@@ -39,37 +39,27 @@ async def main():
 
     print(f"✅ Packagé {len(bundle_data)} Trônes avec leurs CIDs IPFS et OTS.")
 
-    # 3. Configuration Nostr (Signer & Keys)
+    # 3. Configuration Nostr (Signer & Keys) pour v0.34.0
     raw_key = os.environ.get("NOSTR_PRIVATE_KEY", "").strip()
     if not raw_key:
         print("❌ Secret NOSTR_PRIVATE_KEY manquant.")
         sys.exit(1)
 
     try:
-        # 1. Parsing de la clé (gère nsec1... et le format hex)
         keys = Keys.parse(raw_key)
-
-        # 2. Création du Signer à partir des clés
-        signer = NostrSigner.keys(keys)
-
-        # 3. Initialisation du Client SANS argument
-        client = Client()
-
-        # 4. Définition du Signer sur le Client
-        client.set_signer(signer)
-
+        client = Client(keys)
     except Exception as e:
         print(f"❌ ERREUR d'initialisation des clés Nostr : {e}")
         sys.exit(1)
     
-    # Correction du typage strict avec RelayUrl.parse()
+    # 4. Ajout des relais (simples chaînes de caractères en v0.34.0)
     relays = ["wss://relay.damus.io", "wss://nos.lol", "wss://relay.nostr.band"]
     for r in relays:
-        await client.add_relay(RelayUrl.parse(r))
+        await client.add_relay(r)
 
     await client.connect()
 
-    # 4. Envoi de l'événement avec les tags d'indexation
+    # 5. Envoi de l'événement
     content_json = json.dumps(bundle_data)
     tags = [
         Tag.parse(["t", "opentimestamps"]),
@@ -81,10 +71,11 @@ async def main():
 
     try:
         output = await client.send_event_builder(builder)
-        print(f"✅ 24 Trônes Binah publiés sur Nostr ! Event ID: {output.id.to_hex()}")
+        print(f"✅ 24 Trônes Binah publiés sur Nostr ! Event ID: {output.id().to_hex()}")
     except Exception as e:
         print(f"❌ ERREUR d'envoi Nostr : {e}")
         sys.exit(1)
 
 if __name__ == "__main__":
     asyncio.run(main())
+    

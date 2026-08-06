@@ -3,7 +3,7 @@ name: Routine 2 - Export OTS vers Nostr (Midi)
 on:
   schedule:
     # S'exécute chaque jour à 12:15 UTC
-    - cron: '15 12 * * *'
+    - cron: '15 9 * * *'
   workflow_dispatch:     # Permet le déclenchement manuel
 
 jobs:

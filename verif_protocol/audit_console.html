@@ -425,9 +425,9 @@
                 <p>4. Repérez et copiez-collez dans votre presse papier le <strong>nom du fichier OTS correspondant </strong> (Open Time Stamped) que vous désirez vérifier.</p>
                 
                 <div class="code-block">
-                    Format des fichiers : 1 fichier par heure basés sur le temps Unix<br>
-                    Exemple image  : xylem_1785196801399.jpg<br>
-                    Exemple preuve : xylem_1785196801399.jpg.ots
+                    Format des fichiers : 1 fichier par heure basés sur le temps Unix ex:<br>
+                    image : xylem_1785196801399.jpg<br>
+                    proof : xylem_1785196801399.jpg.ots
                 </div>
             </div>
         </div>
@@ -436,13 +436,13 @@
         <div class="step-block active">
             <div class="step-header">[ ÉTAPE 2 ] Téléchargement des Preuves Horodatées (.ots)</div>
             <div class="step-content">
-                <p>Allez sur la page github Action (J+1) et recuperez le numero de parution Nostr "Event ID" contenant les 24 fichiers OTS cryptés:</p>
-                <a href="https://github.com/BigtreeUniversal/Xylem_Protocol/actions/workflows/daily_nostr_ots.yml" target="_blank" class="link-btn">&gt; CHERCHER JOUR</a>
+                <p>Allez sur le reseau Nostr et recuperez le numero de parution "Event ID" du jour souhaité (J+1) contenant les 24 fichiers OTS cryptés (et les liens IPFS des images correspondantes): (astuce copiez directement l'Event_ID sur Coracle ou un autre relay Nostr ou copier l'ensemble JSON de la publication dans le decodeur)</p>
+                <a href="https://coracle.social/nprofile1qqswsm0qnydj4zmhae2zmuuxzym06adc3x8945y7y766v40uuguk0aspz3mhxue69uhhyetvv9ujuerpd46hxtnfduqs6amnwvaz7tmwdaejumr0dsasqpku" target="_blank" class="link-btn">&gt; CHERCHER JOUR +1</a>
 
                 <div class="img-container">
-    <img src="nostr.png" alt="Vue de la page du journal Xylem Log " class="terminal-img">
+    <img src="coracle1.png" alt="Vue de la page du journal Xylem Log " class="terminal-img">
     <span class="img-caption"
-    >&gt; CAPTURE 02: Routine Github Action "Execute Nostr Publish Script" Event ID</span>
+    >&gt; CAPTURE 02: parution du 11 aout pour auditer la journée du 10 aout 2026 sur Coracle et cliquez sur les 3 petits points 'details' puis pensez à décocher "raw version")'</span>
          </div>
 
 <!-- SEARCH ENGINE : NOSTR EVENT VIEWER -->
@@ -572,7 +572,7 @@ function autoFillPayload() {
     <textarea id="nostrPayload" style="width:100%; height:80px; background:#090d12; color:var(--accent-green); border:1px solid var(--panel-border); border-radius:4px; padding:10px; margin:10px 0; font-family:var(--font-mono); font-size:12px;" placeholder='Exemple: {"xylem_1785196801399.jpg": {"ots": "AE9wZW5UaW1lc3RhbXBz...", "cid": "..."}}'></textarea>
 
     <button onclick="extractOTS()" class="link-btn" style="cursor:pointer; background:var(--accent-green); color:#000;">
-        &gt; Extraire &amp; Télécharger le fichier .ots
+        &gt; Extraire &amp; Télécharger les fichiers .ots
     </button>
 
     <div id="extractionResult" style="margin-top:15px;"></div>
@@ -623,8 +623,8 @@ function extractOTS() {
 }
 </script>
 
-<p>Consulter directement l'événement source sur un explorateur de relais Nostr (https://nostr.at/+Event_ID):</p>
-<a href="https://nostr.at/22ca793886c668e4214606414f291f1eea186fd16d36a95afd7a39aea6df029d" target="_blank" class="link-btn">
+<p>Consulter directement l'événement source sur un explorateur de relais Nostr (Jumble, Coracle, Fevela, YakiHonne) tout en VERIFIANT BIEN LA DATE J+1 :</p>
+<a href="https://njump.me/npub1apk7pxgm929h0mj59hecvyfkl46m3zvwttgfufa45e2lec3evlmqs85zmx" target="_blank" class="link-btn">
     &gt; Inspecter la note Nostr (Nostr.band)
 </a>
 
@@ -649,41 +649,63 @@ function extractOTS() {
 
 
         <!-- PARTIE B : SMART CONTRACT BASE L2 -->
+        <!-- PARTIE B : SMART CONTRACT BASE L2 -->
         <div class="section-divider">
             <span class="prompt-symbol">#</span> MODULE 2: ANCRAGE SMART CONTRACT QUOTIDIEN (BASE L2 ETHEREUM)
         </div>
 
         <!-- Étape 4 -->
         <div class="step-block active">
-            <div class="step-header">[ ÉTAPE 4 ] Contrôle du Smart Contract sur Base L2</div>
+            <div class="step-header">[ ÉTAPE 4 ] Localiser la transaction du jour sur Basescan</div>
             <div class="step-content">
+                <p>
+                    Le smart contract enregistre un ancrage automatique par jour. En raison du volume quotidien de transactions sur la blockchain, les transactions datant de plus d'un mois ne sont plus directement visibles sur la première page de Basescan.
+                </p>
+                <p><strong>Pour retrouver la transaction d'une date précise :</strong></p>
+                <p>1. Accédez à l'outil de conversion de date en bloc de Basescan :</p>
+                <a href="https://basescan.org/blockdateconverter" target="_blank" class="link-btn">&gt; Ouvrir le Block &amp; Date Converter sur Basescan</a>
 
+                <p style="margin-top: 10px;">
+                    2. Entrez la date et l'heure approximatives de l'ancrage quotidien (ancrage J+1 generalement entre 5:00 et 7:00 UTC) pour obtenir le <strong>numéro de bloc</strong> correspondant.
+                </p>
+                <p>
+                    3. Ouvrez ensuite la page officielle du Smart Contract Xylem Log :
+                </p>
+                <a href="https://basescan.org/address/0xc88160cc2f3f8171c7782d220bc92ba8f6e426a3" target="_blank" class="link-btn">&gt; Consulter le Smart Contract sur Basescan</a>
 
+                <p style="margin-top: 10px;">
+                    4. Repérez la transaction émise autour du numéro de bloc identifié et cliquez sur son <strong>Transaction Hash (TxHash)</strong>.
+                </p>
 
-                <p><strong>Comment vérifier ?</strong></p>
-                <p>1. Repérez le jour souhaité (J+1) sur le <strong>Sync Daily Log and Update Xylem Oracle</strong> :</p>
-                <a href="https://github.com/BigtreeUniversal/Xylem_Protocol/actions/workflows/sync-and-oracle.yml" target="_blank" class="link-btn">&gt; Consulter le Daily Log and Update Xylem Oracle</a>
-
-                <p style="margin-top: 10px;">2. Accédez à la section <strong>Action / Workflow</strong> du registre pour auditer l'exécution de l'ancrage quotidien (du jour precedent) :</p>
-
-                <!-- Emplacement pour illustration 4 -->
-               <div class="img-container">
-    <img src="smart.png" alt="Vue de la page" class="terminal-img">
-    <span class="img-caption">&gt; CAPTURE 04: Vue de la page GitHub qui execute le smart contrat sur Base L2 Ethereum quotidiennement </span>
-</div>
-
-                <p style="margin-top: 10px;">3. Vérifiez directement la transaction ainsi que le contrat intelligent sur l'explorateur de blocs de la blockchain Base (Ethereum L2) :</p>
-                <a href="https://basescan.org/address/0xc88160cc2f3f8171c7782d220bc92ba8f6e426a3" target="_blank" class="link-btn">&gt; Explorer sur le réseau Base (Basescan)</a>
-                
+                <div class="img-container">
+                    <img src="detail1.png" alt="Vue de la page Basescan du Smart Contract" class="terminal-img">
+                    <span class="img-caption">&gt; CAPTURE 04: Consultation des transactions du Smart Contract sur Basescan L2</span>
+                </div>
             </div>
         </div>
 
-    </div>
+        <!-- Étape 5 -->
+        <div class="step-block active">
+            <div class="step-header">[ ÉTAPE 5 ] Extraction des données (Input Data) &amp; Comparaison Audit</div>
+            <div class="step-content">
+                <p>Une fois sur la page de détails de la transaction :</p>
 
-    <!-- Pied de page -->
-    <div class="terminal-footer">
-        BUHS XYLEM LOG AUDIT ENGINE &bull; PROOF OF TIME &amp; DECENTRALIZED INTEGRITY &bull; BASE L2 / BITCOIN OTS
-    </div>
+                <p>1. Descendez en bas de la page et cliquez sur le lien/bouton : <code>Click to show more</code>.</p>
+
+                <p>2. Localisez la section <strong>Input Data</strong>.</p>
+
+                <p>3. Dans le sélecteur d'affichage de l'Input Data (par défaut souvent positionné sur <i>Hex</i>), sélectionnez : <strong>View Input As UTF-8</strong>.</p>
+
+                <div class="code-block">
+                    Format décodé (UTF-8) :<br>
+                    Ex: "Xylem Log 2026-08-10 Root Hash: 0x... IPFS CID: Qm..."
+                </div>
+
+                <p>
+                    4. **Audit final :** Comparez l'empreinte (Root Hash / CID) affichée dans cet Input Data UTF-8 avec celle publiée sur le journal <strong>Xylem Log [ETAPE1]</strong> du jour correspondant. L'exactitude stricte entre les deux valeurs confirme la validité et l'intégrité de l'ancrage blockchain.
+                </p>
+            </div>
+        </div>
 
 </body>
 </html>

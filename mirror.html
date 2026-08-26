@@ -12,13 +12,21 @@
             border: 1px solid #00cc55; 
             color: #00ff66; 
             background: rgba(0,30,10,0.6); 
-            padding: 6px 12px; 
+            padding: 6px 10px; 
             font-weight: bold; 
             font-size: 11px; 
             display: inline-block;
             text-align: center;
         }
         .brand-btn:active, .brand-btn:hover { background: #00ff66; color: #010402; }
+        
+        /* Style distinctif pour le bouton Miroir (Accès Rapide) */
+        .brand-btn-mirror {
+            border-color: #38bdf8;
+            color: #38bdf8;
+            background: rgba(14, 116, 144, 0.3);
+        }
+        .brand-btn-mirror:active, .brand-btn-mirror:hover { background: #38bdf8; color: #010402; }
     </style>
 </head>
 <body class="p-3 sm:p-6">
@@ -47,8 +55,11 @@
 
 <script>
     // --- CONFIGURATION ---
-    const GITHUB_USER = "TON_PSEUDO"; // <-- Modifie avec ton pseudo GitHub
-    const GITHUB_REPO = "TON_REPO";   // <-- Modifie avec ton dépôt GitHub
+    const GITHUB_USER = "TON_PSEUDO"; // Ton pseudo GitHub (si besoin de fallback API)
+    const GITHUB_REPO = "xylem.bigtreeconnection.com";
+
+    // URL du domaine R2 contenant le dossier d'archivage des images
+    const WORKER_MIRROR_URL = "https://database.bigtreeconnection.com/xylem-protocol-mirror/Archive_data/";
 
     // 1. Détection du fichier dans l'URL (?log=page-2026-07-25.html)
     const urlParams = new URLSearchParams(window.location.search);
@@ -63,7 +74,7 @@
             try {
                 const res = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/`);
                 const files = await res.json();
-                
+
                 const logFiles = files
                     .filter(f => f.name.startsWith('page-') && f.name.endsWith('.html'))
                     .sort((a, b) => b.name.localeCompare(a.name));
@@ -88,16 +99,16 @@
         badge.innerText = "LOADING...";
 
         try {
+            // Télécharge le fichier HTML du jour situé sur xylem.bigtreeconnection.com
             const response = await fetch(fileName);
             if (!response.ok) throw new Error("Fichier introuvable");
 
             const rawHtml = await response.text();
-            
-            // On transforme le HTML brut en DOM virtuel
+
             const parser = new DOMParser();
             const doc = parser.parseFromString(rawHtml, "text/html");
 
-            // A. Extraction des Métadonnées (Day, Root, Parent)
+            // Extraction des Métadonnées (Day, Root, Parent)
             const boxElements = doc.querySelectorAll(".box p");
             boxElements.forEach(p => {
                 const text = p.textContent;
@@ -113,37 +124,41 @@
             });
             document.getElementById("meta-box").classList.remove("hidden");
 
-            // B. Extraction des 24 entrées du tableau
+            // Extraction des 24 entrées du tableau
             const rows = doc.querySelectorAll("tbody tr");
             const container = document.getElementById("cards-container");
-            container.innerHTML = ""; // Vider le conteneur
+            container.innerHTML = "";
 
             rows.forEach(row => {
                 const cols = row.querySelectorAll("td");
                 if (cols.length >= 5) {
-                    const fileName = cols[0].textContent.trim();
+                    const imageName = cols[0].textContent.trim(); // Ex: image_14h.jpg
                     const cid = cols[1].textContent.trim();
                     const time = cols[2].textContent.trim();
                     const status = cols[3].textContent.trim();
                     const ipfsUrl = cols[4].querySelector("a")?.getAttribute("href") || `#`;
 
-                    // Raccourcissement du CID pour le mobile (Ex: QmauEx...TcezX)
+                    // Génération du lien direct vers Cloudflare R2 sur database.bigtreeconnection.com
+                    const mirrorUrl = WORKER_MIRROR_URL + imageName;
+
                     const shortCid = cid.length > 16 ? cid.substring(0, 8) + "..." + cid.substring(cid.length - 8) : cid;
 
-                    // Création de la Carte Mobile
                     const card = document.createElement("div");
                     card.className = "box p-3 space-y-2 text-xs";
                     card.innerHTML = `
                         <div class="flex justify-between items-start border-b border-emerald-900/60 pb-2">
-                            <span class="font-bold text-emerald-400 break-all">${fileName}</span>
+                            <span class="font-bold text-emerald-400 break-all">${imageName}</span>
                             <span class="text-[10px] text-emerald-600 shrink-0 ml-2">${time}</span>
                         </div>
                         <div class="text-emerald-300 font-mono text-[11px] break-all">
                             <span class="text-emerald-700">CID:</span> ${shortCid}
                         </div>
-                        <div class="flex justify-between items-center pt-1">
+                        <div class="flex justify-between items-center pt-1 gap-2">
                             <span class="text-[10px] text-emerald-500 font-bold">${status}</span>
-                            <a href="${ipfsUrl}" target="_blank" class="brand-btn">OPEN IPFS</a>
+                            <div class="flex gap-1.5">
+                                <a href="${mirrorUrl}" target="_blank" class="brand-btn brand-btn-mirror">🚀 MIRROR</a>
+                                <a href="${ipfsUrl}" target="_blank" class="brand-btn">OPEN IPFS</a>
+                            </div>
                         </div>
                     `;
                     container.appendChild(card);

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BUHS L1 Cryptographic Verification Engine</title>
+    
+    <!-- Google Font Monospace -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Core Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-pure: #0a0a0a;
+            --surface: #121212;
+            --surface-accent: #1a1a1a;
+            --border-color: #003322;
+            --accent: #00ff88;
+            --accent-glow: rgba(0, 255, 136, 0.25);
+            --accent-purple: #bc8cff;
+            --accent-amber: #ffbd2e;
+            --accent-blue: #58a6ff;
+            --text-main: #d1d5db;
+            --text-muted: #6b7280;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-pure);
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            font-size: 13.5px;
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
+
+        .doc-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        }
+
+        .header-box {
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        h1 { color: #fff; font-size: 1.35rem; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .subtitle { color: var(--accent); font-weight: 600; font-size: 0.85rem; }
+        .badge { background: rgba(0,255,136,0.1); color: var(--accent); border: 1px solid var(--accent); padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; }
+
+        h2 {
+            color: var(--accent);
+            font-size: 1.05rem;
+            margin-top: 35px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        p { margin-bottom: 14px; text-align: justify; }
+
+        /* Conteneur Image Schéma */
+        .diagram-container {
+            width: 100%;
+            max-width: 500px;
+            margin: 25px auto;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+            background: var(--bg-pure);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .diagram-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Encadrés des Piliers */
+        .pillar-card {
+            background: var(--surface-accent);
+            border: 1px solid var(--border-color);
+            border-left: 3px solid var(--accent-amber);
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+
+        .pillar-card.blue { border-left-color: var(--accent-blue); }
+        .pillar-card.purple { border-left-color: var(--accent-purple); }
+
+        .pillar-title {
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        /* Affichage des Formules Cryptographiques */
+        .formula-box {
+            background: #050505;
+            border: 1px solid var(--border-color);
+            color: var(--accent);
+            padding: 14px;
+            text-align: center;
+            font-weight: 600;
+            border-radius: 4px;
+            margin: 14px 0;
+            font-size: 0.85rem;
+        }
+
+        .proof-note {
+            background: rgba(0,0,0,0.3);
+            border-left: 2px solid var(--text-muted);
+            padding: 10px 14px;
+            font-size: 0.8rem;
+            margin-top: 10px;
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* Blocs Code */
+        .code-title {
+            background: var(--surface-accent);
+            color: var(--text-muted);
+            padding: 8px 14px;
+            font-size: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            border-radius: 4px 4px 0 0;
+            margin-top: 25px;
+        }
+
+        pre {
+            background: #050505;
+            border: 1px solid var(--border-color);
+            color: #d1d5db;
+            padding: 16px;
+            overflow-x: auto;
+            border-radius: 0 0 4px 4px;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        code {
+            color: var(--accent-purple);
+            background: rgba(188, 140, 255, 0.1);
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+        }
+
+        .keyword { color: #ff7b72; }
+        .function { color: #d2a8ff; }
+        .string { color: #a5d6ff; }
+        .comment { color: #6e7681; font-style: italic; }
+    </style>
+</head>
+<body>
+
+<div class="doc-container">
+
+    <!-- En-tête -->
+    <div class="header-box">
+        <div>
+            <h1>BUHS L1 Verification Engine</h1>
+            <div class="subtitle">// Decentralized Data Servers &amp; Sovereign Protocols</div>
+        </div>
+        <span class="badge"><i class="fa-solid fa-shield-halved"></i> AUDIT SPECIFICATION</span>
+    </div>
+
+    <!-- Schéma Central -->
+    <div class="diagram-container">
+        <!-- Remplace par le lien ou chemin de l'image de l'Arbre 3D -->
+        <img src="doc4.png" alt="BUHS L1 Cryptographic Engine Tree Schema">
+    </div>
+
+    <!-- Introduction -->
+    <h2>Understanding the BUHS L1 Cryptographic Verification Engine</h2>
+    <p>
+        The BUHS L1 protocol relies on a <strong>zero-trust, zero-knowledge, client-side audit model</strong>. Rather than asking you to blindly trust our servers, the application exports raw cryptographic proofs directly into your browser. Your local machine independently recalculates the mathematics to verify data integrity, chronological continuity, and absolute timestamping[cite: 8].
+    </p>
+    <p>This verification rests on three foundational cryptographic pillars[cite: 8]:</p>
+
+    <!-- Pillar 1 -->
+    <div class="pillar-card">
+        <div class="pillar-title">1. Deterministic Leaf Integrity (SHA-256 Single-Transaction Proof)</div>
+        <p>At the granular level, every transaction or file registered in the protocol is compressed into a unique, immutable cryptographic footprint called a <code>Leaf Hash</code>[cite: 8].</p>
+        <p>To verify a transaction, your browser takes the original raw inputs—the precise nanosecond timestamp (<code>nano_time</code>), the transaction identifier (<code>uuid</code>), the execution context (<code>pipeline_id</code>), and the local SHA-256 fingerprint of your file (<code>file_sha256</code>)—and concatenates them into a single byte stream[cite: 8]:</p>
+        
+        <div class="formula-box">
+            Leaf_Hash = SHA256( nano_time ║ uuid ║ pipeline_id ║ file_sha256 )
+        </div>
+
+        <div class="proof-note">
+            <strong style="color:var(--accent-amber);">The Proof:</strong> Your client side recalculates this formula locally[cite: 8]. If <code>recomputedLeaf</code> matches <code>proofData.transaction.leaf_hash</code> down to the exact bit, it provides absolute mathematical certainty that neither the file content nor its metadata has been modified since creation[cite: 8]. Given SHA-256’s collision resistance (2<sup>-256</sup> probability of a random match), forging this proof is computationally impossible[cite: 8].
+        </div>
+    </div>
+
+    <!-- Pillar 2 -->
+    <div class="pillar-card blue">
+        <div class="pillar-title">2. Ledger Chronological Continuity (Merkle Sealing)</div>
+        <p>Individual transactions are aggregated into a daily Merkle Tree (<code>Day_Merkle</code>)[cite: 8]. To prevent any historical tampering, rewriting, or deletion of past events, the daily ledger is chained to the previous day's state via a deterministic cryptographic seal[cite: 8]:</p>
+        
+        <div class="formula-box" style="color:var(--accent-blue);">
+            Sealed_Root = SHA256( Parent_Root ║ Day_Merkle )
+        </div>
+
+        <div class="proof-note">
+            <strong style="color:var(--accent-blue);">The Proof:</strong> During the local audit sequence, your browser fetches the public registry's <code>Parent_Root</code> and <code>Day_Merkle</code>, then computes their combined hash[cite: 8]. If <code>SHA256(Parent + Day) == Sealed_Root</code>, it proves unbroken historical continuity[cite: 8]. Modifying a single past transaction would invalidate the entire downstream chain of seals, making secret ledger alteration mathematically detectable[cite: 8].
+        </div>
+    </div>
+
+    <!-- Pillar 3 -->
+    <div class="pillar-card purple">
+        <div class="pillar-title">3. Absolute Temporal Anchoring (OpenTimestamps &amp; Bitcoin L1)</div>
+        <p>To guarantee that a transaction existed at a specific point in real-world time, the protocol extracts timestamp proofs (<code>.ots</code> files) broadcasted over the decentralized Nostr network[cite: 8].</p>
+
+        <div class="proof-note">
+            <strong style="color:var(--accent-purple);">The Proof:</strong> An <code>.ots</code> file contains a cryptographic path of sequential hashes culminating in a hash commitment embedded directly inside a physical Bitcoin block[cite: 8]. Because altering a confirmed Bitcoin block requires overcoming the aggregate proof-of-work of the entire Bitcoin mining network, this offers an indisputable Proof of Existence: it mathematically demonstrates that your file existed prior to the mining of that specific Bitcoin block height[cite: 8].
+        </div>
+    </div>
+
+    <!-- Module 1 JS -->
+    <h2>Client-Side Verification Logic</h2>
+    
+    <div class="code-title">// MODULE MERKLE BUILDER (RECONSTRUCTION LOCALE CLIENT-SIDE)[cite: 8]</div>
+<pre><span class="keyword">async function</span> <span class="function">buildMerkleRootLocally</span>(leaves) {
+    <span class="keyword">if</span> (!leaves || leaves.length === 0) <span class="keyword">return null</span>;
+    <span class="keyword">if</span> (leaves.length === 1) <span class="keyword">return</span> leaves[0];
+    
+    <span class="keyword">let</span> currentLevel = [...leaves];
+    <span class="keyword">while</span> (currentLevel.length &gt; 1) {
+        <span class="keyword">const</span> nextLevel = [];
+        <span class="keyword">for</span> (<span class="keyword">let</span> i = 0; i &lt; currentLevel.length; i += 2) {
+            <span class="keyword">if</span> (i + 1 &lt; currentLevel.length) {
+                <span class="comment">// Concaténation et hachage des paires : SHA256(Node_A + Node_B)[cite: 8]</span>
+                <span class="keyword">const</span> combinedHash = <span class="keyword">await</span> <span class="function">sha256Hex</span>(currentLevel[i] + currentLevel[i + 1]);
+                nextLevel.push(combinedHash);
+            } <span class="keyword">else</span> {
+                <span class="comment">// Gestion du nombre impair de feuilles (duplication de la dernière feuille)[cite: 8]</span>
+                <span class="keyword">const</span> combinedHash = <span class="keyword">await</span> <span class="function">sha256Hex</span>(currentLevel[i] + currentLevel[i]);
+                nextLevel.push(combinedHash);
+            }
+        }
+        currentLevel = nextLevel;
+    }
+    <span class="keyword">return</span> currentLevel[0]; <span class="comment">// Renvoie le Day Merkle recalculé[cite: 8]</span>
+}</pre>
+
+    <!-- Module 2 JS -->
+    <div class="code-title">// AUDIT SEQUENCE (EXTRACTION ET VALIDATION DU SCELLÉ)[cite: 8]</div>
+<pre><span class="comment">// 4. RÉCUPÉRATION DU JOURNAL DU JOUR ET DES FEUILLES[cite: 8]</span>
+<span class="keyword">const</span> isoDateStr = proofData.transaction.nano_time.split(<span class="string">'T'</span>)[0];
+<span class="keyword">const</span> journalUrl = <span class="string">`https://xylem.bigtreeconnection.com/page-${isoDateStr}.html`</span>;
+<span class="function">addLogLine</span>(<span class="string">`Appel du registre public pour la date : ${isoDateStr}...`</span>, <span class="string">'console-warning'</span>);
+
+<span class="keyword">const</span> response = <span class="keyword">await</span> fetch(journalUrl);
+<span class="keyword">if</span> (!response.ok) <span class="keyword">throw new</span> Error(<span class="string">`Registre public introuvable (${journalUrl})`</span>);
+
+<span class="keyword">const</span> htmlText = <span class="keyword">await</span> response.text();
+<span class="keyword">const</span> parser = <span class="keyword">new</span> DOMParser();
+<span class="keyword">const</span> doc = parser.parseFromString(htmlText, <span class="string">"text/html"</span>);
+
+<span class="comment">// Extraction de la racine inscrite sur la page[cite: 8]</span>
+<span class="keyword">const</span> dayMerkleFromRegistry = doc.querySelectorAll(<span class="string">'.box p'</span>)[1].querySelector(<span class="string">'span.select-all'</span>).innerText.trim();
+<span class="keyword">const</span> parentRoot = doc.querySelectorAll(<span class="string">'.box p'</span>)[2].querySelector(<span class="string">'span.select-all'</span>).innerText.trim();
+<span class="keyword">const</span> sealedRoot = doc.querySelectorAll(<span class="string">'.box p'</span>)[3].querySelector(<span class="string">'span.select-all'</span>).innerText.trim();
+
+<span class="comment">// Extraction de la liste complète des leaf_hash du jour[cite: 8]</span>
+<span class="keyword">const</span> rawLeavesElements = doc.querySelectorAll(<span class="string">'.leaf-item'</span>);
+<span class="keyword">const</span> allLeavesOfDay = Array.from(rawLeavesElements).map(el =&gt; el.innerText.trim());
+
+<span class="comment">// A. Vérification de présence de la feuille[cite: 8]</span>
+<span class="keyword">if</span> (allLeavesOfDay.length &gt; 0 &amp;&amp; !allLeavesOfDay.includes(proofData.transaction.leaf_hash)) {
+    <span class="function">addLogLine</span>(<span class="string">"🚨 ÉCHEC : La feuille de la transaction n'existe pas dans le registre du jour !"</span>, <span class="string">"console-error"</span>);
+    <span class="keyword">return</span>;
+}
+
+<span class="comment">// B. APPEL DU MERKLE BUILDER LOCAL[cite: 8]</span>
+<span class="function">addLogLine</span>(<span class="string">"Reconstruction locale de l'Arbre de Merkle via le client..."</span>, <span class="string">"console-warning"</span>);
+<span class="keyword">const</span> recomputedDayMerkle = <span class="keyword">await</span> <span class="function">buildMerkleRootLocally</span>(allLeavesOfDay);
+
+<span class="keyword">if</span> (recomputedDayMerkle &amp;&amp; recomputedDayMerkle !== dayMerkleFromRegistry) {
+    <span class="function">addLogLine</span>(<span class="string">"🚨 ÉCHEC : Le Day Merkle calculé localement ne correspond pas au registre !"</span>, <span class="string">"console-error"</span>);
+    <span class="keyword">return</span>;
+}
+<span class="function">addLogLine</span>(<span class="string">"✔ Reconstruction de l'arbre de Merkle réussie en local."</span>, <span class="string">"console-success"</span>);
+
+<span class="comment">// 5. VÉRIFICATION DU SCELLÉ : SEALED = SHA256(PARENT + DAY)[cite: 8]</span>
+<span class="keyword">const</span> computedSealed = <span class="keyword">await</span> <span class="function">sha256Hex</span>(parentRoot + dayMerkleFromRegistry);</pre>
+
+</div>
+
+</body>
+</html>

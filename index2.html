@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[ XYLEM HUB // CENTRAL LOG ]</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body {
+            background: black;
+            color: #00ff00;
+            font-family: monospace;
+            animation: flicker 0.15s infinite;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.96; }
+            50% { opacity: 1; }
+            100% { opacity: 0.98; }
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            background: repeating-linear-gradient(
+                to bottom,
+                rgba(0, 255, 0, 0.07),
+                rgba(0, 255, 0, 0.07) 1px,
+                transparent 1px,
+                transparent 3px
+            );
+        }
+
+        .box {
+            border: 1px solid #00ff00;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+            background: #030303;
+        }
+
+        h1, h2 {
+            text-shadow: 0 0 10px #00ff00;
+        }
+
+        /* Style de base d'un nœud (bouton) */
+        .day-node {
+            display: block;
+            text-align: center;
+            padding: 12px 0;
+            font-weight: bold;
+            background: #020202;
+            transition: all 0.15s ease-in-out;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            box-shadow: 0 0 4px rgba(0, 255, 0, 0.2);
+        }
+
+        /* Effet de survol sur un bouton illuminé */
+        .day-node:hover {
+            background: #00ff00;
+            color: black;
+            box-shadow: 0 0 12px #00ff00;
+            text-shadow: none;
+        }
+
+        /* État ÉTEINT (si le fichier n'existe pas encore sur GitHub) */
+        .day-node.empty {
+            color: #002200 !important;
+            border: 1px dashed #001100 !important;
+            background: transparent !important;
+            pointer-events: none !important;
+            box-shadow: none !important;
+            text-shadow: none !important;
+        }
+
+        .blink {
+            animation: blinker 1s linear infinite;
+        }
+        @keyframes blinker { 50% { opacity: 0; } }
+    </style>
+</head>
+
+<body class="p-6">
+
+<div class="max-w-4xl mx-auto">
+
+    <!-- BOUTONS DE NAVIGATION DU HUB (ORIGINAL) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+        <a href="https://xylem.bigtreeconnection.com/index_xylem.html" class="day-node text-xs sm:text-sm py-2">
+            [ ⇄ ACCÉDER À LA PAGE MIROIR ]
+        </a>
+        <a href="https://xylem.bigtreeconnection.com/BUHS%20(Big%20Tree%20Universal%20Harmonic%20System)%20%E2%80%94%20Daily%20Log%20&%20Cryptographic%20Audit%20User%20Guide/BUHS_BigTreeUniversalHarmonicSystem_DailyLogC.html" class="day-node text-xs sm:text-sm py-2">
+            [ 📄 DOCUMENTATION DU SYSTÈME ]
+        </a>
+    </div>
+
+    <h1 class="text-xl mb-6">[ XYLEM CORE REGISTRY // TIME-CHAIN INDEX ] <span class="blink">_</span></h1>
+
+    <div class="box text-sm mb-6">
+        <p>> STATUS : LOGGING_ACTIVE</p>
+        <p>> SECURITY : MERKLE_TREE_VALIDATED</p>
+        <p>> SELECT A GREEN NODE TO AUDIT INDIVIDUAL INTERPLANETARY CIDs (IPFS)</p>
+    </div>
+
+    <div class="box text-sm mb-6">
+        <p class="mb-2">> MOUNT_POINT : SELECT_SYSTEM_LOG_EPOCH</p>
+
+        <div class="flex gap-4 mb-3 border-b border-green-900 pb-2">
+            <span class="text-green-600">YEAR:</span>
+            <button class="text-green-400 font-bold underline">[ 2026 ]</button>
+            <button class="text-green-800 cursor-not-allowed" disabled>[ 2027 (LOCKED) ]</button>
+        </div>
+
+        <div class="flex flex-wrap gap-2 text-xs">
+            <span class="text-green-600 self-center mr-2">MONTH:</span>
+            
+            <button id="btn-juin2026" onclick="switchEpoch('juin2026')" class="epoch-btn border border-green-700 px-2 py-1 text-green-400">06_JUIN</button>
+            <button id="btn-juillet2026" onclick="switchEpoch('juillet2026')" class="epoch-btn border border-green-700 px-2 py-1 text-green-400">07_JUILLET</button>
+            <button id="btn-aout2026" onclick="switchEpoch('aout2026')" class="epoch-btn border border-green-400 px-2 py-1 bg-green-500 text-black font-bold">08_AOUT</button>
+            
+            <button class="text-green-900 border border-dashed border-green-950 px-2 py-1 cursor-not-allowed" disabled>09_SEPT</button>
+            <button class="text-green-900 border border-dashed border-green-950 px-2 py-1 cursor-not-allowed" disabled>10_OCT</button>
+            <button class="text-green-900 border border-dashed border-green-950 px-2 py-1 cursor-not-allowed" disabled>11_NOV</button>
+            <button class="text-green-900 border border-dashed border-green-950 px-2 py-1 cursor-not-allowed" disabled>12_DEC</button>
+        </div>
+    </div>
+
+    <!-- JUIN 2026 -->
+    <div id="juin2026" class="epoch-calendar box hidden">
+        <h2 class="text-md mb-4 text-green-400">> EPOCH_LOG : JUIN_2026</h2>
+        
+        <div class="grid grid-cols-7 gap-2">
+            <div class="text-center text-xs font-bold text-green-700 pb-2">LUN</div>
+            <div class="text-center text-xs font-bold text-green-700 pb-2">MAR</div>
+            <div class="text-center text-xs font-bold text-green-700 pb-2">MER</div>
+            <div class="text-center text-xs font-bold text-green-700 pb-2">JEU</div>
+            <div class="text-center text-xs font-bold text-green-700 pb-2">VEN</div>
+            <div class="text-center text-xs font-bold text-green-700 pb-2">SAM</div>
+            <div class="text-center text-xs font-bold text-green-700 pb-2">DIM</div>
+
+            <div class="day-node empty">01</div><div class="day-node empty">02</div><div class="day-node empty">03</div>
+            <div class="day-node empty">04</div><div class="day-node empty">05</div><div class="day-node empty">06</div>
+            <div class="day-node empty">07</div><div class="day-node empty">08</div><div class="day-node empty">09</div>
+            <div class="day-node empty">10</div><div class="day-node empty">11</div><div class="day-node empty">12</div>
+            <div class="day-node empty">13</div><div class="day-node empty">14</div><div class="day-node empty">15</div>
+            <div class="day-node empty">16</div><div class="day-node empty">17</div><div class="day-node empty">18</div>
+            <div class="day-node empty">19</div><div class="day-node empty">20</div><div class="day-node empty">21</div>
+            <div class="day-node empty">22</div><div class="day-node empty">23</div><div class="day-node empty">24</div>
+            <div class="day-node empty">25</div><div class="day-node empty">26</div><div class="day-node empty">27</div>
+
+            <a href="page-2026-06-28.html" class="day-node">28</a>
+
+            <div class="day-node empty">29</div><div class="day-node empty">30</div>
+        </div>
+    </div>
+
+    <!-- JUILLET 2026 -->
+    <div id="juillet2026" class="epoch-calendar box hidden">
+        <h2 class="text-md mb-4 text-green-400">> EPOCH_LOG : JUILLET_2026</h2>
+        
+        <div class="grid grid-cols-7 gap-2">
+            <div class="text-center text-xs font-bold text-green-700 pb-2">LUN</div>
+            <div class="text-center text-xs font-bold text-green-700 pb-2">MAR</div>
+            <div class="text-center text-xs font-bold text-green-700 pb-2">MER</div>
+            <div class="text-center text-xs font-bold text-green-700 pb-2">JEU</div>
+            <div class="text-center text-xs font-bold text-green-700 pb-2">VEN</div>
+            <div class="text-center text-xs font-bold text-green-700 pb-2">SAM</div>
+            <div class="text-center text-xs font-bold text-green-700 pb-2">DIM</div>
+
+            <div class="day-node empty"></div>
+            <div class="day-node empty"></div>
+
+            <a href="page-2026-07-01.html" class="day-node">01</a>
+            <a href="page-2026-07-02.html" class="day-node">02</a>
+            <a href="page-2026-07-03.html" class="day-node">03</a>
+            <a href="page-2026-07-04.html" class="day-node">04</a>
+            <a href="page-2026-07-05.html" class="day-node">05</a>
+            <a href="page-2026-07-06.html" class="day-node">06</a>
+            <a href="page-2026-07-07.html" class="day-node">07</a>
+            <a href="page-2026-07-08.html" class="day-node">08</a>
+            <a href="page-2026-07-09.html" class="day-node">09</a>
+            <a href="page-2026-07-10.html" class="day-node">10</a>
+            <a href="page-2026-07-11.html" class="day-node">11</a>
+            <a href="page-2026-07-12.html" class="day-node">12</a>
+            <a href="page-2026-07-13.html" class="day-node">13</a>
+            <a href="page-2026-07-14.html" class="day-node">14</a>
+            <a href="page-2026-07-15.html" class="day-node">15</a>
+            <a href="page-2026-07-16.html" class="day-node">16</a>
+            <a href="page-2026-07-17.html" class="day-node">17</a>
+            <a href="page-2026-07-18.html" class="day-node">18</a>
+            <a href="page-2026-07-19.html" class="day-node">19</a>
+            <a href="page-2026-07-20.html" class="day-node">20</a>
+            <a href="page-2026-07-21.html" class="day-node">21</a>
+            <a href="page-2026-07-22.html" class="day-node">22</a>
+            <a href="page-2026-07-23.html" class="day-node">23</a>
+            <a href="page-2026-07-24.html" class="day-node">24</a>
+            <a href="page-2026-07-25.html" class="day-node">25</a>
+            <a href="page-2026-07-26.html" class="day-node">26</a>
+            <a href="page-2026-07-27.html" class="day-node">27</a>
+            <a href="page-2026-07-28.html" class="day-node">28</a>
+            <a href="page-2026-07-29.html" class="day-node">29</a>
+            <a href="page-2026-07-30.html" class="day-node">30</a>
+            <a href="page-2026-07-31.html" class="day-node">31</a>
+        </div>
+    </div>
+
+    <!-- AOÛT 2026 -->
+    <div id="aout2026" class="epoch-calendar box">
+        <h2 class="text-md mb-4 text-green-400">> EPOCH_LOG : AOUT_2026</h2>
+        
+        <div class="grid grid-cols-7 gap-2">
+            <div class="text-center text-xs font-bold text-green-700 pb-2">LUN</div>
+            <div class="text-center text-xs font-bold text-green-700 pb-2">MAR</div>
+            <div class="text-center text-xs font-bold text-green-700 pb-2">MER</div>
+            <div class="text-center text-xs font-bold text-green-700 pb-2">JEU</div>
+            <div class="text-center text-xs font-bold text-green-700 pb-2">VEN</div>
+            <div class="text-center text-xs font-bold text-green-700 pb-2">SAM</div>
+            <div class="text-center text-xs font-bold text-green-700 pb-2">DIM</div>
+
+            <!-- Décalage : Le 1er août 2026 tombe un Samedi -->
+            <div class="day-node empty"></div>
+            <div class="day-node empty"></div>
+            <div class="day-node empty"></div>
+            <div class="day-node empty"></div>
+            <div class="day-node empty"></div>
+
+            <a href="page-2026-08-01.html" class="day-node">01</a>
+            <a href="page-2026-08-02.html" class="day-node">02</a>
+            <a href="page-2026-08-03.html" class="day-node">03</a>
+            <a href="page-2026-08-04.html" class="day-node">04</a>
+            <a href="page-2026-08-05.html" class="day-node">05</a>
+            <a href="page-2026-08-06.html" class="day-node">06</a>
+            <a href="page-2026-08-07.html" class="day-node">07</a>
+            <a href="page-2026-08-08.html" class="day-node">08</a>
+            <a href="page-2026-08-09.html" class="day-node">09</a>
+            <a href="page-2026-08-10.html" class="day-node">10</a>
+            <a href="page-2026-08-11.html" class="day-node">11</a>
+            <a href="page-2026-08-12.html" class="day-node">12</a>
+            <a href="page-2026-08-13.html" class="day-node">13</a>
+            <a href="page-2026-08-14.html" class="day-node">14</a>
+            <a href="page-2026-08-15.html" class="day-node">15</a>
+            <a href="page-2026-08-16.html" class="day-node">16</a>
+            <a href="page-2026-08-17.html" class="day-node">17</a>
+            <a href="page-2026-08-18.html" class="day-node">18</a>
+            <a href="page-2026-08-19.html" class="day-node">19</a>
+            <a href="page-2026-08-20.html" class="day-node">20</a>
+            <a href="page-2026-08-21.html" class="day-node">21</a>
+            <a href="page-2026-08-22.html" class="day-node">22</a>
+            <a href="page-2026-08-23.html" class="day-node">23</a>
+            <a href="page-2026-08-24.html" class="day-node">24</a>
+            <a href="page-2026-08-25.html" class="day-node">25</a>
+            <a href="page-2026-08-26.html" class="day-node">26</a>
+            <a href="page-2026-08-27.html" class="day-node">27</a>
+            <a href="page-2026-08-28.html" class="day-node">28</a>
+            <a href="page-2026-08-29.html" class="day-node">29</a>
+            <a href="page-2026-08-30.html" class="day-node">30</a>
+            <a href="page-2026-08-31.html" class="day-node">31</a>
+        </div>
+    </div>
+
+</div>
+
+<script>
+function switchEpoch(epochId) {
+    // 1. Masque tous les calendriers
+    document.querySelectorAll('.epoch-calendar').forEach(el => el.classList.add('hidden'));
+    
+    // 2. Affiche le calendrier sélectionné
+    document.getElementById(epochId).classList.remove('hidden');
+
+    // 3. Réinitialise le style visuel de tous les boutons de mois
+    document.querySelectorAll('.epoch-btn').forEach(btn => {
+        btn.classList.remove('bg-green-500', 'text-black', 'font-bold');
+        btn.classList.add('text-green-400');
+    });
+
+    // 4. Allume le bouton actif
+    const activeBtn = document.getElementById('btn-' + epochId);
+    if(activeBtn) {
+        activeBtn.classList.remove('text-green-400');
+        activeBtn.classList.add('bg-green-500', 'text-black', 'font-bold');
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    const links = document.querySelectorAll(".day-node[href]");
+    
+    links.forEach(link => {
+        const url = link.getAttribute("href");
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    link.classList.add("empty");
+                }
+            })
+            .catch(() => {
+                link.classList.add("empty");
+            });
+    });
+});
+</script>
+
+</body>
+</html>

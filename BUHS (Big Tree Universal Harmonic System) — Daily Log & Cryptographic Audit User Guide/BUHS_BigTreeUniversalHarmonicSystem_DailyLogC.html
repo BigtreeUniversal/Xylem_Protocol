@@ -232,7 +232,7 @@
 
     <!-- Image Principale / Architecture -->
     <div class="diagram-container">
-        <img src="images/image2.png" alt="BUHS Architecture Schema">
+        <img src="doc4.png" alt="BUHS Architecture Schema">
     </div>
 
     <!-- 1. Executive Summary -->
@@ -249,27 +249,27 @@
     <h3>2.1. Oracle &amp; Timestamping Ingestion</h3>
     <ul>
         <li><strong>Temporal Frequency:</strong> Exactly twenty-four astronomical images are ingested per chronological day (one per hour).</li>
-        <li><strong>Decentralized Storage:</strong> Assets are pinned to <strong>IPFS (InterPlanetary File System)</strong>[cite: 9].</li>
-        <li><strong>Cryptographic Proofs:</strong> Each ingestion triggers a <strong>Proof-of-Timestamp (OTS)</strong> anchored to the Bitcoin network[cite: 9].</li>
+        <li><strong>Decentralized Storage:</strong> Assets are pinned to <strong>IPFS (InterPlanetary File System)</strong>].</li>
+        <li><strong>Cryptographic Proofs:</strong> Each ingestion triggers a <strong>Proof-of-Timestamp (OTS)</strong> anchored to the Bitcoin network.</li>
     </ul>
 
     <h3>2.2. Ledger Sealing &amp; Merkle Tree Compilation</h3>
     <ul>
-        <li><strong>Daily Closure:</strong> Post-00:00 UTC, the daily transaction journal is sealed[cite: 9].</li>
-        <li><strong>Merkle Root Generation:</strong> A dedicated Python script (<strong>Merkle Builder</strong>) aggregates and concatenates the day's state data into a cryptographic Merkle tree structure[cite: 9].</li>
-        <li><strong>Deployment Automation:</strong> A GitHub Actions CI/CD routine compiles this data into a standardized HTML ledger page and publishes it to the public repository[cite: 9].</li>
+        <li><strong>Daily Closure:</strong> Post-00:00 UTC, the daily transaction journal is sealed.</li>
+        <li><strong>Merkle Root Generation:</strong> A dedicated Python script (<strong>Merkle Builder</strong>) aggregates and concatenates the day's state data into a cryptographic Merkle tree structure.</li>
+        <li><strong>Deployment Automation:</strong> A GitHub Actions CI/CD routine compiles this data into a standardized HTML ledger page and publishes it to the public repository.</li>
     </ul>
 
     <h3>2.3. Settlement &amp; Cryptographic Anchoring</h3>
     <p>Following the compilation phase, two parallel synchronization routines finalize the daily cycle[cite: 9]:</p>
     <ol>
-        <li><strong>Layer-2 Settlement:</strong> Extracts the twenty-four Oracle IPFS Content Identifiers (CIDs) alongside the current day's root hash (H), parent hash, and arboreal branch identifier, anchoring them immutably onto an Ethereum Layer-2 base layer contract[cite: 9].</li>
-        <li><strong>Nostr Event Broadcasting:</strong> On-the-fly encryption packages the twenty-four hourly OTS proof files[cite: 9]. A Nostr protocol publication broadcasts these proofs alongside their corresponding IPFS image URIs[cite: 9]. <em style="color:var(--accent-amber);">Note: OTS files are purged from local server storage post-broadcast and must be retrieved directly from the Nostr network for auditing[cite: 9].</em></li>
+        <li><strong>Layer-2 Settlement:</strong> Extracts the twenty-four Oracle IPFS Content Identifiers (CIDs) alongside the current day's root hash (H), parent hash, and arboreal branch identifier, anchoring them immutably onto an Ethereum Layer-2 base layer contract.</li>
+        <li><strong>Nostr Event Broadcasting:</strong> On-the-fly encryption packages the twenty-four hourly OTS proof files. A Nostr protocol publication broadcasts these proofs alongside their corresponding IPFS image URIs[cite: 9]. <em style="color:var(--accent-amber);">Note: OTS files are purged from local server storage post-broadcast and must be retrieved directly from the Nostr network for auditing.</em></li>
     </ol>
 
     <!-- 3. Interface Topology -->
     <h2>3. Interface Topology: Official Daily Log vs. Mirror Ledger</h2>
-    <p>Users interact with two distinct access layers for the daily records[cite: 9]. While both render identical visual payloads sourced from the same cryptographic roots, their underlying transport optimization differs[cite: 9]:</p>
+    <p>Users interact with two distinct access layers for the daily records. While both render identical visual payloads sourced from the same cryptographic roots, their underlying transport optimization differs[cite: 9]:</p>
 
     <table>
         <thead>
@@ -282,23 +282,23 @@
         <tbody>
             <tr>
                 <td><strong>Primary Focus</strong></td>
-                <td>Exhaustive archival compliance &amp; full desktop rendering[cite: 9].</td>
-                <td>Fluid, responsive multi-device execution[cite: 9].</td>
+                <td>Exhaustive archival compliance &amp; full desktop rendering.</td>
+                <td>Fluid, responsive multi-device execution.</td>
             </tr>
             <tr>
                 <td><strong>CID Resolution</strong></td>
-                <td>Full, un-truncated cryptographic CIDs[cite: 9].</td>
-                <td>Streamlined resolution paths[cite: 9].</td>
+                <td>Full, un-truncated cryptographic CIDs.</td>
+                <td>Streamlined resolution paths.</td>
             </tr>
             <tr>
                 <td><strong>Image Delivery</strong></td>
-                <td>Direct retrieval via local Swiss node (Strata-1 UTC synchronized)[cite: 9]. Subject to potential bandwidth bottlenecks[cite: 9].</td>
-                <td>Accelerated edge-cached retrieval mitigating local server bandwidth constraints[cite: 9].</td>
+                <td>Direct retrieval via local Swiss node (Strata-1 UTC synchronized)[cite: 9]. Subject to potential bandwidth bottlenecks.</td>
+                <td>Accelerated edge-cached retrieval mitigating local server bandwidth constraints.</td>
             </tr>
             <tr>
                 <td><strong>Audit Suitability</strong></td>
                 <td>Native verification of raw structural state[cite: 9].</td>
-                <td>Fully cryptographically equivalent; suitable for visual audit and rapid asset inspection[cite: 9].</td>
+                <td>Fully cryptographically equivalent; suitable for visual audit and rapid asset inspection.</td>
             </tr>
         </tbody>
     </table>
@@ -311,12 +311,12 @@
     <ol>
         <li><strong>Retrieve Temporal Proofs:</strong> Access the <strong>Nostr network</strong> at J+1 (Day + 1) to fetch and reconstitute the twenty-four hourly <code>.ots</code> cryptographic timestamp files[cite: 9].</li>
         <li><strong>Verify IPFS Assets:</strong> Cross-reference the image CIDs retrieved from either the Official Daily Log or the Mirror Page against decentralized nodes to confirm payload integrity[cite: 9].</li>
-        <li><strong>Execute Mathematical Verification Console:</strong> Navigate to the on-site verification console to programmatically compute and verify[cite: 9]:
+        <li><strong>Execute Mathematical Verification Console:</strong> Navigate to the on-site verification console to programmatically compute and verify:
             <ul style="margin-top:6px; list-style-type: square;">
-                <td>The hourly astronomical image hashes[cite: 9].</td>
-                <td>The daily Merkle tree root alignment[cite: 9].</td>
-                <td>The parent-to-branch hash continuity ($H_{parent} \rightarrow H_{day}$)[cite: 9].</td>
-                <td>The Layer-2 Ethereum contract anchoring logs[cite: 9].</td>
+                <td>The hourly astronomical image hashes.</td>
+                <td>The daily Merkle tree root alignment.</td>
+                <td>The parent-to-branch hash continuity ($H_{parent} \rightarrow H_{day}$).</td>
+                <td>The Layer-2 Ethereum contract anchoring logs.</td>
             </ul>
         </li>
     </ol>
@@ -327,45 +327,45 @@
     <div class="links-grid">
         <!-- Blockchain Log -->
         <div class="link-card">
-            <a href="https://xylem.bigtreeconnection.com/index.html" target="_blank"><i class="fa-solid fa-cube"></i> BUHS_Blockchain_Log</a>[cite: 9]
-            <p>HTML original from Zurich Server : Hday-parent-branch + CID 24H + link 24 jpg IPFS[cite: 9].</p>
+            <a href="https://xylem.bigtreeconnection.com/index.html" target="_blank"><i class="fa-solid fa-cube"></i> BUHS_Blockchain_Log</a>
+            <p>HTML original from Zurich Server : Hday-parent-branch + CID 24H + link 24 jpg IPFS.</p>
             <div class="preview-img"><img src="images/image3.png" alt="Blockchain Log Preview"></div>
         </div>
 
         <!-- Optimized Log -->
         <div class="link-card">
-            <a href="https://xylem.bigtreeconnection.com/index_xylem.html" target="_blank"><i class="fa-solid fa-mobile-screen"></i> BUHS_Blockchain_Log_Optimized</a>[cite: 9]
-            <p>HTML optimized for smartphones : Hday-parent-branch + link 24 jpg IPFS + mirror bucket fast download jpg[cite: 9].</p>
+            <a href="https://xylem.bigtreeconnection.com/index_xylem.html" target="_blank"><i class="fa-solid fa-mobile-screen"></i> BUHS_Blockchain_Log_Optimized</a>
+            <p>HTML optimized for smartphones : Hday-parent-branch + link 24 jpg IPFS + mirror bucket fast download jpg.</p>
             <div class="preview-img"><img src="images/image1.png" alt="Optimized Log Preview"></div>
         </div>
 
         <!-- Nostr Key -->
         <div class="link-card">
-            <a href="https://njump.me/npub1apk7pxgm929h0mj59hecvyfkl46m3zvwttgfufa45e2lec3evlmqs85zmx" target="_blank"><i class="fa-solid fa-key"></i> Nostr Public Key</a>[cite: 9]
-            <p>link 24 jpg IPFS (J+1) + 24 OTS encrypted (J+1)[cite: 9].</p>
+            <a href="https://njump.me/npub1apk7pxgm929h0mj59hecvyfkl46m3zvwttgfufa45e2lec3evlmqs85zmx" target="_blank"><i class="fa-solid fa-key"></i> Nostr Public Key</a>
+            <p>link 24 jpg IPFS (J+1) + 24 OTS encrypted (J+1).</p>
         </div>
 
         <!-- Audit Console -->
         <div class="link-card">
-            <a href="https://xylem.bigtreeconnection.com/verif_protocol/audit_console.html" target="_blank"><i class="fa-solid fa-terminal"></i> Audit Console Blockchain</a>[cite: 9]
+            <a href="https://xylem.bigtreeconnection.com/verif_protocol/audit_console.html" target="_blank"><i class="fa-solid fa-terminal"></i> Audit Console Blockchain</a>
             <p>full audit + verify transaction + documentation[cite: 9].</p>
         </div>
 
         <!-- Nano Time Stamper -->
         <div class="link-card">
-            <a href="https://bigtreeconnection.com/buhs/Time-Stamper/index.html" target="_blank"><i class="fa-solid fa-clock"></i> Nano-Time Stamper</a>[cite: 9]
+            <a href="https://bigtreeconnection.com/buhs/Time-Stamper/index.html" target="_blank"><i class="fa-solid fa-clock"></i> Nano-Time Stamper</a>
             <p>High performance Cryptographic Timestamp[cite: 9].</p>
         </div>
 
         <!-- Network Architecture -->
         <div class="link-card">
-            <a href="https://bigtreeconnection.com/buhs/Tree_of_life/network.html" target="_blank"><i class="fa-solid fa-network-wired"></i> BUHS_Tree of Life Network</a>[cite: 9]
+            <a href="https://bigtreeconnection.com/buhs/Tree_of_life/network.html" target="_blank"><i class="fa-solid fa-network-wired"></i> BUHS_Tree of Life Network</a>
             <p>Explore Complete architecture[cite: 9].</p>
         </div>
 
         <!-- Contact -->
         <div class="link-card">
-            <a href="mailto:bigtreeuniversal@proton.me"><i class="fa-solid fa-envelope"></i> Contact Mail</a>[cite: 9]
+            <a href="mailto:bigtreeuniversal@proton.me"><i class="fa-solid fa-envelope"></i> Contact Mail</a>
             <p>bigtreeuniversal@proton.me[cite: 9]</p>
         </div>
     </div>
@@ -377,7 +377,7 @@
 | |_) | |/ _` | __| '__/ _ \/ _ \ 
 |  _ <| | (_| | |_| | |  __/  __/ 
 |_| \_|_|\__, |\__|_|  \___|\___| 
-         |___/ web3_protocols_2026[cite: 9]
+         |___/ web3_protocols_2026
     </div>
 
 </div>

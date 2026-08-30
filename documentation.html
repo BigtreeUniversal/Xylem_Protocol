@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BUHS | Complete Documentation Hub</title>
+    
+    <meta name="description" content="Centre de documentation globale et portail du Big Tree Universal Harmonic System.">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Google Font Monospace -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Core Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-pure: #0a0a0a;
+            --surface: #121212;
+            --surface-accent: #1a1a1a;
+            --border-color: #003322;
+            --accent: #00ff88;
+            --accent-glow: rgba(0, 255, 136, 0.25);
+            --accent-purple: #bc8cff;
+            --accent-amber: #ffbd2e;
+            --accent-blue: #58a6ff;
+            --text-main: #d1d5db;
+            --text-muted: #6b7280;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-pure);
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow-x: hidden;
+            font-size: 13.5px;
+            line-height: 1.6;
+        }
+
+        header {
+            width: 100%;
+            height: 70px;
+            background: rgba(10, 10, 10, 0.95);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 4%;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+
+        .logo-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent);
+        }
+
+        main {
+            flex-grow: 1;
+            padding: 40px 4%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .pipeline-container {
+            width: 100%;
+            max-width: 850px;
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+            overflow: hidden;
+        }
+
+        .terminal-bar {
+            background: var(--surface-accent);
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .terminal-dots { display: flex; gap: 6px; }
+        .terminal-dot { width: 10px; height: 10px; border-radius: 50%; background: #333; }
+        .terminal-dot.active-dot { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+        .terminal-status { font-size: 0.75rem; color: var(--accent); }
+
+        .workspace-content { 
+            padding: 35px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* En-tête de page simple sans menu */
+        .doc-header {
+            text-align: center;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+
+        .doc-title {
+            color: #fff;
+            font-size: 1.35rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .doc-subtitle {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Frame Image Carrée Responsive */
+        .square-image-container {
+            width: 100%;
+            max-width: 320px;
+            aspect-ratio: 1 / 1;
+            margin: 0 auto 35px auto;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+            background: var(--bg-pure);
+            position: relative;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .square-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            filter: grayscale(20%) contrast(105%);
+            transition: var(--transition);
+        }
+
+        .square-image-container:hover img {
+            filter: grayscale(0%) contrast(100%);
+            transform: scale(1.02);
+        }
+
+        /* Section Boutons et Liens */
+        .links-grid {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .btn-pipeline {
+            width: 100%;
+            background: var(--bg-pure);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 14px 20px;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 4px;
+            text-decoration: none;
+            box-sizing: border-box;
+        }
+
+        .btn-pipeline .btn-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-pipeline:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(0, 255, 136, 0.03);
+            box-shadow: 0 0 15px var(--accent-glow);
+            transform: translateY(-1px);
+        }
+
+        /* Variantes de couleurs de boutons */
+        .btn-purple { border-color: rgba(188, 140, 255, 0.3); }
+        .btn-purple:hover { border-color: var(--accent-purple); color: var(--accent-purple); background: rgba(188, 140, 255, 0.03); box-shadow: 0 0 15px rgba(188, 140, 255, 0.25); }
+
+        .btn-amber { border-color: rgba(255, 189, 46, 0.3); }
+        .btn-amber:hover { border-color: var(--accent-amber); color: var(--accent-amber); background: rgba(255, 189, 46, 0.03); box-shadow: 0 0 15px rgba(255, 189, 46, 0.25); }
+
+        .btn-blue { border-color: rgba(88, 166, 255, 0.3); }
+        .btn-blue:hover { border-color: var(--accent-blue); color: var(--accent-blue); background: rgba(88, 166, 255, 0.03); box-shadow: 0 0 15px rgba(88, 166, 255, 0.25); }
+
+        .section-divider {
+            width: 100%;
+            border: 0;
+            height: 1px;
+            background: var(--border-color);
+            margin: 15px 0;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 20px 4%;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 768px) {
+            header { flex-direction: column; height: auto; padding: 15px; gap: 10px; text-align: center; }
+            .workspace-content { padding: 20px; }
+            .doc-title { font-size: 1.1rem; }
+            .square-image-container { max-width: 100%; }
+            .btn-pipeline { font-size: 0.8rem; padding: 12px 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo">
+            <span class="logo-dot"></span>24_ELDERS_REVELATION // DOCUMENTATION_HUB
+        </a>
+        <div style="font-size:0.75rem; color:var(--text-muted);">
+            [ KNOWLEDGE INDEX V1.0 ]
+        </div>
+    </header>
+
+    <main>
+        <div class="pipeline-container">
+            <div class="terminal-bar">
+                <div class="terminal-dots">
+                    <div class="terminal-dot active-dot"></div>
+                    <div class="terminal-dot"></div>
+                    <div class="terminal-dot"></div>
+                </div>
+                <div class="terminal-status">
+                    <i class="fa-solid fa-book-bookmark"></i> SYSTEM DOCUMENTATION INDEX
+                </div>
+            </div>
+
+            <div class="workspace-content">
+                
+                <!-- Titre Principal de la Documentation -->
+                <div class="doc-header">
+                    <h1 class="doc-title">Big Tree Universal Harmonic System<br>Complete Documentation</h1>
+                    <p class="doc-subtitle">// Centralized Protocol Architecture &amp; Verification Hub</p>
+                </div>
+
+                <!-- Incrustation Responsive pour Image Carrée -->
+                <div class="square-image-container">
+                    <!-- Remplace src par l'URL ou le chemin de ton image carrée -->
+                    <img src="https://xylem.bigtreeconnection.com/BUHS%20(Big%20Tree%20Universal%20Harmonic%20System)%20%E2%80%94%20Daily%20Log%20&%20Cryptographic%20Audit%20User%20Guide/doc9.png" alt="BUHS System Architecture Diagram">
+                </div>
+
+                <!-- Grille de Liens et Boutons -->
+                <div class="links-grid">
+                    
+                    <!-- Documents PDF -->
+                    <a href="https://xylem.bigtreeconnection.com/verif_protocol/BUHS_Nano_Time_Stamper_Quick_Start.pdf" target="_blank" class="btn-pipeline btn-amber">
+                        <span class="btn-label">
+                            <i class="fa-regular fa-file-pdf"></i> Quick start pdf
+                        </span>
+                        <i class="fa-solid fa-download"></i>
+                    </a>
+
+                    <a href="https://bigtreeconnection.com/buhs/Tree_of_life/network.html" target="_blank" class="btn-pipeline btn-amber">
+                        <span class="btn-label">
+                            <i class="fa-solid fa-sitemap"></i> Explore BUHS Tree of life Architecture
+                        </span>
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+
+                    <a href="https://xylem.bigtreeconnection.com/BUHS%20(Big%20Tree%20Universal%20Harmonic%20System)%20%E2%80%94%20Daily%20Log%20&%20Cryptographic%20Audit%20User%20Guide/BUHS_BigTreeUniversalHarmonicSystem_DailyLogC.html" target="_blank" class="btn-pipeline btn-amber">
+                        <span class="btn-label">
+                            <i class="fa-solid fa-cube"></i> BUHS Daily Log & Cryptographic Audit
+                        </span>
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+
+                    <a href="https://xylem.bigtreeconnection.com/BUHS%20(Big%20Tree%20Universal%20Harmonic%20System)%20%E2%80%94%20Daily%20Log%20&%20Cryptographic%20Audit%20User%20Guide/BUHS%20L1%20Cryptographic%20Verification%20Engine.html" target="_blank" class="btn-pipeline btn-amber">
+                        <span class="btn-label">
+                            <i class="fa-solid fa-shield-halved"></i> BUHS L1 Verification Engine
+                        </span>
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+
+                    <hr class="section-divider">
+
+                    <!-- Liens Systèmes et Outils Externe/Internes -->
+                    <a href="https://bigtreeconnection.com/buhs/Time-Stamper/index.html" target="_blank" class="btn-pipeline btn-blue">
+                        <span class="btn-label">
+                            <i class="fa-solid fa-clock-rotate-left"></i> Time Stamper
+                        </span>
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+
+                    <a href="https://xylem.bigtreeconnection.com/verif_protocol/audit_console.html" class="btn-pipeline btn-purple">
+                        <span class="btn-label">
+                            <i class="fa-solid fa-terminal"></i> Audit console
+                        </span>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </a>
+
+                    <a href="https://bigtreeconnection.com/home/Web3_Protocols.html" class="btn-pipeline btn-blue">
+                        <span class="btn-label">
+                            <i class="fa-solid fa-network-wired"></i> Web3 protocols
+                        </span>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </a>
+
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        BIG TREE UNIVERSAL HARMONIC SYSTEM // OPEN DOCUMENTATION REPOSITORY
+    </footer>
+
+</body>
+</html>

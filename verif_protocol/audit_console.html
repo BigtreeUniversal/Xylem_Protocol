@@ -3,43 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xylem Log - Procédure d'Audit & Vérification</title>
+    <title>Xylem Log - Console d'Audit & Protocol Verification</title>
+    
+    <!-- Google Font Monospace -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Core Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
+        /* --- CORE TERMINAL DESIGN SYSTEM (IDENTIQUE PAGE PRINCIPALE) --- */
         :root {
-            --bg-color: #0b0f14;
-            --panel-bg: #131920;
-            --panel-border: #212936;
-            --text-color: #c5d1de;
-            --text-bright: #f0f6fc;
-            --text-muted: #6e7d8e;
-            --accent-green: #3fb950;
-            --accent-blue: #58a6ff;
-            --accent-amber: #d29922;
-            --accent-purple: #bc8cff;
-            --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+            --bg-pure: #0a0a0a;
+            --surface: #121212;
+            --surface-accent: #1a1a1a;
+            --border-color: #003322;
+            --accent: #00ff88;
+            --accent-glow: rgba(0, 255, 136, 0.25);
+            --text-main: #d1d5db;
+            --text-muted: #6b7280;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --font-mono: 'JetBrains Mono', monospace;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            scroll-behavior: smooth;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background-color: var(--bg-pure);
+            color: var(--text-main);
             font-family: var(--font-mono);
             font-size: 13.5px;
             line-height: 1.6;
-            padding: 20px;
-            max-width: 1000px;
-            margin: 0 auto;
+            padding-top: 90px;
+            padding-bottom: 50px;
+            overflow-x: hidden;
         }
 
-        /* En-tête Terminal / Top Navigation */
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-pure);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        .glow-text {
+            color: var(--accent);
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* --- HEADER NAVIGATION (HAMBURGER ONLY) --- */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 4%;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.2rem;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #fff;
+        }
+
+        .logo-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px var(--accent);
+        }
+
+        .menu-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--accent);
+            width: 44px;
+            height: 44px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            transition: var(--transition);
+            z-index: 102;
+        }
+
+        .menu-btn:hover {
+            background: var(--border-color);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .menu-btn span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background-color: var(--accent);
+            transition: var(--transition);
+        }
+
+        .menu-btn.active span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+        .menu-btn.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .menu-btn.active span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        .nav-overlay {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 100%;
+            height: 100vh;
+            background: rgba(10, 10, 10, 0.98);
+            z-index: 101;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            transition: var(--transition);
+            border-left: 1px solid var(--border-color);
+        }
+
+        .nav-overlay.active {
+            right: 0;
+        }
+
+        .nav-link {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 600;
+            padding: 0.5rem 2rem;
+            border: 1px solid transparent;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            color: var(--accent);
+            border-color: var(--border-color);
+            background: var(--surface);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.1);
+        }
+
+        /* --- TERMINAL TOP HEADER --- */
         .terminal-header {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--panel-border);
+            background-color: var(--surface);
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             padding: 16px 20px;
             margin-bottom: 25px;
@@ -51,7 +201,7 @@
         }
 
         .sys-title {
-            color: var(--accent-green);
+            color: var(--accent);
             font-weight: bold;
             font-size: 15px;
             letter-spacing: 0.5px;
@@ -62,63 +212,55 @@
             gap: 8px;
         }
 
-        .sys-status {
-            color: var(--accent-green);
+        .sys-status, .sys-tag {
+            color: var(--accent);
             font-size: 11px;
-            background: rgba(63, 185, 80, 0.1);
+            background: rgba(0, 255, 136, 0.05);
             padding: 4px 10px;
             border-radius: 4px;
-            border: 1px solid rgba(63, 185, 80, 0.3);
+            border: 1px solid var(--border-color);
             text-transform: uppercase;
         }
 
-        .sys-tag {
-            color: var(--accent-blue);
-            font-size: 11px;
-            background: rgba(88, 166, 255, 0.1);
-            padding: 4px 10px;
-            border-radius: 4px;
-            border: 1px solid rgba(88, 166, 255, 0.3);
-        }
-
-        /* Banner / Disclaimer */
+        /* --- BANNER / DISCLAIMER --- */
         .disclaimer-banner {
-            background: rgba(210, 153, 34, 0.08);
-            border: 1px solid rgba(210, 153, 34, 0.3);
-            border-left: 4px solid var(--accent-amber);
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent);
             border-radius: 4px;
-            padding: 12px 16px;
+            padding: 14px 18px;
             margin-bottom: 25px;
-            color: #e3b341;
+            color: var(--text-main);
             font-size: 12.5px;
         }
 
-        /* Modern Terminal Card */
+        /* --- CARDS & PANELS --- */
         .card {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--panel-border);
+            background-color: var(--surface);
+            border: 1px solid var(--border-color);
             border-radius: 6px;
-            padding: 22px;
+            padding: 24px;
             margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .card-title {
-            color: var(--accent-blue);
+            color: #fff;
             font-size: 15px;
             font-weight: bold;
-            border-bottom: 1px solid var(--panel-border);
-            padding-bottom: 10px;
-            margin-bottom: 18px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
         .prompt-symbol {
-            color: var(--accent-green);
+            color: var(--accent);
         }
 
-        /* Options Grid (Page d'accueil) */
+        /* --- BUTTONS & GRID --- */
         .btn-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -136,24 +278,26 @@
             display: flex;
             flex-direction: column;
             padding: 16px;
-            background: #18202a;
-            border: 1px solid var(--panel-border);
-            border-left: 4px solid var(--accent-blue);
+            background: var(--surface-accent);
+            border: 1px solid var(--border-color);
+            border-left: 3px solid var(--border-color);
             border-radius: 4px;
-            color: var(--text-bright);
+            color: var(--text-main);
             text-decoration: none;
-            transition: all 0.2s ease;
+            transition: var(--transition);
         }
 
         .nav-btn:hover {
-            border-color: var(--accent-green);
-            border-left-color: var(--accent-green);
-            background: #1e2835;
+            border-color: var(--accent);
+            border-left-color: var(--accent);
+            background: var(--surface);
+            color: #fff;
+            box-shadow: 0 0 15px var(--accent-glow);
             transform: translateY(-2px);
         }
 
         .nav-btn .btn-num {
-            color: var(--accent-amber);
+            color: var(--accent);
             font-size: 11px;
             margin-bottom: 4px;
             font-weight: bold;
@@ -164,11 +308,36 @@
             font-size: 13px;
         }
 
-        /* Step Details Layout */
+        /* --- LINK BUTTONS --- */
+        .link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--surface-accent);
+            color: var(--accent);
+            border: 1px solid var(--border-color);
+            padding: 8px 14px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 8px 0;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .link-btn:hover {
+            background: var(--accent);
+            color: var(--bg-pure);
+            border-color: var(--accent);
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        /* --- STEP DETAILS LAYOUT --- */
         .step-block {
             margin-bottom: 25px;
             padding-left: 18px;
-            border-left: 2px solid var(--panel-border);
+            border-left: 2px solid var(--border-color);
             position: relative;
         }
 
@@ -180,26 +349,27 @@
             width: 10px;
             height: 10px;
             border-radius: 50%;
-            background: var(--panel-border);
+            background: var(--border-color);
+            transition: var(--transition);
         }
 
         .step-block.active::before {
-            background: var(--accent-amber);
-            box-shadow: 0 0 8px rgba(210, 153, 34, 0.5);
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
         }
 
         .step-header {
-            color: var(--accent-amber);
+            color: var(--accent);
             font-weight: bold;
             font-size: 14px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
         .step-content {
-            color: var(--text-color);
+            color: var(--text-main);
             margin-bottom: 10px;
         }
 
@@ -207,505 +377,501 @@
             margin-bottom: 8px;
         }
 
-        /* Action Links / Buttons in Steps */
-        .link-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: #1c2533;
-            color: var(--accent-blue);
-            border: 1px solid rgba(88, 166, 255, 0.3);
-            padding: 6px 12px;
+        /* --- CODE & INPUT BOXES --- */
+        .code-block {
+            background: var(--bg-pure);
+            border: 1px solid var(--border-color);
             border-radius: 4px;
-            text-decoration: none;
-            font-size: 12px;
-            font-weight: bold;
-            margin: 6px 0;
-            transition: all 0.2s ease;
-        }
-
-        .link-btn:hover {
-            background: var(--accent-blue);
-            color: #0d1117;
-            border-color: var(--accent-blue);
-        }
-
-        /* Image Placeholder Box */
-        .img-placeholder {
-            background: #090d12;
-            border: 1px dashed var(--panel-border);
-            border-radius: 4px;
-            padding: 20px;
-            text-align: center;
-            color: var(--text-muted);
+            padding: 12px 16px;
+            font-family: var(--font-mono);
+            color: var(--accent);
             font-size: 12px;
             margin: 10px 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        .img-placeholder .icon {
-            font-size: 20px;
-            color: var(--accent-blue);
-        }
-
-        /* Code/File Snippet Display */
-        .code-block {
-            background: #090d12;
-            border: 1px solid var(--panel-border);
-            border-radius: 4px;
-            padding: 10px 14px;
-            font-family: var(--font-mono);
-            color: var(--accent-green);
-            font-size: 12px;
-            margin: 8px 0;
             word-break: break-all;
         }
 
-        /* Section Divider Header */
+        /* --- SECTION DIVIDER --- */
         .section-divider {
-            color: var(--accent-purple);
-            font-size: 16px;
+            color: #fff;
+            font-size: 15px;
             font-weight: bold;
             margin: 35px 0 20px 0;
             padding-bottom: 8px;
-            border-bottom: 1px solid var(--panel-border);
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        /* Footer */
-        .terminal-footer {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 11px;
-            margin-top: 40px;
-            border-top: 1px solid var(--panel-border);
-            padding-top: 20px;
+        /* --- IMAGES & CONTAINERS --- */
+        .img-container {
+            margin: 15px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
         }
 
+        .terminal-img {
+            width: 100%;
+            max-width: 550px;
+            height: auto;
+            object-fit: contain;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--bg-pure);
+        }
 
-        /* --- Gestion Responsive & Verticale des Images --- */
-     .img-container {
-    margin: 15px 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-}
+        .img-caption {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 6px;
+            text-align: center;
+        }
 
-.terminal-img {
-    width: 100%;              /* S'adapte à la largeur du conteneur */
-    max-width: 500px;         /* Limite la largeur sur grand écran pour éviter l'effet géant */
-    height: auto;             /* Conserve le ratio d'aspect (pas de déformation) */
-    object-fit: contain;      /* Empêche le rognage ou la distorsion */
-    border: 1px solid var(--panel-border);
-    border-radius: 4px;
-    background-color: #090d12;
-}
+        /* --- FOOTER --- */
+        footer {
+            background: var(--bg-pure);
+            border-top: 1px solid var(--border-color);
+            padding: 24px 4%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 50px;
+        }
 
-.img-caption {
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-top: 6px;
-    text-align: center;
-}
+        .footer-socials a {
+            color: var(--text-muted);
+            margin-left: 1.5rem;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
 
-/* Optimisation spécifique pour Mobile / Smartphone */
-@media (max-width: 768px) {
-    .terminal-img {
-        max-width: 100%;       /* Prend toute la largeur disponible */
-        max-height: 450px;     /* Limite la hauteur sur smartphone pour les images très verticales */
-    }
-}
+        .footer-socials a:hover {
+            color: var(--accent);
+            text-shadow: 0 0 5px var(--accent-glow);
+        }
 
-        
+        @media (max-width: 600px) {
+            footer {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            .footer-socials a {
+                margin: 0 0.75rem;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <!-- En-tête Terminal / Métadonnées -->
-    <div class="terminal-header">
-        <div class="sys-title">
-            <span class="prompt-symbol">&gt;</span> XYLEM_LOG_AUDIT_CONSOLE // VERIFICATION_PROTOCOL
+    <!-- SYSTEM HEADER CONTROLLER -->
+    <header>
+        <div class="logo">
+            <span class="logo-dot"></span>BUHS_L1//TIME
         </div>
-        <div class="sys-badges">
-            <span class="sys-tag">NETWORK: BASE L2</span>
-            <span class="sys-status">[ RIGOROUS_MODE: ACTIVE ]</span>
-        </div>
-    </div>
+        <button class="menu-btn" id="menuBtn" aria-label="Open Operations Protocol">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </header>
 
-    <!-- Note d'information concernant la démarche d'audit -->
-    <div class="disclaimer-banner">
-        <strong>&gt; NOTE D'AUDIT :</strong> Ce protocole est conçu pour offrir une vérification décentralisée, mathématiquement prouvable, dénuée d'intermédiaire et infalsifiable. Les démarches manuelles ci-dessous privilégient la robustesse et l'indépendance de contrôle technique.
-    </div>
+    <!-- OVERLAY NAVIGATION SYSTEM -->
+    <nav class="nav-overlay" id="navOverlay">
+        <a href="https://buhs-time-stamper.netlify.app/pipeline.html" class="nav-link" onclick="toggleNav()">[00] START</a>
+        <a href="https://xylem.bigtreeconnection.com/index.html" class="nav-link" onclick="toggleNav()">[01] NODE_ROOT</a>
+        <a href="#audit-procedure" class="nav-link" onclick="toggleNav()">[02] MODULE_OTS</a>
+        <a href="#module-base" class="nav-link" onclick="toggleNav()">[03] MODULE_BASE_L2</a>
+        <a href="https://xylem.bigtreeconnection.com/verif_protocol/audit_console.html" class="nav-link" onclick="toggleNav()">[04] AUDIT_CONSOLE</a>
+    </nav>
 
-    <!-- Section 1 : Sélecteur d'action -->
-    <div class="card">
-        <div class="card-title">
-            <span class="prompt-symbol">$</span> SELECT_VERIFICATION_MODULE
-        </div>
-        <p>Veuillez choisir le composant du registre à auditer :</p>
+    <div class="container">
 
-        <div class="btn-grid">
-            <!-- Bouton 1 : Lien externe / transaction -->
-            <a href="https://xylem.bigtreeconnection.com/verif_protocol/BUHS_Nano_Time_Stamper_Quick_Start.pdf" target="_blank" class="nav-btn">
-                <span class="btn-num">[ START ]</span>
-                <span class="btn-text">&gt; Lire le fichier Quick Start.pdf</span>
-            </a>
-
-            <a href="https://bigtreeconnection.com/buhs/Time-Stamper/index.html" target="_blank" class="nav-btn">
-                <span class="btn-num">[ ACTION 01 ]</span>
-                <span class="btn-text">&gt; Faire un dépot (Landing Page)</span>
-            </a>
-
-             <a href="https://xylem.bigtreeconnection.com/verify.html" target="_blank" class="nav-btn">
-                <span class="btn-num">[ ACTION 02 ]</span>
-                <span class="btn-text">&gt; Vérifier une transaction individuelle</span>
-            </a>
-
-
-            <a href="https://xylem.bigtreeconnection.com/verif_protocol/oracle_console.html" class="nav-btn">
-                <span class="btn-num">[ ACTION 03 ]</span>
-                <span class="btn-text">&gt; Analyser l'oracle avec la console NOSTR (méthode recommandée)</span>
-            </a>
-
-
-            <a href="#audit-procedure" class="nav-btn">
-                <span class="btn-num">[ ACTION 04 ]</span>
-                <span class="btn-text">&gt; Auditer l'ancrage OTS (24 CID) &amp; Smart Contract Quotidien - Analyse manuelle complete</span>
-            </a>
-
-            <a href="https://github.com/BigtreeUniversal/Xylem_Protocol/blob/main/verif_protocol/merkle_builder.py" class="nav-btn">
-                <span class="btn-num">[ ACTION 05 ]</span>
-                <span class="btn-text">&gt; Analyser le Compilateur (merkle_builder.py)</span>
-            </a>
-
-            <a href="https://github.com/BigtreeUniversal/Xylem_Protocol/blob/main/verify.html" class="nav-btn">
-                <span class="btn-num">[ ACTION 06 ]</span>
-                <span class="btn-text">&gt; Analyser le vérificateur (verify.html)</span>
-            </a>
-
-            <a href="https://xylem.bigtreeconnection.com/verif_protocol/BUHS_L1_Cryptographic_Verification_Engine.pdf" class="nav-btn">
-                <span class="btn-num">[ ACTION 07 ]</span>
-                <span class="btn-text">&gt; Lire la documentation audit (Verification Engine.pdf)
-     </span>
-            </a>
-
-            
-        </div>
-    </div>
-
-    <!-- Section 2 : Procédure détaillée d'audit -->
-    <div class="card" id="audit-procedure">
-        
-        <!-- PARTIE A : ANCRAGE TEMPOREL OTS -->
-        <div class="section-divider">
-            <span class="prompt-symbol">#</span> MODULE 1: VERIFICATION DE L'ANCRAGE TEMPOREL DES 24 IMAGES (OTS) (24 Elders)
-        </div>
-
-        <!-- Étape 1 -->
-        <div class="step-block active">
-            <div class="step-header">[ ÉTAPE 1 ] Accès au Journal XYLEM LOG &amp; Récupération des images</div>
-            <div class="step-content">
-                <p>1. Rendez-vous sur la page du jour que vous souhaitez auditer sur le journal <strong>Xylem Log</strong> :</p>
-                <a href="https://xylem.bigtreeconnection.com/index.html" target="_blank" class="link-btn">&gt; Chercher la page sur l'index</a>
-
-                <div class="img-container">
-    <img src="xylem_log.png" alt="Vue de la page " class="terminal-img">
-    <span class="img-caption">&gt; CAPTURE 01:journal OTS vers Nostr </span>
-</div>
-
-                <p>2. Ouvrez le lien de l'image correspondante à l'heure désirée sur le réseau <strong>IPFS</strong> (accessible directement depuis le lien "open" de la page HTML).</p>
-                <p>3. Enregistrez l'image localement sur votre machine sans la modifier.(accedez au depot miroir si l'acces IPFS est lent)</p>
-                <p>4. Repérez et copiez-collez dans votre presse papier le <strong>nom du fichier OTS correspondant </strong> (Open Time Stamped) que vous désirez vérifier.</p>
-                
-                <div class="code-block">
-                    Format des fichiers : 1 fichier par heure basés sur le temps Unix ex:<br>
-                    image : xylem_1785196801399.jpg<br>
-                    proof : xylem_1785196801399.jpg.ots
-                </div>
+        <!-- En-tête Terminal / Métadonnées -->
+        <div class="terminal-header">
+            <div class="sys-title">
+                <span class="prompt-symbol">&gt;</span> XYLEM_LOG_AUDIT_CONSOLE // VERIFICATION_PROTOCOL
+            </div>
+            <div class="sys-badges">
+                <span class="sys-tag">NETWORK: BASE L2</span>
+                <span class="sys-status">[ RIGOROUS_MODE: ACTIVE ]</span>
             </div>
         </div>
 
-        <!-- Étape 2 -->
-        <div class="step-block active">
-            <div class="step-header">[ ÉTAPE 2 ] Téléchargement des Preuves Horodatées (.ots)</div>
-            <div class="step-content">
-                <p>Allez sur le reseau Nostr et recuperez le numero de parution "Event ID" du jour souhaité (J+1) contenant les 24 fichiers OTS cryptés (et les liens IPFS des images correspondantes): (astuce copiez directement l'Event_ID sur Coracle ou un autre relay Nostr ou copier l'ensemble JSON de la publication dans le decodeur)</p>
-                <a href="https://coracle.social/nprofile1qqswsm0qnydj4zmhae2zmuuxzym06adc3x8945y7y766v40uuguk0aspz3mhxue69uhhyetvv9ujuerpd46hxtnfduqs6amnwvaz7tmwdaejumr0dsasqpku" target="_blank" class="link-btn">&gt; CHERCHER JOUR +1</a>
-
-                <div class="img-container">
-    <img src="coracle1.png" alt="Vue de la page du journal Xylem Log " class="terminal-img">
-    <span class="img-caption"
-    >&gt; CAPTURE 02: parution du 11 aout pour auditer la journée du 10 aout 2026 sur Coracle et cliquez sur les 3 petits points 'details' puis pensez à décocher "raw version")'</span>
-         </div>
-
-<!-- SEARCH ENGINE : NOSTR EVENT VIEWER -->
-<div class="card" style="border-color: var(--accent-purple);">
-    <div class="card-title" style="color: var(--accent-purple);">
-        <span class="prompt-symbol">$</span> NOSTR_EVENT_SEARCH_ENGINE // DIRECT RELAY QUERY
-    </div>
-    <p>Saisissez ou collez l'Event ID Nostr (hex 64 caractères) pour récupérer directement l'événement et son JSON :</p>
-
-    <div style="display: flex; gap: 10px; margin: 12px 0;">
-        <input type="text" id="nostrEventId" placeholder="Ex: 22ca793886c668e4214606414f291f1eea186fd16d36a95afd7a39aea6df029d"
-               style="flex: 1; background: #090d12; color: var(--accent-bright); border: 1px solid var(--panel-border); padding: 10px; border-radius: 4px; font-family: var(--font-mono); font-size: 12px;">
-        <button onclick="searchNostrEvent()" class="link-btn" style="background: var(--accent-purple); color: #000; font-weight: bold; cursor: pointer; margin:0;">
-            &gt; Rechercher
-        </button>
-    </div>
-
-    <!-- Zone de statut / chargement -->
-    <div id="searchStatus" style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;"></div>
-
-    <!-- Zone d'affichage du résultat -->
-    <div id="eventDisplay" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-            <span style="color: var(--accent-green); font-size: 11px;">[ ÉVÉNEMENT TROUVÉ ]</span>
-            <button onclick="autoFillPayload()" class="link-btn" style="font-size: 11px; padding: 2px 8px;">
-                &gt; Charger dans le décodeur OTS
-            </button>
+        <!-- Note d'information concernant la démarche d'audit -->
+        <div class="disclaimer-banner">
+            <strong class="glow-text">&gt; NOTE D'AUDIT :</strong> Ce protocole est conçu pour offrir une vérification décentralisée, mathématiquement prouvable, dénuée d'intermédiaire et infalsifiable. Les démarches manuelles ci-dessous privilégient la robustesse et l'indépendance du contrôle technique.
         </div>
-        <pre id="rawContent" style="background: #090d12; color: var(--accent-green); padding: 12px; border-radius: 4px; border: 1px solid var(--panel-border); overflow-x: auto; font-size: 11px; max-height: 250px;"></pre>
+
+        <!-- Section 1 : Sélecteur d'action -->
+        <div class="card">
+            <div class="card-title">
+                <span class="prompt-symbol">$</span> SELECT_VERIFICATION_MODULE
+            </div>
+            <p style="margin-bottom: 15px; color: var(--text-muted);">Veuillez choisir le composant du registre à auditer :</p>
+
+            <div class="btn-grid">
+                <a href="https://xylem.bigtreeconnection.com/verif_protocol/BUHS_Nano_Time_Stamper_Quick_Start.pdf" target="_blank" class="nav-btn">
+                    <span class="btn-num">[ START ]</span>
+                    <span class="btn-text">&gt; Lire le fichier Quick Start.pdf</span>
+                </a>
+
+                <a href="https://bigtreeconnection.com/buhs/Time-Stamper/index.html" target="_blank" class="nav-btn">
+                    <span class="btn-num">[ ACTION 01 ]</span>
+                    <span class="btn-text">&gt; Faire un dépôt (Landing Page)</span>
+                </a>
+
+                <a href="https://xylem.bigtreeconnection.com/verify.html" target="_blank" class="nav-btn">
+                    <span class="btn-num">[ ACTION 02 ]</span>
+                    <span class="btn-text">&gt; Vérifier une transaction individuelle</span>
+                </a>
+
+                <a href="https://xylem.bigtreeconnection.com/verif_protocol/oracle_console.html" class="nav-btn">
+                    <span class="btn-num">[ ACTION 03 ]</span>
+                    <span class="btn-text">&gt; Analyser l'oracle avec la console NOSTR (méthode recommandée)</span>
+                </a>
+
+                <a href="#audit-procedure" class="nav-btn">
+                    <span class="btn-num">[ ACTION 04 ]</span>
+                    <span class="btn-text">&gt; Auditer l'ancrage OTS (24 CID) &amp; Smart Contract Quotidien - Analyse manuelle complète</span>
+                </a>
+
+                <a href="https://github.com/BigtreeUniversal/Xylem_Protocol/blob/main/verif_protocol/merkle_builder.py" target="_blank" class="nav-btn">
+                    <span class="btn-num">[ ACTION 05 ]</span>
+                    <span class="btn-text">&gt; Analyser le Compilateur (merkle_builder.py)</span>
+                </a>
+
+                <a href="https://github.com/BigtreeUniversal/Xylem_Protocol/blob/main/verify.html" target="_blank" class="nav-btn">
+                    <span class="btn-num">[ ACTION 06 ]</span>
+                    <span class="btn-text">&gt; Analyser le vérificateur (verify.html)</span>
+                </a>
+
+                <a href="https://xylem.bigtreeconnection.com/verif_protocol/BUHS_L1_Cryptographic_Verification_Engine.pdf" target="_blank" class="nav-btn">
+                    <span class="btn-num">[ ACTION 07 ]</span>
+                    <span class="btn-text">&gt; Lire la documentation audit (Verification Engine.pdf)</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Section 2 : Procédure détaillée d'audit -->
+        <div class="card" id="audit-procedure">
+            
+            <!-- PARTIE A : ANCRAGE TEMPOREL OTS -->
+            <div class="section-divider">
+                <span class="prompt-symbol">#</span> MODULE 1: VÉRIFICATION DE L'ANCRAGE TEMPOREL DES 24 IMAGES (OTS) (24 Elders)
+            </div>
+
+            <!-- Étape 1 -->
+            <div class="step-block active">
+                <div class="step-header">[ ÉTAPE 1 ] Accès au Journal XYLEM LOG &amp; Récupération des images</div>
+                <div class="step-content">
+                    <p>1. Rendez-vous sur la page du jour que vous souhaitez auditer sur le journal <strong>Xylem Log</strong> :</p>
+                    <a href="https://xylem.bigtreeconnection.com/index.html" target="_blank" class="link-btn">&gt; Chercher la page sur l'index</a>
+
+                    <div class="img-container">
+                        <img src="xylem_log.png" alt="Vue de la page Xylem Log" class="terminal-img">
+                        <span class="img-caption">&gt; CAPTURE 01: Journal OTS vers Nostr</span>
+                    </div>
+
+                    <p>2. Ouvrez le lien de l'image correspondante à l'heure désirée sur le réseau <strong>IPFS</strong> (accessible directement depuis le lien "open" de la page HTML).</p>
+                    <p>3. Enregistrez l'image localement sur votre machine sans la modifier (accédez au dépôt miroir si l'accès IPFS est lent).</p>
+                    <p>4. Repérez et copiez-collez dans votre presse-papier le <strong>nom du fichier OTS correspondant</strong> (Open Time Stamped) que vous désirez vérifier.</p>
+                    
+                    <div class="code-block">
+                        Format des fichiers : 1 fichier par heure basés sur le temps Unix ex:<br>
+                        image : xylem_1785196801399.jpg<br>
+                        proof : xylem_1785196801399.jpg.ots
+                    </div>
+                </div>
+            </div>
+
+            <!-- Étape 2 -->
+            <div class="step-block active">
+                <div class="step-header">[ ÉTAPE 2 ] Téléchargement des Preuves Horodatées (.ots)</div>
+                <div class="step-content">
+                    <p>Allez sur le réseau Nostr et récupérez le numéro de parution "Event ID" du jour souhaité (J+1) contenant les 24 fichiers OTS cryptés (et les liens IPFS des images correspondantes) : (astuce : copiez directement l'Event_ID sur Coracle ou un autre relay Nostr, ou copiez l'ensemble JSON de la publication dans le décodeur)</p>
+                    <a href="https://coracle.social/nprofile1qqswsm0qnydj4zmhae2zmuuxzym06adc3x8945y7y766v40uuguk0aspz3mhxue69uhhyetvv9ujuerpd46hxtnfduqs6amnwvaz7tmwdaejumr0dsasqpku" target="_blank" class="link-btn">&gt; CHERCHER JOUR +1</a>
+
+                    <div class="img-container">
+                        <img src="coracle1.png" alt="Vue de la page Coracle" class="terminal-img">
+                        <span class="img-caption">&gt; CAPTURE 02: Parution du 11 août pour auditer la journée du 10 août 2026 sur Coracle (cliquez sur les 3 petits points 'détails' puis pensez à décocher 'raw version')</span>
+                    </div>
+
+                    <!-- SEARCH ENGINE : NOSTR EVENT VIEWER -->
+                    <div class="card" style="border-color: var(--border-color); margin-top: 20px;">
+                        <div class="card-title">
+                            <span class="prompt-symbol">$</span> NOSTR_EVENT_SEARCH_ENGINE // DIRECT RELAY QUERY
+                        </div>
+                        <p style="margin-bottom: 10px; color: var(--text-muted);">Saisissez ou collez l'Event ID Nostr (hex 64 caractères) pour récupérer les 24 OTS ou le Event JSON dans le decodeur ci-dessous:</p>
+
+                        <div style="display: flex; gap: 10px; margin: 12px 0; flex-wrap: wrap;">
+                            <input type="text" id="nostrEventId" placeholder="Ex: 22ca793886c668e4214606414f291f1eea186fd16d36a95afd7a39aea6df029d"
+                                   style="flex: 1; min-width: 250px; background: var(--bg-pure); color: var(--accent); border: 1px solid var(--border-color); padding: 10px; border-radius: 4px; font-family: var(--font-mono); font-size: 12px;">
+                            <button onclick="searchNostrEvent()" class="link-btn" style="margin: 0;">
+                                &gt; Rechercher
+                            </button>
+                        </div>
+
+                        <!-- Zone de statut / chargement -->
+                        <div id="searchStatus" style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;"></div>
+
+                        <!-- Zone d'affichage du résultat -->
+                        <div id="eventDisplay" style="display: none;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                <span style="color: var(--accent); font-size: 11px;">[ ÉVÉNEMENT TROUVÉ ]</span>
+                                <button onclick="autoFillPayload()" class="link-btn" style="font-size: 11px; padding: 2px 8px;">
+                                    &gt; Charger dans le décodeur OTS
+                                </button>
+                            </div>
+                            <pre id="rawContent" style="background: var(--bg-pure); color: var(--accent); padding: 12px; border-radius: 4px; border: 1px solid var(--border-color); overflow-x: auto; font-size: 11px; max-height: 250px;"></pre>
+                        </div>
+                    </div>
+
+                    <!-- DECODEUR NOSTR INSTANTANE -->
+                    <div class="card" style="border-color: var(--border-color); margin-top: 20px;">
+                        <div class="card-title">
+                            <span class="prompt-symbol">$</span> DECODEUR_NOSTR_OTS // CONVERTISSEUR INSTANTANÉ
+                        </div>
+                        <p style="color: var(--text-muted);">Collez ici le texte brut de la publication Nostr pour extraire directement la preuve <code>.ots</code> binaire :</p>
+
+                        <textarea id="nostrPayload" style="width:100%; height:80px; background:var(--bg-pure); color:var(--accent); border:1px solid var(--border-color); border-radius:4px; padding:10px; margin:10px 0; font-family:var(--font-mono); font-size:12px;" placeholder='Exemple: {"xylem_1785196801399.jpg": {"ots": "AE9wZW5UaW1lc3RhbXBz...", "cid": "..."}}'></textarea>
+
+                        <button onclick="extractOTS()" class="link-btn">
+                            &gt; Extraire &amp; Télécharger les fichiers .ots
+                        </button>
+
+                        <div id="extractionResult" style="margin-top:15px;"></div>
+                    </div>
+
+                    <p style="margin-top: 15px;">Consulter directement l'événement source sur un explorateur de relais Nostr (Jumble, Coracle, Fevela, YakiHonne) tout en VÉRIFIANT BIEN LA DATE J+1 :</p>
+                    <a href="https://njump.me/npub1apk7pxgm929h0mj59hecvyfkl46m3zvwttgfufa45e2lec3evlmqs85zmx" target="_blank" class="link-btn">
+                        &gt; Inspecter la note Nostr (Nostr.band)
+                    </a>
+                </div>
+            </div>
+
+            <!-- Étape 3 -->
+            <div class="step-block active">
+                <div class="step-header">[ ÉTAPE 3 ] Soumission et Vérification sur OpenTimestamps</div>
+                <div class="step-content">
+                    <p>Rendez-vous sur l'outil de vérification indépendant <strong>OpenTimestamps</strong> :</p>
+                    <a href="https://opentimestamps.org/" target="_blank" class="link-btn">&gt; Accéder au vérificateur OpenTimestamps.org</a>
+
+                    <p style="margin-top: 10px;">
+                        Glissez-déposez conjointement <strong>l'image (.jpg)</strong> et sa <strong>preuve horodatée (.ots)</strong> pour valider l'ancrage temporel exact dans la blockchain Bitcoin.
+                    </p>
+
+                    <div class="img-container">
+                        <img src="OTS.png" alt="Vue de la page OpenTimestamps" class="terminal-img">
+                        <span class="img-caption">&gt; CAPTURE 03: Vue de l'interface OpenTimestamps</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PARTIE B : SMART CONTRACT BASE L2 -->
+            <div class="section-divider" id="module-base">
+                <span class="prompt-symbol">#</span> MODULE 2: ANCRAGE SMART CONTRACT QUOTIDIEN (BASE L2 ETHEREUM)
+            </div>
+
+            <!-- Étape 4 (Version Simplifiée) -->
+            <div class="step-block active">
+                <div class="step-header">[ ÉTAPE 4 ] Consulter les transactions du Smart Contract sur Basescan</div>
+                <div class="step-content">
+                    <p>
+                        Le smart contract officiel Xylem Log enregistre un ancrage automatique quotidien scellant le Root Hash et le CID de la journée.
+                    </p>
+                    <p style="margin-top: 10px;">
+                        Accédez directement au registre public des transactions sur Basescan :
+                    </p>
+                    <a href="https://basescan.org/address/0xc88160cc2f3f8171c7782d220bc92ba8f6e426a3" target="_blank" class="link-btn">&gt; Consulter le Smart Contract sur Basescan</a>
+
+                    <p style="margin-top: 15px;">
+                        Sélectionnez la transaction correspondant à la date de votre audit et cliquez sur son <strong>Transaction Hash (TxHash)</strong> pour ouvrir la fiche de détail.
+                    </p>
+
+                    <div class="img-container">
+                        <img src="detail1.png" alt="Vue de la page Basescan du Smart Contract" class="terminal-img">
+                        <span class="img-caption">&gt; CAPTURE 04: Consultation des transactions du Smart Contract sur Basescan L2</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Étape 5 -->
+            <div class="step-block active">
+                <div class="step-header">[ ÉTAPE 5 ] Extraction des données (Input Data) &amp; Comparaison Audit</div>
+                <div class="step-content">
+                    <p>Une fois sur la page de détails de la transaction :</p>
+
+                    <p>1. Descendez en bas de la page et cliquez sur le lien/bouton : <code>Click to show more</code>.</p>
+
+                    <p>2. Localisez la section <strong>Input Data</strong>.</p>
+
+                    <p>3. Dans le sélecteur d'affichage de l'Input Data (par défaut souvent positionné sur <i>Hex</i>), sélectionnez : <strong>View Input As UTF-8</strong>.</p>
+
+                    <div class="code-block">
+                        Format décodé (UTF-8) :<br>
+                        Ex: "Xylem Log 2026-08-10 Root Hash: 0x... IPFS CID: Qm..."
+                    </div>
+
+                    <p>
+                        4. <strong>Audit final :</strong> Comparez l'empreinte (Root Hash / CID) affichée dans cet Input Data UTF-8 avec celle publiée sur le journal <strong>Xylem Log [ÉTAPE 1]</strong> du jour correspondant. L'exactitude stricte entre les deux valeurs confirme la validité et l'intégrité de l'ancrage blockchain.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
     </div>
-</div>
 
-<script>
-async function searchNostrEvent() {
-    const eventId = document.getElementById('nostrEventId').value.trim();
-    const statusDiv = document.getElementById('searchStatus');
-    const displayDiv = document.getElementById('eventDisplay');
-    const contentPre = document.getElementById('rawContent');
+    <!-- MINIMAL FOOTER -->
+    <footer>
+        <div>&copy; 2026 BUHS L1 PROTOCOL SYSTEMS INC. ALL OPERATIONS LOGGED.</div>
+        <div class="footer-socials">
+            <a href="https://github.com/BigtreeUniversal/Xylem_Protocol" target="_blank" aria-label="Github Repo"><i class="fa-brands fa-github"></i></a>
+            <a href="#" aria-label="X Network"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="#" aria-label="Discord Channel"><i class="fa-brands fa-discord"></i></a>
+        </div>
+    </footer>
 
-    if (!eventId || eventId.length !== 64) {
-        statusDiv.innerHTML = '<span style="color:#f85149;">&gt; Erreur : L\'Event ID doit contenir exactement 64 caractères hexadécimaux.</span>';
-        displayDiv.style.display = 'none';
-        return;
-    }
+    <!-- SCRIPTS INTERACTIFS TERMINAL -->
+    <script>
+        // Navigation Hamburger
+        const menuBtn = document.getElementById('menuBtn');
+        const navOverlay = document.getElementById('navOverlay');
 
-    // Relais Nostr publics par défaut pour l'interrogation
-    const relays = [
-        "wss://relay.damus.io",
-        "wss://nos.lol",
-        "wss://relay.nostr.band",
-        "wss://purplepag.es"
-    ];
+        menuBtn.addEventListener('click', toggleNav);
 
-    statusDiv.innerHTML = '<span style="color:var(--accent-amber);">&gt; Connexion aux relais Nostr en cours...</span>';
-    displayDiv.style.display = 'none';
+        function toggleNav() {
+            menuBtn.classList.toggle('active');
+            navOverlay.classList.toggle('active');
+        }
 
-    let foundEvent = null;
+        // Script Recherche Event Nostr
+        async function searchNostrEvent() {
+            const eventId = document.getElementById('nostrEventId').value.trim();
+            const statusDiv = document.getElementById('searchStatus');
+            const displayDiv = document.getElementById('eventDisplay');
+            const contentPre = document.getElementById('rawContent');
 
-    // Requête via WebSocket natif
-    const fetchFromRelay = (relayUrl) => {
-        return new Promise((resolve) => {
-            try {
-                const ws = new WebSocket(relayUrl);
-                const subId = "sub_" + Math.random().toString(36).substring(2, 8);
+            if (!eventId || eventId.length !== 64) {
+                statusDiv.innerHTML = '<span style="color:#ff5f56;">&gt; Erreur : L\'Event ID doit contenir exactement 64 caractères hexadécimaux.</span>';
+                displayDiv.style.display = 'none';
+                return;
+            }
 
-                ws.onopen = () => {
-                    // Envoie du filtre de recherche REQ par ID d'événement (NIP-01)
-                    ws.send(JSON.stringify(["REQ", subId, { "ids": [eventId] }]));
-                };
+            const relays = [
+                "wss://relay.damus.io",
+                "wss://nos.lol",
+                "wss://relay.nostr.band",
+                "wss://purplepag.es"
+            ];
 
-                ws.onmessage = (msg) => {
-                    const data = JSON.parse(msg.data);
-                    if (data[0] === "EVENT" && data[2]?.id === eventId) {
-                        foundEvent = data[2];
-                        ws.close();
-                        resolve(foundEvent);
-                    } else if (data[0] === "EOSE") {
-                        ws.close();
+            statusDiv.innerHTML = '<span style="color:var(--text-muted);">&gt; Connexion aux relais Nostr en cours...</span>';
+            displayDiv.style.display = 'none';
+
+            let foundEvent = null;
+
+            const fetchFromRelay = (relayUrl) => {
+                return new Promise((resolve) => {
+                    try {
+                        const ws = new WebSocket(relayUrl);
+                        const subId = "sub_" + Math.random().toString(36).substring(2, 8);
+
+                        ws.onopen = () => {
+                            ws.send(JSON.stringify(["REQ", subId, { "ids": [eventId] }]));
+                        };
+
+                        ws.onmessage = (msg) => {
+                            const data = JSON.parse(msg.data);
+                            if (data[0] === "EVENT" && data[2]?.id === eventId) {
+                                foundEvent = data[2];
+                                ws.close();
+                                resolve(foundEvent);
+                            } else if (data[0] === "EOSE") {
+                                ws.close();
+                                resolve(null);
+                            }
+                        };
+
+                        ws.onerror = () => resolve(null);
+                        setTimeout(() => { ws.close(); resolve(null); }, 3000);
+                    } catch(e) {
                         resolve(null);
                     }
-                };
+                });
+            };
 
-                ws.onerror = () => resolve(null);
-                setTimeout(() => { ws.close(); resolve(null); }, 3000); // Timeout 3s
-            } catch(e) {
-                resolve(null);
+            const results = await Promise.all(relays.map(r => fetchFromRelay(r)));
+            const event = results.find(e => e !== null);
+
+            if (event) {
+                statusDiv.innerHTML = `<span style="color:var(--accent);">&gt; Événement trouvé sur le réseau Nostr !</span>`;
+                contentPre.innerText = JSON.stringify(event, null, 2);
+                displayDiv.style.display = 'block';
+            } else {
+                statusDiv.innerHTML = `<span style="color:#ff5f56;">&gt; Aucun événement trouvé pour cet ID sur les relais interrogés.</span>`;
             }
-        });
-    };
-
-    // Recherche en parallèle sur l'ensemble des relais
-    const results = await Promise.all(relays.map(r => fetchFromRelay(r)));
-    const event = results.find(e => e !== null);
-
-    if (event) {
-        statusDiv.innerHTML = `<span style="color:var(--accent-green);">&gt; Événement trouvé sur le réseau Nostr !</span>`;
-        contentPre.innerText = JSON.stringify(event, null, 2);
-        displayDiv.style.display = 'block';
-    } else {
-        statusDiv.innerHTML = `<span style="color:#f85149;">&gt; Aucun événement trouvé pour cet ID sur les relais interrogés.</span>`;
-    }
-}
-
-// Fonction pour envoyer automatiquement le contenu dans le décodeur OTS si présent
-function autoFillPayload() {
-    const rawContent = document.getElementById('rawContent').innerText;
-    try {
-        const eventObj = JSON.parse(rawContent);
-        const nostrInput = document.getElementById('nostrPayload');
-        if (nostrInput) {
-            nostrInput.value = eventObj.content;
-            nostrInput.scrollIntoView({ behavior: 'smooth' });
         }
-    } catch(e) {
-        alert("Impossible d'extraire le payload de cet événement.");
-    }
-}
-</script>
 
-        <!-- NOUVEAU MODULE : DECODEUR NOSTR INSTANTANE -->
-<div class="card">
-    <div class="card-title">
-        <span class="prompt-symbol">$</span> DECODEUR_NOSTR_OTS // CONVERTISSEUR INSTANTANE
-    </div>
-    <p>Collez ici le texte brut de la publication Nostr pour extraire directement la preuve <code>.ots</code> binaire :</p>
-
-    <textarea id="nostrPayload" style="width:100%; height:80px; background:#090d12; color:var(--accent-green); border:1px solid var(--panel-border); border-radius:4px; padding:10px; margin:10px 0; font-family:var(--font-mono); font-size:12px;" placeholder='Exemple: {"xylem_1785196801399.jpg": {"ots": "AE9wZW5UaW1lc3RhbXBz...", "cid": "..."}}'></textarea>
-
-    <button onclick="extractOTS()" class="link-btn" style="cursor:pointer; background:var(--accent-green); color:#000;">
-        &gt; Extraire &amp; Télécharger les fichiers .ots
-    </button>
-
-    <div id="extractionResult" style="margin-top:15px;"></div>
-</div>
-
-<script>
-function extractOTS() {
-    const rawInput = document.getElementById('nostrPayload').value.trim();
-    const resultDiv = document.getElementById('extractionResult');
-    resultDiv.innerHTML = '';
-
-    try {
-        const data = JSON.parse(rawInput);
-        let count = 0;
-
-        for (const [filename, content] of Object.entries(data)) {
-            if (content.ots) {
-                count++;
-                const otsFilename = filename.endsWith('.jpg') ? filename.replace('.jpg', '.ots') : filename + '.ots';
-
-                // Conversion Base64 vers Binaire Blob
-                const byteCharacters = atob(content.ots);
-                const byteNumbers = new Array(byteCharacters.length);
-                for (let i = 0; i < byteCharacters.length; i++) {
-                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+        function autoFillPayload() {
+            const rawContent = document.getElementById('rawContent').innerText;
+            try {
+                const eventObj = JSON.parse(rawContent);
+                const nostrInput = document.getElementById('nostrPayload');
+                if (nostrInput) {
+                    nostrInput.value = eventObj.content;
+                    nostrInput.scrollIntoView({ behavior: 'smooth' });
                 }
-                const byteArray = new Uint8Array(byteNumbers);
-                const blob = new Blob([byteArray], {type: "application/octet-stream"});
-                const otsUrl = URL.createObjectURL(blob);
-
-                // Affichage d'un bouton de téléchargement direct
-                const item = document.createElement('div');
-                item.style.cssText = "background:#18202a; padding:8px 12px; margin-bottom:6px; border-radius:4px; border:1px solid var(--panel-border); display:flex; justify-content:space-between; align-items:center;";
-                item.innerHTML = `
-                    <span>📄 <strong>${otsFilename}</strong></span>
-                    <a href="${otsUrl}" download="${otsFilename}" class="link-btn">&gt; Télécharger .ots</a>
-                `;
-                resultDiv.appendChild(item);
+            } catch(e) {
+                alert("Impossible d'extraire le payload de cet événement.");
             }
         }
 
-        if(count === 0) {
-            resultDiv.innerHTML = '<span style="color:var(--accent-amber);">&gt; Aucun payload OTS valide trouvé dans ce JSON.</span>';
+        // Script Décodeur OTS
+        function extractOTS() {
+            const rawInput = document.getElementById('nostrPayload').value.trim();
+            const resultDiv = document.getElementById('extractionResult');
+            resultDiv.innerHTML = '';
+
+            try {
+                const data = JSON.parse(rawInput);
+                let count = 0;
+
+                for (const [filename, content] of Object.entries(data)) {
+                    if (content.ots) {
+                        count++;
+                        const otsFilename = filename.endsWith('.jpg') ? filename.replace('.jpg', '.ots') : filename + '.ots';
+
+                        const byteCharacters = atob(content.ots);
+                        const byteNumbers = new Array(byteCharacters.length);
+                        for (let i = 0; i < byteCharacters.length; i++) {
+                            byteNumbers[i] = byteCharacters.charCodeAt(i);
+                        }
+                        const byteArray = new Uint8Array(byteNumbers);
+                        const blob = new Blob([byteArray], {type: "application/octet-stream"});
+                        const otsUrl = URL.createObjectURL(blob);
+
+                        const item = document.createElement('div');
+                        item.style.cssText = "background:var(--surface-accent); padding:10px 14px; margin-bottom:8px; border-radius:4px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;";
+                        item.innerHTML = `
+                            <span>📄 <strong>${otsFilename}</strong></span>
+                            <a href="${otsUrl}" download="${otsFilename}" class="link-btn">&gt; Télécharger .ots</a>
+                        `;
+                        resultDiv.appendChild(item);
+                    }
+                }
+
+                if(count === 0) {
+                    resultDiv.innerHTML = '<span style="color:var(--text-muted);">&gt; Aucun payload OTS valide trouvé dans ce JSON.</span>';
+                }
+            } catch (e) {
+                resultDiv.innerHTML = '<span style="color:#ff5f56;">&gt; Erreur : Le texte collé n\'est pas un JSON Nostr valide.</span>';
+            }
         }
-    } catch (e) {
-        resultDiv.innerHTML = '<span style="color:#f85149;">&gt; Erreur : Le texte collé n\'est pas un JSON Nostr valide.</span>';
-    }
-}
-</script>
-
-<p>Consulter directement l'événement source sur un explorateur de relais Nostr (Jumble, Coracle, Fevela, YakiHonne) tout en VERIFIANT BIEN LA DATE J+1 :</p>
-<a href="https://njump.me/npub1apk7pxgm929h0mj59hecvyfkl46m3zvwttgfufa45e2lec3evlmqs85zmx" target="_blank" class="link-btn">
-    &gt; Inspecter la note Nostr (Nostr.band)
-</a>
-
-        <!-- Étape 3 -->
-        <div class="step-block active">
-            <div class="step-header">[ ÉTAPE 3 ] Soumission et Vérification sur OpenTimestamps</div>
-            <div class="step-content">
-                <p>Rendez-vous sur l'outil de vérification indépendant <strong>OpenTimestamps</strong> :</p>
-                <a href="https://opentimestamps.org/" target="_blank" class="link-btn">&gt; Accéder au vérificateur OpenTimestamps.org</a>
-
-                <p style="margin-top: 10px;">
-                    Glissez-déposez conjointement <strong>l'image (.jpg)</strong> et sa <strong>preuve horodatée (.ots)</strong> pour valider l'ancrage temporel exact dans la blockchain Bitcoin.
-                </p>
-
-                <!-- Emplacement pour illustration 3 -->
-                <div class="img-container">
-    <img src="OTS.png" alt="Vue de la page" class="terminal-img">
-    <span class="img-caption">&gt; CAPTURE 03: Vue de la page interface de OpenTimeStamped</span>
-</div>
-
-        </div>
-
-
-        <!-- PARTIE B : SMART CONTRACT BASE L2 -->
-        <!-- PARTIE B : SMART CONTRACT BASE L2 -->
-        <div class="section-divider">
-            <span class="prompt-symbol">#</span> MODULE 2: ANCRAGE SMART CONTRACT QUOTIDIEN (BASE L2 ETHEREUM)
-        </div>
-
-        <!-- Étape 4 -->
-        <div class="step-block active">
-            <div class="step-header">[ ÉTAPE 4 ] Localiser la transaction du jour sur Basescan</div>
-            <div class="step-content">
-                <p>
-                    Le smart contract enregistre un ancrage automatique par jour. En raison du volume quotidien de transactions sur la blockchain, les transactions datant de plus d'un mois ne sont plus directement visibles sur la première page de Basescan.
-                </p>
-                <p><strong>Pour retrouver la transaction d'une date précise :</strong></p>
-                <p>1. Accédez à l'outil de conversion de date en bloc de Basescan :</p>
-                <a href="https://basescan.org/blockdateconverter" target="_blank" class="link-btn">&gt; Ouvrir le Block &amp; Date Converter sur Basescan</a>
-
-                <p style="margin-top: 10px;">
-                    2. Entrez la date et l'heure approximatives de l'ancrage quotidien (ancrage J+1 generalement entre 5:00 et 7:00 UTC) pour obtenir le <strong>numéro de bloc</strong> correspondant.
-                </p>
-                <p>
-                    3. Ouvrez ensuite la page officielle du Smart Contract Xylem Log :
-                </p>
-                <a href="https://basescan.org/address/0xc88160cc2f3f8171c7782d220bc92ba8f6e426a3" target="_blank" class="link-btn">&gt; Consulter le Smart Contract sur Basescan</a>
-
-                <p style="margin-top: 10px;">
-                    4. Repérez la transaction émise autour du numéro de bloc identifié et cliquez sur son <strong>Transaction Hash (TxHash)</strong>.
-                </p>
-
-                <div class="img-container">
-                    <img src="detail1.png" alt="Vue de la page Basescan du Smart Contract" class="terminal-img">
-                    <span class="img-caption">&gt; CAPTURE 04: Consultation des transactions du Smart Contract sur Basescan L2</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Étape 5 -->
-        <div class="step-block active">
-            <div class="step-header">[ ÉTAPE 5 ] Extraction des données (Input Data) &amp; Comparaison Audit</div>
-            <div class="step-content">
-                <p>Une fois sur la page de détails de la transaction :</p>
-
-                <p>1. Descendez en bas de la page et cliquez sur le lien/bouton : <code>Click to show more</code>.</p>
-
-                <p>2. Localisez la section <strong>Input Data</strong>.</p>
-
-                <p>3. Dans le sélecteur d'affichage de l'Input Data (par défaut souvent positionné sur <i>Hex</i>), sélectionnez : <strong>View Input As UTF-8</strong>.</p>
-
-                <div class="code-block">
-                    Format décodé (UTF-8) :<br>
-                    Ex: "Xylem Log 2026-08-10 Root Hash: 0x... IPFS CID: Qm..."
-                </div>
-
-                <p>
-                    4. **Audit final :** Comparez l'empreinte (Root Hash / CID) affichée dans cet Input Data UTF-8 avec celle publiée sur le journal <strong>Xylem Log [ETAPE1]</strong> du jour correspondant. L'exactitude stricte entre les deux valeurs confirme la validité et l'intégrité de l'ancrage blockchain.
-                </p>
-            </div>
-        </div>
-
+    </script>
 </body>
 </html>

@@ -198,51 +198,51 @@
     <p>
         The BUHS L1 protocol relies on a <strong>zero-trust, zero-knowledge, client-side audit model</strong>. Rather than asking you to blindly trust our servers, the application exports raw cryptographic proofs directly into your browser. Your local machine independently recalculates the mathematics to verify data integrity, chronological continuity, and absolute timestamping[cite: 8].
     </p>
-    <p>This verification rests on three foundational cryptographic pillars[cite: 8]:</p>
+    <p>This verification rests on three foundational cryptographic pillars:</p>
 
     <!-- Pillar 1 -->
     <div class="pillar-card">
         <div class="pillar-title">1. Deterministic Leaf Integrity (SHA-256 Single-Transaction Proof)</div>
-        <p>At the granular level, every transaction or file registered in the protocol is compressed into a unique, immutable cryptographic footprint called a <code>Leaf Hash</code>[cite: 8].</p>
-        <p>To verify a transaction, your browser takes the original raw inputs—the precise nanosecond timestamp (<code>nano_time</code>), the transaction identifier (<code>uuid</code>), the execution context (<code>pipeline_id</code>), and the local SHA-256 fingerprint of your file (<code>file_sha256</code>)—and concatenates them into a single byte stream[cite: 8]:</p>
+        <p>At the granular level, every transaction or file registered in the protocol is compressed into a unique, immutable cryptographic footprint called a <code>Leaf Hash</code>.</p>
+        <p>To verify a transaction, your browser takes the original raw inputs—the precise nanosecond timestamp (<code>nano_time</code>), the transaction identifier (<code>uuid</code>), the execution context (<code>pipeline_id</code>), and the local SHA-256 fingerprint of your file (<code>file_sha256</code>)—and concatenates them into a single byte stream:</p>
         
         <div class="formula-box">
             Leaf_Hash = SHA256( nano_time ║ uuid ║ pipeline_id ║ file_sha256 )
         </div>
 
         <div class="proof-note">
-            <strong style="color:var(--accent-amber);">The Proof:</strong> Your client side recalculates this formula locally[cite: 8]. If <code>recomputedLeaf</code> matches <code>proofData.transaction.leaf_hash</code> down to the exact bit, it provides absolute mathematical certainty that neither the file content nor its metadata has been modified since creation[cite: 8]. Given SHA-256’s collision resistance (2<sup>-256</sup> probability of a random match), forging this proof is computationally impossible[cite: 8].
+            <strong style="color:var(--accent-amber);">The Proof:</strong> Your client side recalculates this formula locally. If <code>recomputedLeaf</code> matches <code>proofData.transaction.leaf_hash</code> down to the exact bit, it provides absolute mathematical certainty that neither the file content nor its metadata has been modified since creation. Given SHA-256’s collision resistance (2<sup>-256</sup> probability of a random match), forging this proof is computationally impossible.
         </div>
     </div>
 
     <!-- Pillar 2 -->
     <div class="pillar-card blue">
         <div class="pillar-title">2. Ledger Chronological Continuity (Merkle Sealing)</div>
-        <p>Individual transactions are aggregated into a daily Merkle Tree (<code>Day_Merkle</code>)[cite: 8]. To prevent any historical tampering, rewriting, or deletion of past events, the daily ledger is chained to the previous day's state via a deterministic cryptographic seal[cite: 8]:</p>
+        <p>Individual transactions are aggregated into a daily Merkle Tree (<code>Day_Merkle</code>). To prevent any historical tampering, rewriting, or deletion of past events, the daily ledger is chained to the previous day's state via a deterministic cryptographic seal:</p>
         
         <div class="formula-box" style="color:var(--accent-blue);">
             Sealed_Root = SHA256( Parent_Root ║ Day_Merkle )
         </div>
 
         <div class="proof-note">
-            <strong style="color:var(--accent-blue);">The Proof:</strong> During the local audit sequence, your browser fetches the public registry's <code>Parent_Root</code> and <code>Day_Merkle</code>, then computes their combined hash[cite: 8]. If <code>SHA256(Parent + Day) == Sealed_Root</code>, it proves unbroken historical continuity[cite: 8]. Modifying a single past transaction would invalidate the entire downstream chain of seals, making secret ledger alteration mathematically detectable[cite: 8].
+            <strong style="color:var(--accent-blue);">The Proof:</strong> During the local audit sequence, your browser fetches the public registry's <code>Parent_Root</code> and <code>Day_Merkle</code>, then computes their combined hash. If <code>SHA256(Parent + Day) == Sealed_Root</code>, it proves unbroken historical continuity. Modifying a single past transaction would invalidate the entire downstream chain of seals, making secret ledger alteration mathematically detectable.
         </div>
     </div>
 
     <!-- Pillar 3 -->
     <div class="pillar-card purple">
         <div class="pillar-title">3. Absolute Temporal Anchoring (OpenTimestamps &amp; Bitcoin L1)</div>
-        <p>To guarantee that a transaction existed at a specific point in real-world time, the protocol extracts timestamp proofs (<code>.ots</code> files) broadcasted over the decentralized Nostr network[cite: 8].</p>
+        <p>To guarantee that a transaction existed at a specific point in real-world time, the protocol extracts timestamp proofs (<code>.ots</code> files) broadcasted over the decentralized Nostr network.</p>
 
         <div class="proof-note">
-            <strong style="color:var(--accent-purple);">The Proof:</strong> An <code>.ots</code> file contains a cryptographic path of sequential hashes culminating in a hash commitment embedded directly inside a physical Bitcoin block[cite: 8]. Because altering a confirmed Bitcoin block requires overcoming the aggregate proof-of-work of the entire Bitcoin mining network, this offers an indisputable Proof of Existence: it mathematically demonstrates that your file existed prior to the mining of that specific Bitcoin block height[cite: 8].
+            <strong style="color:var(--accent-purple);">The Proof:</strong> An <code>.ots</code> file contains a cryptographic path of sequential hashes culminating in a hash commitment embedded directly inside a physical Bitcoin block. Because altering a confirmed Bitcoin block requires overcoming the aggregate proof-of-work of the entire Bitcoin mining network, this offers an indisputable Proof of Existence: it mathematically demonstrates that your file existed prior to the mining of that specific Bitcoin block height.
         </div>
     </div>
 
     <!-- Module 1 JS -->
     <h2>Client-Side Verification Logic</h2>
     
-    <div class="code-title">// MODULE MERKLE BUILDER (RECONSTRUCTION LOCALE CLIENT-SIDE)[cite: 8]</div>
+    <div class="code-title">// MODULE MERKLE BUILDER (RECONSTRUCTION LOCALE CLIENT-SIDE)</div>
 <pre><span class="keyword">async function</span> <span class="function">buildMerkleRootLocally</span>(leaves) {
     <span class="keyword">if</span> (!leaves || leaves.length === 0) <span class="keyword">return null</span>;
     <span class="keyword">if</span> (leaves.length === 1) <span class="keyword">return</span> leaves[0];
@@ -252,23 +252,23 @@
         <span class="keyword">const</span> nextLevel = [];
         <span class="keyword">for</span> (<span class="keyword">let</span> i = 0; i &lt; currentLevel.length; i += 2) {
             <span class="keyword">if</span> (i + 1 &lt; currentLevel.length) {
-                <span class="comment">// Concaténation et hachage des paires : SHA256(Node_A + Node_B)[cite: 8]</span>
+                <span class="comment">// Concaténation et hachage des paires : SHA256(Node_A + Node_B)</span>
                 <span class="keyword">const</span> combinedHash = <span class="keyword">await</span> <span class="function">sha256Hex</span>(currentLevel[i] + currentLevel[i + 1]);
                 nextLevel.push(combinedHash);
             } <span class="keyword">else</span> {
-                <span class="comment">// Gestion du nombre impair de feuilles (duplication de la dernière feuille)[cite: 8]</span>
+                <span class="comment">// Gestion du nombre impair de feuilles (duplication de la dernière feuille)</span>
                 <span class="keyword">const</span> combinedHash = <span class="keyword">await</span> <span class="function">sha256Hex</span>(currentLevel[i] + currentLevel[i]);
                 nextLevel.push(combinedHash);
             }
         }
         currentLevel = nextLevel;
     }
-    <span class="keyword">return</span> currentLevel[0]; <span class="comment">// Renvoie le Day Merkle recalculé[cite: 8]</span>
+    <span class="keyword">return</span> currentLevel[0]; <span class="comment">// Renvoie le Day Merkle recalculé</span>
 }</pre>
 
     <!-- Module 2 JS -->
-    <div class="code-title">// AUDIT SEQUENCE (EXTRACTION ET VALIDATION DU SCELLÉ)[cite: 8]</div>
-<pre><span class="comment">// 4. RÉCUPÉRATION DU JOURNAL DU JOUR ET DES FEUILLES[cite: 8]</span>
+    <div class="code-title">// AUDIT SEQUENCE (EXTRACTION ET VALIDATION DU SCELLÉ)</div>
+<pre><span class="comment">// 4. RÉCUPÉRATION DU JOURNAL DU JOUR ET DES FEUILLES</span>
 <span class="keyword">const</span> isoDateStr = proofData.transaction.nano_time.split(<span class="string">'T'</span>)[0];
 <span class="keyword">const</span> journalUrl = <span class="string">`https://xylem.bigtreeconnection.com/page-${isoDateStr}.html`</span>;
 <span class="function">addLogLine</span>(<span class="string">`Appel du registre public pour la date : ${isoDateStr}...`</span>, <span class="string">'console-warning'</span>);
@@ -280,22 +280,22 @@
 <span class="keyword">const</span> parser = <span class="keyword">new</span> DOMParser();
 <span class="keyword">const</span> doc = parser.parseFromString(htmlText, <span class="string">"text/html"</span>);
 
-<span class="comment">// Extraction de la racine inscrite sur la page[cite: 8]</span>
+<span class="comment">// Extraction de la racine inscrite sur la page</span>
 <span class="keyword">const</span> dayMerkleFromRegistry = doc.querySelectorAll(<span class="string">'.box p'</span>)[1].querySelector(<span class="string">'span.select-all'</span>).innerText.trim();
 <span class="keyword">const</span> parentRoot = doc.querySelectorAll(<span class="string">'.box p'</span>)[2].querySelector(<span class="string">'span.select-all'</span>).innerText.trim();
 <span class="keyword">const</span> sealedRoot = doc.querySelectorAll(<span class="string">'.box p'</span>)[3].querySelector(<span class="string">'span.select-all'</span>).innerText.trim();
 
-<span class="comment">// Extraction de la liste complète des leaf_hash du jour[cite: 8]</span>
+<span class="comment">// Extraction de la liste complète des leaf_hash du jour</span>
 <span class="keyword">const</span> rawLeavesElements = doc.querySelectorAll(<span class="string">'.leaf-item'</span>);
 <span class="keyword">const</span> allLeavesOfDay = Array.from(rawLeavesElements).map(el =&gt; el.innerText.trim());
 
-<span class="comment">// A. Vérification de présence de la feuille[cite: 8]</span>
+<span class="comment">// A. Vérification de présence de la feuille</span>
 <span class="keyword">if</span> (allLeavesOfDay.length &gt; 0 &amp;&amp; !allLeavesOfDay.includes(proofData.transaction.leaf_hash)) {
     <span class="function">addLogLine</span>(<span class="string">"🚨 ÉCHEC : La feuille de la transaction n'existe pas dans le registre du jour !"</span>, <span class="string">"console-error"</span>);
     <span class="keyword">return</span>;
 }
 
-<span class="comment">// B. APPEL DU MERKLE BUILDER LOCAL[cite: 8]</span>
+<span class="comment">// B. APPEL DU MERKLE BUILDER LOCAL</span>
 <span class="function">addLogLine</span>(<span class="string">"Reconstruction locale de l'Arbre de Merkle via le client..."</span>, <span class="string">"console-warning"</span>);
 <span class="keyword">const</span> recomputedDayMerkle = <span class="keyword">await</span> <span class="function">buildMerkleRootLocally</span>(allLeavesOfDay);
 
@@ -305,7 +305,7 @@
 }
 <span class="function">addLogLine</span>(<span class="string">"✔ Reconstruction de l'arbre de Merkle réussie en local."</span>, <span class="string">"console-success"</span>);
 
-<span class="comment">// 5. VÉRIFICATION DU SCELLÉ : SEALED = SHA256(PARENT + DAY)[cite: 8]</span>
+<span class="comment">// 5. VÉRIFICATION DU SCELLÉ : SEALED = SHA256(PARENT + DAY)</span>
 <span class="keyword">const</span> computedSealed = <span class="keyword">await</span> <span class="function">sha256Hex</span>(parentRoot + dayMerkleFromRegistry);</pre>
 
 </div>

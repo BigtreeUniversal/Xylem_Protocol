@@ -1,8 +1,10 @@
-# 🌳 BUHS — Big Tree Universal Harmonic System
+# BUHS — Big Tree Universal Harmonic System
 > **Xylem Substrate & Cryptographic Log Protocol**  
 > *A deterministic, multi-chain anchored ledger for temporal data & astronomical image verification.*
 
-![BUHS Network Banner]([images/image2.png](https://xylem.bigtreeconnection.com/BUHS%20(Big%20Tree%20Universal%20Harmonic%20System)%20%E2%80%94%20Daily%20Log%20&%20Cryptographic%20Audit%20User%20Guide/doc9.png)) <!-- Banner / Architecture Overview image placeholder -->
+![BUHS Network Banner](https://bigtreeconnection.com/home/blockchain_tree.avif)
+
+<!-- Banner / Architecture Overview image placeholder -->
 
 ---
 
@@ -30,12 +32,12 @@ The `xylem.bigtreeconnection.com` repository serves as the public core for daily
 
 ### 2. State Compilation & Merkle Tree Aggregation
 - **Daily Epoch Closure:** Sealed daily post-00:00 UTC.
-- **Merkle Tree Builder:** A dedicated Python engine compiles daily payloads, parent hash links ($H_{parent} \rightarrow H_{day}$), and arboreal branch identifiers into a unified state root[cite: 9].
-- **Automated Publishing:** GitHub Actions generates static Web3 ledger pages deployed directly to the edge network[cite: 9].
+- **Merkle Tree Builder:** A dedicated Python engine compiles daily payloads, parent hash links ($H_{parent} \rightarrow H_{day}$), and arboreal branch identifiers into a unified state root.
+- **Automated Publishing:** GitHub Actions generates static Web3 ledger pages deployed directly to the edge network.
 
 ### 3. Multi-Chain Settlement & Nostr Broadcast
-- **Ethereum L2 Settlement:** The daily Merkle Root ($H$), parent hash, branch ID, and 24 IPFS CIDs are committed immutably on-chain[cite: 9].
-- **Nostr Relay Broadcast:** Hourly OTS proof files are encrypted on-the-fly and published alongside IPFS URIs over Nostr relays[cite: 9]. *(Note: OTS files are purged locally post-broadcast and retrieved via Nostr for auditing)*[cite: 9].
+- **Ethereum L2 Settlement:** The daily Merkle Root ($H$), parent hash, branch ID, and 24 IPFS CIDs are committed immutably on-chain].
+- **Nostr Relay Broadcast:** Hourly OTS proof files are encrypted on-the-fly and published alongside IPFS URIs over Nostr relays. *(Note: OTS files are purged locally post-broadcast and retrieved via Nostr for auditing)*.
 
 ---
 
@@ -43,15 +45,15 @@ The `xylem.bigtreeconnection.com` repository serves as the public core for daily
 
 | Interface | Access Point | Description |
 | :--- | :--- | :--- |
-| **Official Daily Log** | [`xylem/index.html`](https://xylem.bigtreeconnection.com/index.html)[cite: 9] | Un-truncated CIDs, raw state audit, direct Swiss node delivery[cite: 9]. |
-| **Optimized Mirror** | [`xylem/index_xylem.html`](https://xylem.bigtreeconnection.com/index_xylem.html)[cite: 9] | Edge-cached asset delivery optimized for mobile rendering[cite: 9]. |
-| **Audit Console** | [`xylem/audit_console.html`](https://xylem.bigtreeconnection.com/verif_protocol/audit_console.html)[cite: 9] | Programmatic verification suite for hashes, Merkle roots & L2 logs[cite: 9]. |
+| **Official Daily Log** | [`xylem/index.html`](https://xylem.bigtreeconnection.com/index.html)[cite: 9] | Un-truncated CIDs, raw state audit, direct Swiss node delivery. |
+| **Optimized Mirror** | [`xylem/index_xylem.html`](https://xylem.bigtreeconnection.com/index_xylem.html)[cite: 9] | Edge-cached asset delivery optimized for mobile rendering. |
+| **Audit Console** | [`xylem/audit_console.html`](https://xylem.bigtreeconnection.com/verif_protocol/audit_console.html)[cite: 9] | Programmatic verification suite for hashes, Merkle roots & L2 logs. |
 
 ---
 
 ## 🔍 Cryptographic Verification Guide
 
-To perform an independent cryptographic audit of any daily epoch[cite: 9]:
+To perform an independent cryptographic audit of any daily epoch:
 
 ```bash
 # 1. Fetch encrypted OTS timestamp proofs from the Nostr Protocol
@@ -67,19 +69,20 @@ ots verify timestamp_proof.ots
 You can also run automated verification directly in-browser using our On-Chain Audit Console.
 
 🌐 Ecosystem Network Endpoints
+
 🔗 Blockchain Log (Zurich Node): xylem.bigtreeconnection.com/index.html
 
 
-📱 Mobile Optimized Log: [xylem.bigtreeconnection.com/index_xylem.html](https://xylem.bigtreeconnection.com/index_xylem.html)
+📱 Mobile Optimized Log: xylem.bigtreeconnection.com/index_xylem.html
 
 
 🔑 Nostr Identity: npub1apk7pxgm929h0mj59hecvyfkl46m3zvwttgfufa45e2lec3evlmqs85zmx
 
 
-⏱️ Nano-Time Stamper: [bigtreeconnection.com/buhs/Time-Stamper](https://bigtreeconnection.com/buhs/Time-Stamper/index.html)
+⏱️ Nano-Time Stamper: bigtreeconnection.com/buhs/Time-Stamper/index:html
 
 
-🕸️ Network Architecture: [bigtreeconnection.com/buhs/Tree_of_life/network.html](https://bigtreeconnection.com/buhs/Tree_of_life/network.html)
+🕸️ Network Architecture: bigtreeconnection.com/buhs/Tree_of_life/network.html
 
 
 📫 Contact & Security
@@ -88,7 +91,7 @@ For protocol specs, node pairing, or cryptographic security inquiries:
 Email: bigtreeuniversal@proton.me
 
 
-Repository: [https://github.com/BigtreeUniversal/Xylem_Protocol](https://github.com/BigtreeUniversal/Xylem_Protocol)
+Repository: github.com/BigtreeUniversal/Xylem_Protocol
 
  ____  _       _                 
 | __ )(_) __ _| |_ _ __ ___  ___ 

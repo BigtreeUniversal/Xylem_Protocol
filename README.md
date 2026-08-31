@@ -56,15 +56,26 @@ The `xylem.bigtreeconnection.com` repository serves as the public core for daily
 To perform an independent cryptographic audit of any daily epoch:
 
 ```bash
+
+██████╗ ██╗   ██╗██╗  ██╗███████╗
+██╔══██╗██║   ██║██║  ██║██╔════╝
+██████╔╝██║   ██║███████║███████╗
+██╔══██╗██║   ██║██╔══██║╚════██║
+██████╔╝╚██████╔╝██║  ██║███████║
+╚══════╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝
+
+--- UNIVERSAL HARMONIC SYSTEM ---
+
+
 # 1. Fetch encrypted OTS timestamp proofs from the Nostr Protocol
 npub: npub1apk7pxgm929h0mj59hecvyfkl46m3zvwttgfufa45e2lec3evlmqs85zmx
 
 # 2. Verify IPFS Image Payload Integrity
-ipfs cat /ipfs/<TARGET_IMAGE_CID> > image.jpg
-sha256sum image.jpg
+https://dweb.link/ipfs/<TARGET_IMAGE_CID>
+https://ipfs.io/ipfs/<TARGET_IMAGE_CID>
 
-# 3. Verify Bitcoin OTS Proof
-ots verify timestamp_proof.ots
+# 3. Verify Bitcoin Oracle OTS Proof
+https://bigtreeconnection.com/web3/Groundation_of_the_day.html
 
 You can also run automated verification directly in-browser using our On-Chain Audit Console.
 
@@ -90,14 +101,16 @@ For protocol specs, node pairing, or cryptographic security inquiries:
 
 Email: bigtreeuniversal@proton.me
 
-
 Repository: github.com/BigtreeUniversal/Xylem_Protocol
 
- ____  _       _                 
-| __ )(_) __ _| |_ _ __ ___  ___ 
+Bigtree dashboard : bigtreeconnection.com/web3/daily_log.html
+
+ ____  _       _
+| __ )(_) __ _| |_ _ __ ___  ___
 |  _ \| |/ _` | __| '__/ _ \/ _ \
 | |_) | | (_| | |_| | |  __/  __/
 |____/|_|\__, |\__|_|  \___|\___|
-         |___/                   
+         |___/ web3_protocols2026
+
 
 

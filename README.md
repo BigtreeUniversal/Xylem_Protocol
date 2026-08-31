@@ -66,6 +66,10 @@ To perform an independent cryptographic audit of any daily epoch:
 
 --- UNIVERSAL HARMONIC SYSTEM ---
 
+Welcome into BUHS Xylem Blockchain
+
+Read the Documentation:
+https://xylem.bigtreeconnection.com/documentation.html
 
 # 1. Fetch encrypted OTS timestamp proofs from the Nostr Protocol
 npub: npub1apk7pxgm929h0mj59hecvyfkl46m3zvwttgfufa45e2lec3evlmqs85zmx
@@ -77,14 +81,15 @@ https://ipfs.io/ipfs/<TARGET_IMAGE_CID>
 # 3. Verify Bitcoin Oracle OTS Proof
 https://bigtreeconnection.com/web3/Groundation_of_the_day.html
 
-You can also run automated verification directly in-browser using our On-Chain Audit Console.
+You can also run verification directly in-browser using our On-Chain Audit Console:
+https://xylem.bigtreeconnection.com/verif_protocol/audit_console.html
 
 🌐 Ecosystem Network Endpoints
 
 🔗 Blockchain Log (Zurich Node): xylem.bigtreeconnection.com/index.html
 
 
-📱 Mobile Optimized Log: xylem.bigtreeconnection.com/index_xylem.html
+📱 Mobile Optimized Log : xylem.bigtreeconnection.com/index_xylem.html
 
 
 🔑 Nostr Identity: npub1apk7pxgm929h0mj59hecvyfkl46m3zvwttgfufa45e2lec3evlmqs85zmx
@@ -101,9 +106,6 @@ For protocol specs, node pairing, or cryptographic security inquiries:
 
 Email: bigtreeuniversal@proton.me
 
-Repository: github.com/BigtreeUniversal/Xylem_Protocol
-
-Bigtree dashboard : bigtreeconnection.com/web3/daily_log.html
 
  ____  _       _
 | __ )(_) __ _| |_ _ __ ___  ___

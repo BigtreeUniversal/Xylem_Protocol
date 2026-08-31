@@ -45,9 +45,9 @@ The `xylem.bigtreeconnection.com` repository serves as the public core for daily
 
 | Interface | Access Point | Description |
 | :--- | :--- | :--- |
-| **Official Daily Log** | [`xylem/index.html`](https://xylem.bigtreeconnection.com/index.html)[cite: 9] | Un-truncated CIDs, raw state audit, direct Swiss node delivery. |
-| **Optimized Mirror** | [`xylem/index_xylem.html`](https://xylem.bigtreeconnection.com/index_xylem.html)[cite: 9] | Edge-cached asset delivery optimized for mobile rendering. |
-| **Audit Console** | [`xylem/audit_console.html`](https://xylem.bigtreeconnection.com/verif_protocol/audit_console.html)[cite: 9] | Programmatic verification suite for hashes, Merkle roots & L2 logs. |
+| **Official Daily Log** | [`xylem/index.html`](https://xylem.bigtreeconnection.com/index.html) | Un-truncated CIDs, raw state audit, direct Swiss node delivery. |
+| **Optimized Mirror** | [`xylem/index_xylem.html`](https://xylem.bigtreeconnection.com/index_xylem.html) | Edge-cached asset delivery optimized for mobile rendering. |
+| **Audit Console** | [`xylem/audit_console.html`](https://xylem.bigtreeconnection.com/verif_protocol/audit_console.html) | Programmatic verification suite for hashes, Merkle roots & L2 logs. |
 
 ---
 
@@ -79,7 +79,7 @@ You can also run automated verification directly in-browser using our On-Chain A
 🔑 Nostr Identity: npub1apk7pxgm929h0mj59hecvyfkl46m3zvwttgfufa45e2lec3evlmqs85zmx
 
 
-⏱️ Nano-Time Stamper: bigtreeconnection.com/buhs/Time-Stamper/index:html
+⏱️ Nano-Time Stamper: bigtreeconnection.com/buhs/Time-Stamper/index.html
 
 
 🕸️ Network Architecture: bigtreeconnection.com/buhs/Tree_of_life/network.html

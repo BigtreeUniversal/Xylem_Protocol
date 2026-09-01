@@ -45,6 +45,7 @@ The `xylem.bigtreeconnection.com` repository serves as the public core for daily
 
 | Interface | Access Point | Description |
 | :--- | :--- | :--- |
+| **Documentation** | [`xylem/documentation.html`](https://xylem.bigtreeconnection.com/documentation.html)) | BUHS Blockchain Complete Documentation. |
 | **Official Daily Log** | [`xylem/index.html`](https://xylem.bigtreeconnection.com/index.html) | Un-truncated CIDs, raw state audit, direct Swiss node delivery. |
 | **Optimized Mirror** | [`xylem/index_xylem.html`](https://xylem.bigtreeconnection.com/index_xylem.html) | Edge-cached asset delivery optimized for mobile rendering. |
 | **Audit Console** | [`xylem/audit_console.html`](https://xylem.bigtreeconnection.com/verif_protocol/audit_console.html) | Programmatic verification suite for hashes, Merkle roots & L2 logs. |

@@ -257,14 +257,14 @@
     <ul>
         <li><strong>Daily Closure:</strong> Post-00:00 UTC, the daily transaction journal is sealed.</li>
         <li><strong>Merkle Root Generation:</strong> A dedicated Python script (<strong>Merkle Builder</strong>) aggregates and concatenates the day's state data into a cryptographic Merkle tree structure.</li>
-        <li><strong>Deployment Automation:</strong> A GitHub Actions CI/CD routine compiles this data into a standardized HTML ledger page and publishes it to the public repository.</li>
+        <li><strong>Deployment Automation:</strong> A GitHub Actions routine compiles this data into a standardized HTML ledger page and publishes it to the public repository.</li>
     </ul>
 
     <h3>2.3. Settlement &amp; Cryptographic Anchoring</h3>
-    <p>Following the compilation phase, two parallel synchronization routines finalize the daily cycle[cite: 9]:</p>
+    <p>Following the compilation phase, two parallel synchronization routines finalize the daily cycle:</p>
     <ol>
         <li><strong>Layer-2 Settlement:</strong> Extracts the twenty-four Oracle IPFS Content Identifiers (CIDs) alongside the current day's root hash (H), parent hash, and arboreal branch identifier, anchoring them immutably onto an Ethereum Layer-2 base layer contract.</li>
-        <li><strong>Nostr Event Broadcasting:</strong> On-the-fly encryption packages the twenty-four hourly OTS proof files. A Nostr protocol publication broadcasts these proofs alongside their corresponding IPFS image URIs[cite: 9]. <em style="color:var(--accent-amber);">Note: OTS files are purged from local server storage post-broadcast and must be retrieved directly from the Nostr network for auditing.</em></li>
+        <li><strong>Nostr Event Broadcasting:</strong> On-the-fly encryption packages the twenty-four hourly OTS proof files. A Nostr protocol publication broadcasts these proofs alongside their corresponding IPFS image URIs. <em style="color:var(--accent-amber);">Note: OTS files are purged from local server storage post-broadcast and must be retrieved directly from the Nostr network for auditing.</em></li>
     </ol>
 
     <!-- 3. Interface Topology -->
@@ -292,12 +292,12 @@
             </tr>
             <tr>
                 <td><strong>Image Delivery</strong></td>
-                <td>Direct retrieval via local Swiss node (Strata-1 UTC synchronized)[cite: 9]. Subject to potential bandwidth bottlenecks.</td>
+                <td>Direct retrieval via local Swiss node (Strata-1 UTC synchronized). Subject to potential bandwidth bottlenecks.</td>
                 <td>Accelerated edge-cached retrieval mitigating local server bandwidth constraints.</td>
             </tr>
             <tr>
                 <td><strong>Audit Suitability</strong></td>
-                <td>Native verification of raw structural state[cite: 9].</td>
+                <td>Native verification of raw structural state.</td>
                 <td>Fully cryptographically equivalent; suitable for visual audit and rapid asset inspection.</td>
             </tr>
         </tbody>
@@ -305,17 +305,17 @@
 
     <!-- 4. Verification Protocol -->
     <h2>4. Verification &amp; Cryptographic Auditing Protocol</h2>
-    <p>A comprehensive audit of the BUHS daily epoch requires verifying the immutable links connecting the IPFS assets, the Bitcoin timestamp proofs, and the Layer-2 smart contract state[cite: 9].</p>
+    <p>A comprehensive audit of the BUHS daily epoch requires verifying the immutable links connecting the IPFS assets, the Bitcoin timestamp proofs, and the Layer-2 smart contract state.</p>
 
     <h3>Audit Checklist</h3>
     <ol>
-        <li><strong>Retrieve Temporal Proofs:</strong> Access the <strong>Nostr network</strong> at J+1 (Day + 1) to fetch and reconstitute the twenty-four hourly <code>.ots</code> cryptographic timestamp files[cite: 9].</li>
-        <li><strong>Verify IPFS Assets:</strong> Cross-reference the image CIDs retrieved from either the Official Daily Log or the Mirror Page against decentralized nodes to confirm payload integrity[cite: 9].</li>
+        <li><strong>Retrieve Temporal Proofs:</strong> Access the <strong>Nostr network</strong> at J+1 (Day + 1) to fetch and reconstitute the twenty-four hourly <code>.ots</code> cryptographic timestamp files.</li>
+        <li><strong>Verify IPFS Assets:</strong> Cross-reference the image CIDs retrieved from either the Official Daily Log or the Mirror Page against decentralized nodes to confirm payload integrity.</li>
         <li><strong>Execute Mathematical Verification Console:</strong> Navigate to the on-site verification console to programmatically compute and verify:
             <ul style="margin-top:6px; list-style-type: square;">
                 <td>The hourly astronomical image hashes.</td>
                 <td>The daily Merkle tree root alignment.</td>
-                <td>The parent-to-branch hash continuity ($H_{parent} \rightarrow H_{day}$).</td>
+                <td>The parent-to-branch hash continuity (H_{parent} > H_{day}).</td>
                 <td>The Layer-2 Ethereum contract anchoring logs.</td>
             </ul>
         </li>
@@ -348,36 +348,37 @@
         <!-- Audit Console -->
         <div class="link-card">
             <a href="https://xylem.bigtreeconnection.com/verif_protocol/audit_console.html" target="_blank"><i class="fa-solid fa-terminal"></i> Audit Console Blockchain</a>
-            <p>full audit + verify transaction + documentation[cite: 9].</p>
+            <p>full audit + verify transaction + documentation.</p>
         </div>
 
         <!-- Nano Time Stamper -->
         <div class="link-card">
             <a href="https://bigtreeconnection.com/buhs/Time-Stamper/index.html" target="_blank"><i class="fa-solid fa-clock"></i> Nano-Time Stamper</a>
-            <p>High performance Cryptographic Timestamp[cite: 9].</p>
+            <p>High performance Cryptographic Timestamp.</p>
         </div>
 
         <!-- Network Architecture -->
         <div class="link-card">
             <a href="https://bigtreeconnection.com/buhs/Tree_of_life/network.html" target="_blank"><i class="fa-solid fa-network-wired"></i> BUHS_Tree of Life Network</a>
-            <p>Explore Complete architecture[cite: 9].</p>
+            <p>Explore Complete architecture.</p>
         </div>
 
         <!-- Contact -->
         <div class="link-card">
             <a href="mailto:bigtreeuniversal@proton.me"><i class="fa-solid fa-envelope"></i> Contact Mail</a>
-            <p>bigtreeuniversal@proton.me[cite: 9]</p>
+            <p>bigtreeuniversal@proton.me</p>
         </div>
     </div>
 
     <!-- Banner ASCII Footer -->
     <div class="ascii-art">
- ____  _        _                  
-|  _ \(_)_  ___| |_ _ __ ___  ___  
-| |_) | |/ _` | __| '__/ _ \/ _ \ 
-|  _ <| | (_| | |_| | |  __/  __/ 
-|_| \_|_|\__, |\__|_|  \___|\___| 
-         |___/ web3_protocols_2026
+ ____  _       _                 
+| __ )(_) __ _| |_ _ __ ___  ___ 
+|  _ \| |/ _` | __| '__/ _ \/ _ \
+| |_) | | (_| | |_| | |  __/  __/
+|____/|_|\__, |\__|_|  \___|\___|
+         |___/ web3_protocols2026                  
+
     </div>
 
 </div>

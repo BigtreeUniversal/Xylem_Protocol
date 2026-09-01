@@ -73,7 +73,21 @@
             text-transform: uppercase;
         }
 
+        h3 {
+            color: var(--accent-purple);
+            font-size: 0.9rem;
+            margin-top: 18px;
+            margin-bottom: 10px;
+        }
+
         p { margin-bottom: 14px; text-align: justify; }
+
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 14px;
+        }
+
+        li { margin-bottom: 6px; }
 
         /* Conteneur Image Schéma */
         .diagram-container {
@@ -189,14 +203,13 @@
 
     <!-- Schéma Central -->
     <div class="diagram-container">
-        <!-- Remplace par le lien ou chemin de l'image de l'Arbre 3D -->
         <img src="doc4.png" alt="BUHS L1 Cryptographic Engine Tree Schema">
     </div>
 
     <!-- Introduction -->
     <h2>Understanding the BUHS L1 Cryptographic Verification Engine</h2>
     <p>
-        The BUHS L1 protocol relies on a <strong>zero-trust, zero-knowledge, client-side audit model</strong>. Rather than asking you to blindly trust our servers, the application exports raw cryptographic proofs directly into your browser. Your local machine independently recalculates the mathematics to verify data integrity, chronological continuity, and absolute timestamping[cite: 8].
+        The BUHS L1 protocol relies on a <strong>zero-trust, zero-knowledge, client-side audit model</strong>. Rather than asking you to blindly trust our servers, the application exports raw cryptographic proofs directly into your browser. Your local machine independently recalculates the mathematics to verify data integrity, chronological continuity, and absolute timestamping.
     </p>
     <p>This verification rests on three foundational cryptographic pillars:</p>
 
@@ -211,7 +224,7 @@
         </div>
 
         <div class="proof-note">
-            <strong style="color:var(--accent-amber);">The Proof:</strong> Your client side recalculates this formula locally. If <code>recomputedLeaf</code> matches <code>proofData.transaction.leaf_hash</code> down to the exact bit, it provides absolute mathematical certainty that neither the file content nor its metadata has been modified since creation. Given SHA-256’s collision resistance (2<sup>-256</sup> probability of a random match), forging this proof is computationally impossible.
+            <strong style="color:var(--accent-amber);">The Proof:</strong> Your client side recalculates this formula locally[. If <code>recomputedLeaf</code> matches <code>proofData.transaction.leaf_hash</code> down to the exact bit, it provides absolute mathematical certainty that neither the file content nor its metadata has been modified since creation. Given SHA-256’s collision resistance (2<sup>-256</sup> probability of a random match), forging this proof is computationally impossible.
         </div>
     </div>
 
@@ -225,17 +238,40 @@
         </div>
 
         <div class="proof-note">
-            <strong style="color:var(--accent-blue);">The Proof:</strong> During the local audit sequence, your browser fetches the public registry's <code>Parent_Root</code> and <code>Day_Merkle</code>, then computes their combined hash. If <code>SHA256(Parent + Day) == Sealed_Root</code>, it proves unbroken historical continuity. Modifying a single past transaction would invalidate the entire downstream chain of seals, making secret ledger alteration mathematically detectable.
+            <strong style="color:var(--accent-blue);">The Proof:</strong> During the local audit sequence, your browser fetches the public registry's <code>Parent_Root</code> and <code>Day_Merkle</code>, then computes their combined hash. If <code>SHA256(Parent + Day) == Sealed_Root</code>, it proves unbroken historical continuity. Modifying a single past transaction would invalidate the entire downstream chain of seals, making secret ledger alteration mathematically detectable[.
         </div>
     </div>
 
-    <!-- Pillar 3 -->
+    <!-- Pillar 3 (REMANIÉ) -->
     <div class="pillar-card purple">
-        <div class="pillar-title">3. Absolute Temporal Anchoring (OpenTimestamps &amp; Bitcoin L1)</div>
-        <p>To guarantee that a transaction existed at a specific point in real-world time, the protocol extracts timestamp proofs (<code>.ots</code> files) broadcasted over the decentralized Nostr network.</p>
+        <div class="pillar-title">3. Absolute Temporal Anchoring (Bitcoin &amp; Ethereum Base Layer-2)</div>
+        <p>
+            The protocol establishes absolute temporal authenticity through a dual verification mechanism. It pairs continuous hourly L1 timestamping with an automated daily multi-chain state settlement.
+        </p>
+
+        <div class="formula-box" style="color:var(--accent-purple);">
+            (24 CIDs &rarr; H256) + (Transactions &rarr; H256) = H<sub>day</sub>
+        </div>
+
+        <h3>3.1. Hourly Oracle Verification (Oracle Xylem of 24 Thrones)</h3>
+        <ul>
+            <li><strong>Temporal Frequency:</strong> Ingested precisely once per hour via the <em>Oracle Xylem of 24 Thrones (Tree of Life)</em>.</li>
+            <li><strong>Bitcoin L1 Timestamping:</strong> Generates an individual OpenTimestamps (<code>.ots</code>) cryptographic proof for each hourly frame, directly anchoring the data payload to the Bitcoin blockchain.</li>
+        </ul>
+
+        <h3>3.2. Daily Automated Settlement &amp; Decentralized Export</h3>
+        <p>Upon daily epoch closure, two automated routines guarantee permanent multi-chain anchoring and decentralized retrieval:</p>
+        <ol>
+            <li>
+                <strong>Ethereum Base Layer-2 Contract Sync:</strong> An automated routine (GitHub Daily Log Sync) aggregates the 24 hourly IPFS Content Identifiers (CIDs), the parent hash, and the daily Merkle Root (H_day) directly into an immutable Base Layer-2 smart contract.
+            </li>
+            <li>
+                <strong>Nostr Relay Broadcast (Routine 2):</strong> An automated export routine fetches the 24 IPFS CIDs, encrypts the 24 corresponding <code>.ots</code> proof files on-the-fly, and broadcasts them across the decentralized Nostr relay network.
+            </li>
+        </ol>
 
         <div class="proof-note">
-            <strong style="color:var(--accent-purple);">The Proof:</strong> An <code>.ots</code> file contains a cryptographic path of sequential hashes culminating in a hash commitment embedded directly inside a physical Bitcoin block. Because altering a confirmed Bitcoin block requires overcoming the aggregate proof-of-work of the entire Bitcoin mining network, this offers an indisputable Proof of Existence: it mathematically demonstrates that your file existed prior to the mining of that specific Bitcoin block height.
+            <strong style="color:var(--accent-purple);">The Proof:</strong> By combining hourly Bitcoin OTS block proofs with daily Base Layer-2 smart contract state commits, the protocol renders historical backdating or timestamp manipulation mathematically impossible.
         </div>
     </div>
 

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BUHS - Technical &amp; Architectural Specifications</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-pure: #0a0a0a;
+            --surface: #121212;
+            --surface-accent: #1a1a1a;
+            --border-color: #003322;
+            --accent: #00ff88;
+            --accent-glow: rgba(0, 255, 136, 0.25);
+            --accent-purple: #bc8cff;
+            --accent-amber: #ffbd2e;
+            --accent-blue: #58a6ff;
+            --text-main: #d1d5db;
+            --text-muted: #6b7280;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-pure);
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
+
+        .doc-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        }
+
+        .header-box {
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        h1 { color: #fff; font-size: 1.4rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .author-tag { color: var(--accent); font-weight: 600; font-size: 0.85rem; }
+        .version-tag { color: var(--text-muted); font-size: 0.75rem; float: right; }
+
+        h2 {
+            color: var(--accent);
+            font-size: 1.1rem;
+            margin-top: 35px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        h3 { color: var(--accent-amber); font-size: 0.95rem; margin-top: 20px; margin-bottom: 10px; }
+        h4 { color: #fff; font-size: 0.85rem; margin-top: 15px; margin-bottom: 8px; }
+
+        p { margin-bottom: 12px; text-align: justify; }
+
+        /* Conteneur Image Schéma */
+        .diagram-container {
+            width: 100%;
+            max-width: 500px;
+            margin: 25px auto;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+            background: var(--bg-pure);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+            text-align: center;
+        }
+
+        .diagram-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Zones d'art ASCII & Schémas */
+        .ascii-box {
+            background: #050505;
+            border: 1px solid var(--border-color);
+            color: var(--accent);
+            padding: 15px;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            white-space: pre;
+            overflow-x: auto;
+            border-radius: 4px;
+            margin: 20px 0;
+            line-height: 1.2;
+        }
+
+        /* Formattage des Séphiroth */
+        .sephira-card {
+            background: var(--surface-accent);
+            border: 1px solid var(--border-color);
+            border-left: 3px solid var(--accent);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        .sephira-card.back { border-left-color: var(--accent-purple); }
+        .sephira-card.front { border-left-color: var(--accent-blue); }
+        .sephira-card.core { border-left-color: var(--accent-amber); }
+
+        .sephira-title { font-weight: 700; color: #fff; font-size: 0.9rem; margin-bottom: 6px; }
+        .tech-stack { font-size: 0.75rem; color: var(--accent-purple); margin-bottom: 8px; }
+
+        /* Structure des Tableaux */
+        .table-responsive { width: 100%; overflow-x: auto; margin: 20px 0; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.75rem; text-align: left; }
+        th, td { border: 1px solid var(--border-color); padding: 10px; }
+        th { background: var(--surface-accent); color: var(--accent); text-transform: uppercase; }
+        tr:nth-child(even) { background: rgba(255,255,255,0.01); }
+
+        code {
+            color: var(--accent-purple);
+            background: rgba(188, 140, 255, 0.1);
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+        }
+
+        ul, ol { margin-left: 20px; margin-bottom: 15px; }
+        li { margin-bottom: 6px; }
+
+        @media print {
+            body { background: #fff; color: #000; }
+            .doc-container { border: none; box-shadow: none; padding: 0; max-width: 100%; }
+            .sephira-card, .ascii-box, th { background: #f5f5f5 !important; color: #000 !important; border-color: #ccc !important; }
+            h1, h2, h3, .sephira-title, code { color: #000 !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="doc-container">
+
+    <div class="header-box">
+        <span class="version-tag">Version 1.0 — Unified Architecture</span>
+        <h1>Bigtree Universal Harmonic System (BUHS)</h1>
+        <div class="author-tag">Sovereign Network Technical &amp; Architectural Specifications</div>
+        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 5px;">Author: Oliver Bigtree</div>
+    </div>
+
+    <!-- EMPLACEMENT IMAGE / SCHÉMA ARCHITECTURE -->
+    <div class="diagram-container">
+        <img src="https://xylem.bigtreeconnection.com/BUHS%20(Big%20Tree%20Universal%20Harmonic%20System)%20%E2%80%94%20Daily%20Log%20&%20Cryptographic%20Audit%20User%20Guide/doc4.png" alt="BUHS Network Architectural Diagram">
+    </div>
+
+    <!-- 1. INTRODUCTION -->
+    <h2>1. Introduction &amp; System Philosophy</h2>
+    <p>The <strong>Bigtree Universal Harmonic System (BUHS)</strong> is a sovereign, holistic blockchain architecture designed upon the principle of an isomorphism between a living organism, and a decentralized computer network topology.</p>
+    <p>Modeled after the ancestral structure of the Sephirotic Tree of Life, BUHS seamlessly bridges.:</p>
+    <ul>
+        <li><strong>The Above (Observable Reality):</strong> Continuous ingestion of the physical and temporal environment (24 Thrones Visual Oracle and astronomical timestamping).</li>
+        <li><strong>The Below (User Reality):</strong> End-user sovereignty, allowing users to generate and certify data at the root without compromising privacy.</li>
+    </ul>
+
+    <!-- 2. SEPHIROTH -->
+    <h2>2. The Network Tree of Life: Mapping the 10 Sephiroth</h2>
+
+    <h3>Section A: The Top of the Tree (The Oracle &amp; Observable Truth).</h3>
+    
+    <div class="sephira-card">
+        <div class="sephira-title">Sephira 1: Kether — The Crown / Control Tower.</div>
+        <div class="tech-stack">Function: Original Visual Oracle &amp; Real-World Ingestion | Tech: Physical webcams, raw video stream.</div>
+        <p>Kether captures the observable reality of the physical world in its purest form. It provides uncorrupted raw visual and luminous data, serving as an unquestionable point of truth for the entire system.</p>
+    </div>
+
+    <div class="sephira-card front">
+        <div class="sephira-title">Sephira 2: Chokhmah — Wisdom / Smart Clock Radar.</div>
+        <div class="tech-stack">Function: Front-End Dynamic Engine (360°) | Tech: Node.js, snapshot.js, SunCalc, Dynamic SVG.</div>
+        <p>Chokhmah takes Kether's raw light data and applies the <code>snapshot.js</code> script (triggered every minute by Tiphereth). It computes real-time solar positions (SunCalc) and projects coordinates onto an equidistant 360° SVG map, forming the visual interface of universal time.</p>
+    </div>
+
+    <div class="sephira-card back">
+        <div class="sephira-title">Sephira 3: Binah — Understanding / Protocol Xylem &amp; Watchdog.</div>
+        <div class="tech-stack">Function: Back-End Memory Ledger | Tech: JS (index.js), IPFS, OpenTimestamps (OTS / Bitcoin).</div>
+        <p>Binah structures the data. Its Watchdog script runs hourly: it takes the Kether/Chokhmah frame capture, generates a permanent IPFS CID, and anchors it to the Bitcoin blockchain via OpenTimestamps (OTS). It preserves an tamper-proof memory of what the Earth observed.</p>
+    </div>
+
+    <h3>Section B: The Beating Heart (Tempo and Synchronization).</h3>
+    
+    <div class="sephira-card core">
+        <div class="sephira-title">Sephira 6: Tiphereth — Beauty / Heartbeat Nyahbinghi Master Clock.</div>
+        <div class="tech-stack">Function: Master Synchronization Server (±1 ns) | Tech: Swiss OVH Node (Stratum 1 NTP/PTP), Liquidsoap.</div>
+        <p>Tiphereth is the beating heart of BUHS. Inspired by the Nyahbinghi heartbeat pulse in Reggae music (fundamental 1/1 rhythm), this Swiss-hosted server is directly wired to a Stratum 0 time reference, delivering 9-decimal precision timestamping (nanosecond accuracy). It paces cron jobs, synchronizes modules, and streams network audio radio.</p>
+    </div>
+
+    <h3>Section C: The Compiler &amp; Publication Fan.</h3>
+
+    <div class="sephira-card back">
+        <div class="sephira-title">Sephira 5: Gevurah — Severity / Merkle Compiler.</div>
+        <div class="tech-stack">Function: Aggregation Engine &amp; L2 Settlement | Tech: Python (merkle_builder.py), L2 Smart Contract.</div>
+        <p>Every night at 00:30 UTC, its Python script fuses the Oracle data (24h sliding window) and Transaction logs (sealed at 00:00 UTC). It calculates the unified Merkle Tree, extracts the daily root hash <code>H</code>, and commits a transaction onto the Layer-2 Smart Contract for low-cost immutable anchoring.</p>
+    </div>
+
+    <div class="sephira-card front">
+        <div class="sephira-title">Sephira 4: Chesed — Mercy / Expansion Fan.</div>
+        <div class="tech-stack">Function: Public Web2 Portal Exposure | Tech: Web2 Interface (Read/Write), REST API.</div>
+        <p>Chesed takes the unified daily log sealed by Gevurah and publishes it to Web2 as an interactive expansion fan. It makes cryptographic truth universally verifiable without requiring prior blockchain technical expertise.</p>
+    </div>
+
+    <h3>Section D: The Bottom of the Tree (Execution and User Anchoring).</h3>
+
+    <div class="sephira-card">
+        <div class="sephira-title">Sephira 10: Malkhuth — The Kingdom / Client Orchestrator.</div>
+        <div class="tech-stack">Function: Sovereign Local Environment (T0) | Tech: Client Web Browser, SHA-256 Web Crypto API.</div>
+        <p>Malkhuth represents the end-user machine. When a file is dropped into the interface, the browser computes its SHA-256 hash locally at instant T0. The raw file never leaves the user device: only its cryptographic hash is transmitted.</p>
+    </div>
+
+    <div class="sephira-card core">
+        <div class="sephira-title">Sephira 9: Yesod — Foundation / Deployment Airlock.</div>
+        <div class="tech-stack">Function: Secure Communication Tunnel | Tech: HTTPS / SSH, Netlify Edge.</div>
+        <p>Yesod serves as the secure transit airlock between the local client machine (Malkhuth) and the server infrastructure. Upon clicking "Anchor", Netlify captures the payload and securely routes it to the central system.</p>
+    </div>
+
+    <div class="sephira-card back">
+        <div class="sephira-title">Sephira 8: Hod — Glory / The Inforad (Back-End).</div>
+        <div class="tech-stack">Function: Notifier &amp; UUID Issuer | Tech: Stratum 1 Chrony NTP Engine, UUID Generator.</div>
+        <p>Hod receives the request routed by Yesod, queries Tiphereth's time server, and issues a timestamped UUID ticket back to the user as proof of ingestion.</p>
+    </div>
+
+    <div class="sephira-card front">
+        <div class="sephira-title">Sephira 7: Netzach — Victory / P2P Network (Front-End).</div>
+        <div class="tech-stack">Function: Gateway Terminal & IPFS Decentralized Distribution | Tech: IPFS Node, Global P2P Network.</div>
+        <p>Netzach takes the transaction footprint and propagates its metadata across the global IPFS network, ensuring high availability and censorship resistance.</p>
+    </div>
+
+    <!-- 3. SYNOPTIC TABLE -->
+    <h2>3. Architecture Synoptic Overview.</h2>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>#.</th>
+                    <th>Sephira.</th>
+                    <th>BUHS Component.</th>
+                    <th>Pillar / Axis.</th>
+                    <th>Key Engine / Tech.</th>
+                    <th>Core Role.</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>1</td><td>Kether</td><td>Control Tower</td><td>Central (Top)</td><td>Physical Webcams</td><td>Raw video capture of physical reality</td></tr>
+                <tr><td>2</td><td>Chokhmah</td><td>Smart Clock</td><td>Masculine (Front)</td><td>Node.js / SunCalc / SVG</td><td>360° solar radar map generation</td></tr>
+                <tr><td>3</td><td>Binah</td><td>Protocol Xylem</td><td>Feminine (Back)</td><td>IPFS / OTS (Bitcoin)</td><td>Hourly Watchdog &amp; Bitcoin timestamping</td></tr>
+                <tr><td>4</td><td>Chesed</td><td>Public Fan</td><td>Masculine (Front)</td><td>REST Web2 Interface / Cloudflare</td><td>Public daily log publishing (Root H)</td></tr>
+                <tr><td>5</td><td>Gevurah</td><td>Merkle Compiler</td><td>Feminine (Back)</td><td>Python / L2 Smart Contract</td><td>24h data compilation &amp; On-Chain sealing</td></tr>
+                <tr><td>6</td><td>Tiphereth</td><td>Heartbeat Nyahbinghi</td><td>Central (Core)</td><td>Swiss OVH Stratum 1 / Liquidsoap</td><td>Master Clock ±1 ns &amp; Audio Broadcast</td></tr>
+                <tr><td>7</td><td>Netzach</td><td>P2P Network</td><td>Masculine (Front)</td><td>IPFS P2P Network</td><td>Global P2P metadata propagation</td></tr>
+                <tr><td>8</td><td>Hod</td><td>Inforad</td><td>Feminine (Back)</td><td>UUID / Chrony NTP / RUST / GO</td><td>Timestamp receipt issuing &amp; ACK</td></tr>
+                <tr><td>9</td><td>Yesod</td><td>Netlify Airlock</td><td>Central (Bottom)</td><td>HTTPS / SSH / Netlify Edge</td><td>Secure network transit tunnel</td></tr>
+                <tr><td>10</td><td>Malkhuth</td><td>Client Kingdom</td><td>Central (Bottom)</td><td>Browser SHA-256 API</td><td>Zero-Knowledge local hash computation (T0)</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 4. GOVERNANCE & TOKEN ASCII MODEL -->
+    <h2>4. Economic Model &amp; DAO</h2>
+    <p>The network operates via the <strong>Harmonic Token ($BUHS)</strong> and a bicameral decentralized governance model.</p>
+    
+    <div class="ascii-box">
+[ SEPHIROTH COUNCIL (DAO) ]
+  |
+  +-----------------------------+-----------------------------+
+  |                                                           |
+[ PILLAR OF SEVERITY ]                      [ PILLAR OF EXPANSION ]
+(Technical &amp; Back-End Governance)           (Economic &amp; Front-End Governance)
+- Python/JS updates validation              - Treasury allocation
+- Stratum 0/1 infrastructure maintenance    - Web2 licensing &amp; partnerships
+- Layer-2 Smart Contracts auditing          - Tokenomics evolution
+    </div>
+
+    <!-- 5. PRACTICAL USE CASES TABLE -->
+    <h2>5. Practical Use Cases.</h2>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Domain.</th>
+                    <th>Problem Solved by BUHS.</th>
+                    <th>Key Sephiroth.</th>
+                    <th>Core Benefit.</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Music &amp; Art</strong></td>
+                    <td>Creation theft / Proof of priority prior to release</td>
+                    <td>Malkhuth (10) &rarr; Tiphereth (6) &rarr; Chesed (4)</td>
+                    <td>Instant registration, zero-cost local compute, indisputable proof.</td>
+                </tr>
+                <tr>
+                    <td><strong>Legal &amp; Patents</strong></td>
+                    <td>Data leak exposure during third-party filings</td>
+                    <td>Malkhuth (10) &rarr; Hod (8) &rarr; Gevurah (5)</td>
+                    <td>Zero-Knowledge model: raw document never leaves client machine.</td>
+                </tr>
+                <tr>
+                    <td><strong>IoT &amp; Science</strong></td>
+                    <td>Retroactive data log tampering or falsification</td>
+                    <td>Kether (1) &rarr; Binah (3) &rarr; Gevurah (5)</td>
+                    <td>Stratum 1 nanosecond timestamping &amp; Bitcoin L1 anchoring.</td>
+                </tr>
+                <tr>
+                    <td><strong>ESG &amp; Logistics</strong></td>
+                    <td>High cost of continuous on-chain certification</td>
+                    <td>Gevurah (5) &rarr; Layer 2 &rarr; Chesed (4)</td>
+                    <td>Mass aggregation into a single daily Hash H at minimal cost.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>

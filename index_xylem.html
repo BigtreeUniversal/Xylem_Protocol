@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>[ XYLEM MIRROR // CENTRAL LOG ]</title>
+    <title>[ XYLEM FAST MIRROR// CENTRAL LOG ]</title>
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
@@ -87,7 +87,7 @@
 
 <div class="max-w-4xl mx-auto">
 
-    <h1 class="text-lg sm:text-xl mb-6">[ XYLEM FAST MIRROR // TIME-CHAIN INDEX ] <span class="blink">_</span></h1>
+    <h1 class="text-lg sm:text-xl mb-6">[ XYLEM CORE REGISTRY // TIME-CHAIN INDEX ] <span class="blink">_</span></h1>
     
     <div class="box text-xs sm:text-sm mb-6">
         <p>> STATUS : LOGGING_ACTIVE</p>
@@ -112,10 +112,6 @@
             <button id="btn-juillet2026" onclick="switchEpoch('juillet2026')" class="epoch-btn border border-green-700 px-2 py-1 text-green-400">07_JUILLET</button>
             <button id="btn-aout2026" onclick="switchEpoch('aout2026')" class="epoch-btn border border-green-700 px-2 py-1 text-green-400">08_AOUT</button>
             <button id="btn-septembre2026" onclick="switchEpoch('septembre2026')" class="epoch-btn border border-green-400 px-2 py-1 bg-green-500 text-black font-bold">09_SEPT</button>
-
-            <button class="text-green-900 border border-dashed border-green-950 px-2 py-1 cursor-not-allowed" disabled>10_OCT</button>
-            <button class="text-green-900 border border-dashed border-green-950 px-2 py-1 cursor-not-allowed" disabled>11_NOV</button>
-            <button class="text-green-900 border border-dashed border-green-950 px-2 py-1 cursor-not-allowed" disabled>12_DEC</button>
         </div>
     </div>
 
@@ -191,7 +187,7 @@
     </div>
 
     <!-- AOÛT 2026 -->
-    <div id="aout2026" class="epoch-calendar box">
+    <div id="aout2026" class="epoch-calendar box hidden">
         <h2 class="text-md mb-4 text-green-400">> EPOCH_LOG : AOUT_2026</h2>
         <div class="grid grid-cols-7 gap-1 sm:gap-2 text-xs">
             <div class="text-center font-bold text-green-700 pb-2">LUN</div>
@@ -244,53 +240,52 @@
         </div>
     </div>
 
-
     <!-- SEPTEMBRE 2026 -->
     <div id="septembre2026" class="epoch-calendar box">
         <h2 class="text-md mb-4 text-green-400">> EPOCH_LOG : SEPTEMBRE_2026</h2>
+        <div class="grid grid-cols-7 gap-1 sm:gap-2 text-xs">
+            <div class="text-center font-bold text-green-700 pb-2">LUN</div>
+            <div class="text-center font-bold text-green-700 pb-2">MAR</div>
+            <div class="text-center font-bold text-green-700 pb-2">MER</div>
+            <div class="text-center font-bold text-green-700 pb-2">JEU</div>
+            <div class="text-center font-bold text-green-700 pb-2">VEN</div>
+            <div class="text-center font-bold text-green-700 pb-2">SAM</div>
+            <div class="text-center font-bold text-green-700 pb-2">DIM</div>
 
-        <div class="grid grid-cols-7 gap-2">
-            <div class="text-center text-xs font-bold text-green-700 pb-2">LUN</div>
-            <div class="text-center text-xs font-bold text-green-700 pb-2">MAR</div>
-            <div class="text-center text-xs font-bold text-green-700 pb-2">MER</div>
-            <div class="text-center text-xs font-bold text-green-700 pb-2">JEU</div>
-            <div class="text-center text-xs font-bold text-green-700 pb-2">VEN</div>
-            <div class="text-center text-xs font-bold text-green-700 pb-2">SAM</div>
-            <div class="text-center text-xs font-bold text-green-700 pb-2">DIM</div>
-
-            <!-- Décalage : Le 1er septembre 2026 tombe un Mardi -->
+            <!-- Le 1er septembre 2026 tombe un Mardi (1 case vide avant) -->
             <div class="day-node empty"></div>
 
-            <a href="page-2026-09-01.html" class="day-node">01</a>
-            <a href="page-2026-09-02.html" class="day-node">02</a>
-            <a href="page-2026-09-03.html" class="day-node">03</a>
-            <a href="page-2026-09-04.html" class="day-node">04</a>
-            <a href="page-2026-09-05.html" class="day-node">05</a>
-            <a href="page-2026-09-06.html" class="day-node">06</a>
-            <a href="page-2026-09-07.html" class="day-node">07</a>
-            <a href="page-2026-09-08.html" class="day-node">08</a>
-            <a href="page-2026-09-09.html" class="day-node">09</a>
-            <a href="page-2026-09-10.html" class="day-node">10</a>
-            <a href="page-2026-09-11.html" class="day-node">11</a>
-            <a href="page-2026-09-12.html" class="day-node">12</a>
-            <a href="page-2026-09-13.html" class="day-node">13</a>
-            <a href="page-2026-09-14.html" class="day-node">14</a>
-            <a href="page-2026-09-15.html" class="day-node">15</a>
-            <a href="page-2026-09-16.html" class="day-node">16</a>
-            <a href="page-2026-09-17.html" class="day-node">17</a>
-            <a href="page-2026-09-18.html" class="day-node">18</a>
-            <a href="page-2026-09-19.html" class="day-node">19</a>
-            <a href="page-2026-09-20.html" class="day-node">20</a>
-            <a href="page-2026-09-21.html" class="day-node">21</a>
-            <a href="page-2026-09-22.html" class="day-node">22</a>
-            <a href="page-2026-09-23.html" class="day-node">23</a>
-            <a href="page-2026-09-24.html" class="day-node">24</a>
-            <a href="page-2026-09-25.html" class="day-node">25</a>
-            <a href="page-2026-09-26.html" class="day-node">26</a>
-            <a href="page-2026-09-27.html" class="day-node">27</a>
-            <a href="page-2026-09-28.html" class="day-node">28</a>
-            <a href="page-2026-09-29.html" class="day-node">29</a>
-            <a href="page-2026-09-30.html" class="day-node">30</a>
+            <!-- Jours du mois de Septembre -->
+            <a href="mirror.html?log=page-2026-09-01.html" class="day-node">01</a>
+            <a href="mirror.html?log=page-2026-09-02.html" class="day-node">02</a>
+            <a href="mirror.html?log=page-2026-09-03.html" class="day-node">03</a>
+            <a href="mirror.html?log=page-2026-09-04.html" class="day-node">04</a>
+            <a href="mirror.html?log=page-2026-09-05.html" class="day-node">05</a>
+            <a href="mirror.html?log=page-2026-09-06.html" class="day-node">06</a>
+            <a href="mirror.html?log=page-2026-09-07.html" class="day-node">07</a>
+            <a href="mirror.html?log=page-2026-09-08.html" class="day-node">08</a>
+            <a href="mirror.html?log=page-2026-09-09.html" class="day-node">09</a>
+            <a href="mirror.html?log=page-2026-09-10.html" class="day-node">10</a>
+            <a href="mirror.html?log=page-2026-09-11.html" class="day-node">11</a>
+            <a href="mirror.html?log=page-2026-09-12.html" class="day-node">12</a>
+            <a href="mirror.html?log=page-2026-09-13.html" class="day-node">13</a>
+            <a href="mirror.html?log=page-2026-09-14.html" class="day-node">14</a>
+            <a href="mirror.html?log=page-2026-09-15.html" class="day-node">15</a>
+            <a href="mirror.html?log=page-2026-09-16.html" class="day-node">16</a>
+            <a href="mirror.html?log=page-2026-09-17.html" class="day-node">17</a>
+            <a href="mirror.html?log=page-2026-09-18.html" class="day-node">18</a>
+            <a href="mirror.html?log=page-2026-09-19.html" class="day-node">19</a>
+            <a href="mirror.html?log=page-2026-09-20.html" class="day-node">20</a>
+            <a href="mirror.html?log=page-2026-09-21.html" class="day-node">21</a>
+            <a href="mirror.html?log=page-2026-09-22.html" class="day-node">22</a>
+            <a href="mirror.html?log=page-2026-09-23.html" class="day-node">23</a>
+            <a href="mirror.html?log=page-2026-09-24.html" class="day-node">24</a>
+            <a href="mirror.html?log=page-2026-09-25.html" class="day-node">25</a>
+            <a href="mirror.html?log=page-2026-09-26.html" class="day-node">26</a>
+            <a href="mirror.html?log=page-2026-09-27.html" class="day-node">27</a>
+            <a href="mirror.html?log=page-2026-09-28.html" class="day-node">28</a>
+            <a href="mirror.html?log=page-2026-09-29.html" class="day-node">29</a>
+            <a href="mirror.html?log=page-2026-09-30.html" class="day-node">30</a>
         </div>
     </div>
 

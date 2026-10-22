@@ -59,9 +59,9 @@ async function main() {
   console.log(`   - Sealed Root (H_t)   : ${currentHash}`);
   console.log(`   - CIDs IPFS trouvés   : ${cids.length}`);
 
-  if (cids.length < 1 || cids.length > 24) {
-    throw new Error(`Nombre de CIDs invalide : ${cids.length} (attendu : 1 à 24)`);
-  }
+ if (cids.length < 0 || cids.length > 24) {
+    throw new Error(`Nombre de CIDs invalide : ${cids.length} (attendu : 0 à 24)`);
+}
 
   // 4. Interaction avec XylemOracle.sol
   const contractABI = [

@@ -68,8 +68,8 @@ jobs:
             cat ots_list.txt
             echo "--------------------------------------"
 
-            # 3. Téléchargement depuis le dossier archives
-            rsync -avz \
+            # 3. Téléchargement depuis le dossier archives avec tolérance d'absence
+            rsync -avz --ignore-missing-args \
               --files-from=ots_list.txt \
               ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/root/xylem_data/archives/ \
               ./ots_downloaded/
